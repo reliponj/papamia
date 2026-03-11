@@ -214,6 +214,29 @@ main {
   font-weight: 600;
 }
 
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.filter-button {
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid #e0c2a7;
+  background-color: #fffaf2;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #6b4a3d;
+}
+
+.filter-button-active {
+  border-color: #e63946;
+  background: linear-gradient(135deg, #e63946, #f4a261);
+  color: #fff;
+}
+
 .empty-state {
   padding: 1.4rem 1.6rem;
   border-radius: 16px;
