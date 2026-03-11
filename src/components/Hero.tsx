@@ -2,18 +2,20 @@ import type { FC } from 'react'
 
 export const Hero: FC = () => {
   return (
-    <section className="hero">
-      <div className="hero-content">
-        <h1>Итальянский ресторан PapaMia</h1>
+    <section className="hero hero-dark">
+      <div className="hero-overlay" />
+      <div className="hero-content hero-content-dark">
+        <h1>PapaMia — вкус Италии ночью</h1>
         <p>
-          Горячая пицца, свежая паста и ароматные супы прямо из сердца Италии.
-          Закажите онлайн — мы доставим тепло итальянской кухни к вам домой.
+          Атмосферный итальянский ресторан с доставкой до поздней ночи. Горячая
+          пицца из печи, свежая паста и супы, приготовленные по семейным
+          рецептам. Мы заботимся о том, чтобы каждое блюдо было таким же тёплым,
+          как огни нашего зала.
         </p>
-        <a className="hero-button" href="#catalog">
-          Перейти к каталогу
+        <a className="hero-button hero-button-light" href="#catalog">
+          Посмотреть меню
         </a>
       </div>
-      <div className="hero-decoration" aria-hidden="true" />
     </section>
   )
 }

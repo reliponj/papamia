@@ -1,10 +1,13 @@
-import type { FC } from 'react'
+import { type FC, useState } from 'react'
 import type { Product } from '../data/products'
 
 interface ProductCardProps {
   product: Product
   isFavorite: boolean
   onToggleFavorite: () => void
+  quantity: number
+  onIncrease: () => void
+  onDecrease: () => void
   onAddToCart: () => void
 }
 
@@ -12,8 +15,13 @@ export const ProductCard: FC<ProductCardProps> = ({
   product,
   isFavorite,
   onToggleFavorite,
+  quantity,
+  onIncrease,
+  onDecrease,
   onAddToCart,
 }) => {
+  const [likes, setLikes] = useState(0)
+
   return (
     <article className="product-card">
       <div className="product-image-wrapper">
@@ -38,6 +46,13 @@ export const ProductCard: FC<ProductCardProps> = ({
         >
           {isFavorite ? '❤' : '♡'}
         </button>
+        <button
+          type="button"
+          className="like-button"
+          onClick={() => setLikes((current) => current + 1)}
+        >
+          👍 {likes}
+        </button>
       </div>
       <div className="product-body">
         <h3 className="product-title">{product.name}</h3>
@@ -45,9 +60,38 @@ export const ProductCard: FC<ProductCardProps> = ({
       </div>
       <div className="product-footer">
         <span className="product-price">{product.price} MDL</span>
-        <button type="button" className="product-button" onClick={onAddToCart}>
-          В корзину
-        </button>
+        <div className="product-actions">
+          {quantity > 0 ? (
+            <div className="quantity-control">
+              <button
+                type="button"
+                className="quantity-button"
+                onClick={onDecrease}
+                aria-label="Уменьшить количество"
+              >
+                −
+              </button>
+              <input
+                className="quantity-input"
+                type="text"
+                readOnly
+                value={quantity}
+              />
+              <button
+                type="button"
+                className="quantity-button"
+                onClick={onIncrease}
+                aria-label="Увеличить количество"
+              >
+                +
+              </button>
+            </div>
+          ) : (
+            <button type="button" className="product-button" onClick={onAddToCart}>
+              В корзину
+            </button>
+          )}
+        </div>
       </div>
     </article>
   )

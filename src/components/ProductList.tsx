@@ -7,6 +7,9 @@ interface ProductListProps {
   favoriteIds: number[]
   onToggleFavorite: (id: number) => void
   onAddToCart: (product: Product) => void
+  getQuantityForProduct: (id: number) => number
+  onIncreaseQuantity: (product: Product) => void
+  onDecreaseQuantity: (product: Product) => void
 }
 
 export const ProductList: FC<ProductListProps> = ({
@@ -14,6 +17,9 @@ export const ProductList: FC<ProductListProps> = ({
   favoriteIds,
   onToggleFavorite,
   onAddToCart,
+  getQuantityForProduct,
+  onIncreaseQuantity,
+  onDecreaseQuantity,
 }) => {
   if (products.length === 0) {
     return (
@@ -31,6 +37,9 @@ export const ProductList: FC<ProductListProps> = ({
           product={product}
           isFavorite={favoriteIds.includes(product.id)}
           onToggleFavorite={() => onToggleFavorite(product.id)}
+          quantity={getQuantityForProduct(product.id)}
+          onIncrease={() => onIncreaseQuantity(product)}
+          onDecrease={() => onDecreaseQuantity(product)}
           onAddToCart={() => onAddToCart(product)}
         />
       ))}

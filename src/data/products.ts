@@ -1,4 +1,4 @@
-export type Category = 'pizza' | 'pasta' | 'soup'
+export type Category = 'pizza' | 'pasta' | 'soup' | 'clothes'
 
 export interface Product {
   id: number

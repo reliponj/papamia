@@ -1,5 +1,5 @@
 import './App.css'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CartModal } from './components/CartModal'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -8,7 +8,7 @@ import { Counter } from './components/Counter'
 import { FilterButtons, type FilterValue } from './components/FilterButtons'
 import { ProductList } from './components/ProductList'
 import { SearchBar } from './components/SearchBar'
-import { products, type Product } from './data/products'
+import { products as mockProducts, type Product } from './data/products'
 import type { CartItem } from './types/cart'
 
 function App() {
@@ -17,10 +17,12 @@ function App() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [favoriteIds, setFavoriteIds] = useState<number[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const [allProducts, setAllProducts] = useState<Product[]>(mockProducts)
+  const [isLoading, setIsLoading] = useState(false)
 
   const filteredProducts = useMemo(() => {
     const query = search.toLowerCase().trim()
-    let result = products
+    let result = allProducts
 
     if (filter !== 'all') {
       result = result.filter((product) => product.category === filter)
@@ -33,7 +35,38 @@ function App() {
     return result.filter((product) =>
       product.name.toLowerCase().includes(query),
     )
-  }, [filter, search])
+  }, [allProducts, filter, search])
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('https://fakestoreapi.com/products')
+        if (!response.ok) return
+        const data: Array<{
+          id: number
+          title: string
+          price: number
+          image: string
+          category: string
+          description: string
+        }> = await response.json()
+        const mapped: Product[] = data.slice(0, 8).map((item) => ({
+          id: 1000 + item.id,
+          name: item.title,
+          description: item.description,
+          price: Math.round(item.price * 18),
+          image: item.image,
+          category: 'clothes',
+        }))
+        setAllProducts((current) => [...current, ...mapped])
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    void fetchProducts()
+  }, [])
 
   const handleAddToCart = (product: Product) => {
     setCartItems((current) => {
@@ -58,8 +91,8 @@ function App() {
   }
 
   const favoriteProducts = useMemo(
-    () => products.filter((product) => favoriteIds.includes(product.id)),
-    [favoriteIds],
+    () => allProducts.filter((product) => favoriteIds.includes(product.id)),
+    [allProducts, favoriteIds],
   )
 
   const cartCount = cartItems.reduce(
@@ -90,12 +123,31 @@ function App() {
 
           <FilterButtons activeFilter={filter} onChange={setFilter} />
 
-          <ProductList
-            products={filteredProducts}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={handleToggleFavorite}
-            onAddToCart={handleAddToCart}
-          />
+          {isLoading ? (
+            <p className="empty-state">Загрузка...</p>
+          ) : (
+            <ProductList
+              products={filteredProducts}
+              favoriteIds={favoriteIds}
+              onToggleFavorite={handleToggleFavorite}
+              onAddToCart={handleAddToCart}
+              getQuantityForProduct={(id) =>
+                cartItems.find((item) => item.product.id === id)?.quantity ?? 0
+              }
+              onIncreaseQuantity={handleAddToCart}
+              onDecreaseQuantity={(product) => {
+                setCartItems((current) =>
+                  current
+                    .map((item) =>
+                      item.product.id === product.id
+                        ? { ...item, quantity: item.quantity - 1 }
+                        : item,
+                    )
+                    .filter((item) => item.quantity > 0),
+                )
+              }}
+            />
+          )}
         </section>
 
         <section id="favorites" className="info-section">
@@ -103,12 +155,29 @@ function App() {
           {favoriteProducts.length === 0 ? (
             <p>У вас пока нет избранных блюд. Нажмите на сердечко на карточке, чтобы добавить.</p>
           ) : (
-            <ProductList
-              products={favoriteProducts}
-              favoriteIds={favoriteIds}
-              onToggleFavorite={handleToggleFavorite}
-              onAddToCart={handleAddToCart}
-            />
+            <div className="favorites-grid-wrapper">
+              <ProductList
+                products={favoriteProducts}
+                favoriteIds={favoriteIds}
+                onToggleFavorite={handleToggleFavorite}
+                onAddToCart={handleAddToCart}
+                getQuantityForProduct={(id) =>
+                  cartItems.find((item) => item.product.id === id)?.quantity ?? 0
+                }
+                onIncreaseQuantity={handleAddToCart}
+                onDecreaseQuantity={(product) => {
+                  setCartItems((current) =>
+                    current
+                      .map((item) =>
+                        item.product.id === product.id
+                          ? { ...item, quantity: item.quantity - 1 }
+                          : item,
+                      )
+                      .filter((item) => item.quantity > 0),
+                  )
+                }}
+              />
+            </div>
           )}
         </section>
 

@@ -13,6 +13,7 @@ const FILTERS: { value: FilterValue; label: string }[] = [
   { value: 'pizza', label: 'Пицца' },
   { value: 'pasta', label: 'Паста' },
   { value: 'soup', label: 'Супы' },
+  { value: 'clothes', label: 'Одежда' },
 ]
 
 export const FilterButtons: FC<FilterButtonsProps> = ({
