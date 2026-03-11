@@ -35,6 +35,7 @@ export const ProductCard: FC<ProductCardProps> = ({
           {product.category === 'pizza' && 'Пицца'}
           {product.category === 'pasta' && 'Паста'}
           {product.category === 'soup' && 'Суп'}
+          {product.category === 'clothes' && 'Одежда'}
         </span>
         <button
           type="button"

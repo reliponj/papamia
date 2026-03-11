@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CartModal } from './components/CartModal'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -19,6 +19,7 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [allProducts, setAllProducts] = useState<Product[]>(mockProducts)
   const [isLoading, setIsLoading] = useState(false)
+  const hasLoadedFromApi = useRef(false)
 
   const filteredProducts = useMemo(() => {
     const query = search.toLowerCase().trim()
@@ -38,6 +39,9 @@ function App() {
   }, [allProducts, filter, search])
 
   useEffect(() => {
+    if (hasLoadedFromApi.current) return
+    hasLoadedFromApi.current = true
+
     const fetchProducts = async () => {
       try {
         setIsLoading(true)
@@ -51,7 +55,7 @@ function App() {
           category: string
           description: string
         }> = await response.json()
-        const mapped: Product[] = data.slice(0, 8).map((item) => ({
+        const mapped: Product[] = data.map((item) => ({
           id: 1000 + item.id,
           name: item.title,
           description: item.description,
@@ -59,7 +63,11 @@ function App() {
           image: item.image,
           category: 'clothes',
         }))
-        setAllProducts((current) => [...current, ...mapped])
+        setAllProducts((current) => {
+          const existingIds = new Set(current.map((product) => product.id))
+          const unique = mapped.filter((product) => !existingIds.has(product.id))
+          return [...current, ...unique]
+        })
       } finally {
         setIsLoading(false)
       }
