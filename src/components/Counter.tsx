@@ -1,13 +1,15 @@
 import type { FC } from 'react'
 
 interface CounterProps {
-  count: number
+  foundCount: number
+  cartCount: number
 }
 
-export const Counter: FC<CounterProps> = ({ count }) => {
+export const Counter: FC<CounterProps> = ({ foundCount, cartCount }) => {
   return (
     <p className="catalog-count">
-      Найдено блюд: <span>{count}</span>
+      Найдено блюд: <span>{foundCount}</span> | В корзине:{' '}
+      <span>{cartCount}</span>
     </p>
   )
 }

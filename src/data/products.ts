@@ -16,7 +16,7 @@ export const products: Product[] = [
     description: 'Тонкое тесто, томатный соус, моцарелла, свежий базилик',
     price: 180,
     image:
-      'https://images.pexels.com/photos/1596881/pexels-photo-1596881.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1435907/pexels-photo-1435907.jpeg?auto=compress&cs=tinysrgb&w=800',
     category: 'pizza',
   },
   {
@@ -43,7 +43,7 @@ export const products: Product[] = [
     description: 'Свежая паста, соус песто из базилика, кедровые орехи',
     price: 185,
     image:
-      'https://images.pexels.com/photos/1279332/pexels-photo-1279332.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/6287520/pexels-photo-6287520.jpeg?auto=compress&cs=tinysrgb&w=800',
     category: 'pasta',
   },
   {
@@ -52,7 +52,7 @@ export const products: Product[] = [
     description: 'Овощной суп с томатами, фасолью и ароматными травами',
     price: 130,
     image:
-      'https://images.pexels.com/photos/1437269/pexels-photo-1437269.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1351238/pexels-photo-1351238.jpeg?auto=compress&cs=tinysrgb&w=800',
     category: 'soup',
   },
   {
@@ -61,8 +61,26 @@ export const products: Product[] = [
     description: 'Нежный томатный крем-суп с базиликом и гренками',
     price: 135,
     image:
-      'https://images.pexels.com/photos/730922/pexels-photo-730922.jpeg?auto=compress&cs=tinysrgb&w=800',
+      'https://images.pexels.com/photos/1907227/pexels-photo-1907227.jpeg?auto=compress&cs=tinysrgb&w=800',
     category: 'soup',
+  },
+  {
+    id: 7,
+    name: 'Четыре сыра',
+    description: 'Пицца на тонком тесте с моцареллой, горгонзолой, пармезаном и эмменталем',
+    price: 220,
+    image:
+      'https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg?auto=compress&cs=tinysrgb&w=800',
+    category: 'pizza',
+  },
+  {
+    id: 8,
+    name: 'Паста Болоньезе',
+    description: 'Спагетти с томатным соусом болоньезе из говядины и свежим пармезаном',
+    price: 205,
+    image:
+      'https://images.pexels.com/photos/6287520/pexels-photo-6287520.jpeg?auto=compress&cs=tinysrgb&w=800',
+    category: 'pasta',
   },
 ]
 
