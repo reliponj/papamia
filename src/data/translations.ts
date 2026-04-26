@@ -87,6 +87,19 @@ export type UiKey =
   | 'aria.openMenu'
   | 'aria.closeCart'
   | 'aria.lang'
+  | 'nav.builder'
+  | 'builder.title'
+  | 'builder.sub'
+  | 'builder.step.dough'
+  | 'builder.step.sauce'
+  | 'builder.step.toppings'
+  | 'builder.next'
+  | 'builder.back'
+  | 'builder.addToCart'
+  | 'builder.total'
+  | 'builder.custom'
+  | 'builder.toppings.hint'
+  | 'builder.preview.empty'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -270,6 +283,31 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'aria.openMenu': { ro: 'Deschide meniul', ru: 'Открыть меню', en: 'Open menu' },
   'aria.closeCart': { ro: 'Închide coșul', ru: 'Закрыть корзину', en: 'Close cart' },
   'aria.lang': { ro: 'Limbă', ru: 'Язык', en: 'Language' },
+  'nav.builder': { ro: 'Constructor', ru: 'Конструктор', en: 'Pizza builder' },
+  'builder.title': { ro: 'Constructor de pizza', ru: 'Конструктор пиццы', en: 'Pizza builder' },
+  'builder.sub': {
+    ro: 'Compune pizza ta pas cu pas',
+    ru: 'Собери свою пиццу шаг за шагом',
+    en: 'Build your pizza step by step',
+  },
+  'builder.step.dough': { ro: 'Alege aluatul', ru: 'Выберите тесто', en: 'Choose dough' },
+  'builder.step.sauce': { ro: 'Alege sosul', ru: 'Выберите соус', en: 'Choose sauce' },
+  'builder.step.toppings': { ro: 'Adaugă ingrediente', ru: 'Добавьте начинки', en: 'Add toppings' },
+  'builder.next': { ro: 'Înainte', ru: 'Далее', en: 'Next' },
+  'builder.back': { ro: 'Înapoi', ru: 'Назад', en: 'Back' },
+  'builder.addToCart': { ro: 'Adaugă în coș', ru: 'Добавить в корзину', en: 'Add to cart' },
+  'builder.total': { ro: 'Total', ru: 'Итого', en: 'Total' },
+  'builder.custom': { ro: 'Pizza personalizată', ru: 'Своя пицца', en: 'Custom pizza' },
+  'builder.toppings.hint': {
+    ro: 'Poți alege mai multe ingrediente',
+    ru: 'Можно выбрать несколько начинок',
+    en: 'You can select multiple toppings',
+  },
+  'builder.preview.empty': {
+    ro: 'Alege aluatul pentru a începe',
+    ru: 'Выберите тесто, чтобы начать',
+    en: 'Choose dough to start',
+  },
 }
 
 export function translate(lang: Lang, key: UiKey) {

@@ -6,8 +6,8 @@ import { Button } from '../ui/Button'
 
 export function CartDrawer() {
   const { isDrawerOpen: open } = useCartState()
-  const { lines, total } = useCartTotals()
-  const { setQty, closeDrawer, removeLine } = useCartActions()
+  const { lines, customLines, total } = useCartTotals()
+  const { setQty, closeDrawer, removeLine, removeCustomLine } = useCartActions()
   const { lang, t } = useLocale()
 
   useEffect(() => {
@@ -27,6 +27,8 @@ export function CartDrawer() {
   }, [open])
 
   if (!open) return null
+
+  const isEmpty = lines.length === 0 && customLines.length === 0
 
   return (
     <div className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
@@ -48,7 +50,8 @@ export function CartDrawer() {
             ×
           </button>
         </header>
-        {lines.length === 0 ? (
+
+        {isEmpty ? (
           <p className="cart-drawer__empty">{t('cart.empty')}</p>
         ) : (
           <ul className="cart-drawer__list">
@@ -85,8 +88,32 @@ export function CartDrawer() {
                 </li>
               )
             })}
+
+            {customLines.map((cl) => (
+              <li key={cl.id} className="cart-line cart-line--custom">
+                <div>
+                  <div className="cart-line__name">{cl.label}</div>
+                  <div className="cart-line__meta cart-line__meta--custom">
+                    {t('builder.custom')}
+                  </div>
+                  <div className="cart-line__meta">
+                    {cl.price} {t('menu.currency')} × {cl.qty}
+                  </div>
+                </div>
+                <div className="cart-line__controls">
+                  <button
+                    type="button"
+                    className="cart-line__remove"
+                    onClick={() => removeCustomLine(cl.id)}
+                  >
+                    {t('cart.remove')}
+                  </button>
+                </div>
+              </li>
+            ))}
           </ul>
         )}
+
         <footer className="cart-drawer__foot">
           <div className="cart-drawer__total">
             <span>{t('cart.total')}</span>
@@ -97,7 +124,7 @@ export function CartDrawer() {
           <Button
             variant="primary"
             className="cart-drawer__checkout"
-            disabled={lines.length === 0}
+            disabled={isEmpty}
             onClick={() => {
               window.alert('Checkout demo — connect your payment backend here.')
             }}

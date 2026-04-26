@@ -45,6 +45,13 @@ export function SiteHeader() {
             {t('nav.menu')}
           </NavLink>
           <NavLink
+            to="/builder"
+            className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            {t('nav.builder')}
+          </NavLink>
+          <NavLink
             to="/about"
             className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
             onClick={() => setMenuOpen(false)}

@@ -24,3 +24,13 @@ export type CartLine = {
   productId: string
   qty: number
 }
+
+export type CustomPizzaLine = {
+  id: string
+  label: string
+  price: number
+  qty: number
+  doughId: string
+  sauceId: string
+  toppingIds: string[]
+}

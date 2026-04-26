@@ -4,6 +4,7 @@ import { HomePage } from './pages/HomePage'
 import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
 import { ContactsPage } from './pages/ContactsPage'
+import { PizzaBuilderPage } from './pages/PizzaBuilderPage'
 
 export const router = createBrowserRouter([
   {
@@ -12,6 +13,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'menu', element: <MenuPage /> },
+      { path: 'builder', element: <PizzaBuilderPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contacts', element: <ContactsPage /> },
     ],
