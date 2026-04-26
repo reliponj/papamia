@@ -1108,12 +1108,24 @@ textarea {
 }
 
 .contacts-page {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
+.contacts-page__map-wrap {
+  margin-top: 2rem;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.contacts-page__map {
+  width: 100%;
+  height: 380px;
+}
+
 .contacts-page__section {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
 }
 
 .contacts-page__heading {
@@ -1130,7 +1142,7 @@ textarea {
 .contacts-page__locations {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 @media (max-width: 900px) {
@@ -1171,7 +1183,7 @@ textarea {
 
 .contacts-page__details {
   display: flex;
-  gap: 3rem;
+  gap: 4rem;
   flex-wrap: wrap;
 }
 
