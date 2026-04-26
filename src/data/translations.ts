@@ -73,6 +73,10 @@ export type UiKey =
   | 'about.page.p1'
   | 'about.page.p2'
   | 'about.page.chef'
+  | 'about.page.mission.label'
+  | 'about.page.team.title'
+  | 'about.page.team.sub'
+  | 'about.page.food.title'
   | 'aria.openMenu'
   | 'aria.closeCart'
   | 'aria.lang'
@@ -137,9 +141,21 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   },
   'about.reserve': { ro: 'Rezervare', ru: 'Забронировать', en: 'Book a table' },
   'about.contact': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
-  'featured.title': { ro: 'Recomandări', ru: 'Мы рекомендуем', en: 'We recommend' },
-  'featured.sub': { ro: 'Cel mai bun sezon', ru: 'Лучшее в сезоне', en: 'Best of the season' },
-  'featured.order': { ro: 'Comandă acum', ru: 'Заказать сейчас', en: 'Order now' },
+  'featured.title': {
+    ro: 'Recomandări',
+    ru: 'Мы рекомендуем',
+    en: 'We recommend',
+  },
+  'featured.sub': {
+    ro: 'Cel mai bun sezon',
+    ru: 'Лучшее в сезоне',
+    en: 'Best of the season',
+  },
+  'featured.order': {
+    ro: 'Comandă acum',
+    ru: 'Заказать сейчас',
+    en: 'Order now',
+  },
   'delivery.title': {
     ro: 'Livrare în Chișinău și împrejurimi',
     ru: 'Доставка по Кишинёву и пригородам',
@@ -199,19 +215,39 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'contacts.form.send': { ro: 'Trimite', ru: 'Отправить', en: 'Send' },
   'about.page.title': { ro: 'Povestea noastră', ru: 'Наша история', en: 'Our story' },
   'about.page.p1': {
-    ro: 'Papa Mia a început din pasiunea pentru aluat dospit 48 de ore și ingrediente italiane verificate.',
-    ru: 'Papa Mia начался с любви к тесту на 48 часов и проверенным итальянским продуктам.',
-    en: 'Papa Mia began with a passion for 48-hour dough and verified Italian ingredients.',
+    ro: 'Papa Mia s-a născut dintr-o dorință simplă: să aducem o bucățică din Roma la voi. Nu o interpretare, nu o adaptare — ci autenticitatea în starea ei pură. Mirosul aluatului dospit 48 de ore, căldura cuptorului cu lemn, gestul lent al unui bucătar care știe că graba strică totul. Credem că mâncarea bună este un act de respect — față de ingredient, față de tradiție și față de omul care stă la masă.',
+    ru: 'Papa Mia родился из простого желания: привезти кусочек Рима к вам. Не интерпретацию, не адаптацию — а подлинность в чистом виде. Запах теста, выдержанного 48 часов, тепло дровяной печи, неспешный жест повара, который знает: торопливость всё портит. Мы верим, что хорошая еда — это акт уважения: к ингредиенту, к традиции и к человеку за столом.',
+    en: 'Papa Mia was born from a simple desire: to bring a piece of Rome to you. Not an interpretation, not an adaptation — but authenticity in its purest form. The scent of 48-hour dough, the warmth of a wood-fired oven, the unhurried gesture of a cook who knows that rushing ruins everything. We believe good food is an act of respect — for the ingredient, for tradition, and for the person at the table.',
   },
   'about.page.p2': {
-    ro: 'Fiecare pizza este coaptă la temperatură înaltă pentru crustă aerată și topping-uri echilibrate.',
-    ru: 'Каждая пицца запекается при высокой температуре — воздушная корка и сбалансированные топпинги.',
-    en: 'Every pizza is baked hot for an airy crust and balanced toppings.',
+    ro: 'Fiecare rețetă pe care o servim a trecut prin mâinile a cel puțin două generații. Mozzarella di bufala sosește proaspătă în fiecare săptămână, roșiile San Marzano sunt singurele pe care le folosim, iar aluatul nu se grăbește niciodată. Aceasta nu este filozofie de marketing — este pur și simplu modul în care familia noastră a gătit dintotdeauna.',
+    ru: 'Каждый рецепт, который мы подаём, прошёл через руки как минимум двух поколений. Моцарелла ди буфала приезжает свежей каждую неделю, томаты Сан-Марцано — единственные, что мы используем, а тесто никогда не торопится. Это не маркетинговая философия — это просто то, как наша семья готовила всегда.',
+    en: 'Every recipe we serve has passed through the hands of at least two generations. Bufala mozzarella arrives fresh every week, San Marzano tomatoes are the only ones we use, and the dough is never rushed. This is not a marketing philosophy — it is simply the way our family has always cooked.',
   },
   'about.page.chef': {
-    ro: 'Chef Antonio — Napoli',
-    ru: 'Шеф Антонио — Неаполь',
-    en: 'Chef Antonio — Naples',
+    ro: '— Chef Antonio, Napoli',
+    ru: '— Шеф Антонио, Неаполь',
+    en: '— Chef Antonio, Naples',
+  },
+  'about.page.mission.label': {
+    ro: 'Misiunea noastră',
+    ru: 'Наша миссия',
+    en: 'Our mission',
+  },
+  'about.page.team.title': {
+    ro: 'Oamenii din spatele bucătăriei',
+    ru: 'Люди за кухней',
+    en: 'The people behind the kitchen',
+  },
+  'about.page.team.sub': {
+    ro: 'Echipa noastră aduce cu sine ani de practică în Italia și dragostea sinceră pentru meșteșug.',
+    ru: 'Наша команда несёт годы практики в Италии и искреннюю любовь к ремеслу.',
+    en: 'Our team brings years of practice in Italy and a genuine love for the craft.',
+  },
+  'about.page.food.title': {
+    ro: 'Simplitate. Prospețime. Pasiune.',
+    ru: 'Простота. Свежесть. Страсть.',
+    en: 'Simplicity. Freshness. Passion.',
   },
   'aria.openMenu': { ro: 'Deschide meniul', ru: 'Открыть меню', en: 'Open menu' },
   'aria.closeCart': { ro: 'Închide coșul', ru: 'Закрыть корзину', en: 'Close cart' },
