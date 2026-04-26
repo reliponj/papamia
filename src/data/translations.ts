@@ -64,9 +64,16 @@ export type UiKey =
   | 'favorites.title'
   | 'favorites.empty'
   | 'contacts.title'
+  | 'contacts.sub'
+  | 'contacts.section.locations'
+  | 'contacts.section.contacts'
   | 'contacts.address'
   | 'contacts.phone'
   | 'contacts.email'
+  | 'contacts.hours.label'
+  | 'contacts.phone.label'
+  | 'contacts.email.label'
+  | 'contacts.address.label'
   | 'contacts.form.name'
   | 'contacts.form.send'
   | 'about.page.title'
@@ -204,13 +211,24 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'No saved dishes yet.',
   },
   'contacts.title': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
+  'contacts.section.locations': { ro: 'Locații', ru: 'Локации', en: 'Locations' },
+  'contacts.section.contacts': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
   'contacts.address': {
-    ro: 'Chișinău, str. Exemplu 10',
-    ru: 'Кишинёв, ул. Примерная 10',
-    en: 'Chișinău, 10 Sample Street',
+    ro: 'Chișinău, str. Ștefan cel Mare 65',
+    ru: 'Кишинёв, ул. Штефан чел Маре 65',
+    en: 'Chișinău, Ștefan cel Mare St. 65',
   },
-  'contacts.phone': { ro: '079 000 000', ru: '079 000 000', en: '079 000 000' },
+  'contacts.phone': { ro: '+373 22 000 002', ru: '+373 22 000 002', en: '+373 22 000 002' },
   'contacts.email': { ro: 'hello@papamia.md', ru: 'hello@papamia.md', en: 'hello@papamia.md' },
+  'contacts.sub': {
+    ro: 'Găsește-ne în Chișinău',
+    ru: 'Найдите нас в Кишинёве',
+    en: 'Find us in Chișinău',
+  },
+  'contacts.hours.label': { ro: 'Program', ru: 'Часы работы', en: 'Hours' },
+  'contacts.phone.label': { ro: 'Telefon', ru: 'Телефон', en: 'Phone' },
+  'contacts.email.label': { ro: 'Email', ru: 'Email', en: 'Email' },
+  'contacts.address.label': { ro: 'Adresă', ru: 'Адрес', en: 'Address' },
   'contacts.form.name': { ro: 'Nume', ru: 'Имя', en: 'Name' },
   'contacts.form.send': { ro: 'Trimite', ru: 'Отправить', en: 'Send' },
   'about.page.title': { ro: 'Povestea noastră', ru: 'Наша история', en: 'Our story' },

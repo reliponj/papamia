@@ -1107,42 +1107,98 @@ textarea {
   margin: 0.3rem 0 0;
 }
 
-.contacts-page .contacts-page__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-top: 1.5rem;
+.contacts-page {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-@media (max-width: 720px) {
-  .contacts-page .contacts-page__grid {
+.contacts-page__section {
+  margin-top: 2.5rem;
+}
+
+.contacts-page__heading {
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.contacts-page__locations {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .contacts-page__locations {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .contacts-page__locations {
     grid-template-columns: 1fr;
   }
 }
 
-.contacts-page__form {
-  display: grid;
-  gap: 0.85rem;
+.contacts-page__card {
   padding: 1.25rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--bg-elev);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.field {
-  display: grid;
-  gap: 0.35rem;
+.contacts-page__card-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--accent);
+}
+
+.contacts-page__card-address {
+  margin: 0;
   font-size: 0.9rem;
   color: var(--muted);
+  line-height: 1.5;
 }
 
-.field input,
-.field textarea {
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+.contacts-page__details {
+  display: flex;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+.contacts-page__detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.contacts-page__label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.contacts-page__detail-item a,
+.contacts-page__detail-item span:not(.contacts-page__label) {
+  font-size: 1rem;
   color: var(--text);
-  padding: 0.55rem 0.65rem;
+  text-decoration: none;
+}
+
+.contacts-page__detail-item a:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 /* Cart drawer */
