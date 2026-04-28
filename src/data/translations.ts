@@ -113,6 +113,33 @@ export type UiKey =
   | 'auth.register.hasAccount'
   | 'auth.register.login'
   | 'auth.register.mismatch'
+  | 'account.title'
+  | 'account.tab.profile'
+  | 'account.tab.favorites'
+  | 'account.tab.orders'
+  | 'account.profile.name'
+  | 'account.profile.email'
+  | 'account.profile.password'
+  | 'account.profile.newPassword'
+  | 'account.profile.confirmPassword'
+  | 'account.profile.save'
+  | 'account.profile.saved'
+  | 'account.orders.empty'
+  | 'account.orders.order'
+  | 'account.orders.date'
+  | 'account.orders.total'
+  | 'account.orders.status'
+  | 'account.orders.status.delivered'
+  | 'account.orders.status.preparing'
+  | 'account.orders.items'
+  | 'account.nav'
+  | 'account.tab.security'
+  | 'account.security.title'
+  | 'account.security.newPassword'
+  | 'account.security.confirmPassword'
+  | 'account.security.save'
+  | 'account.security.saved'
+  | 'account.security.mismatch'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -334,6 +361,33 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'auth.register.hasAccount': { ro: 'Ai deja cont?', ru: 'Уже есть аккаунт?', en: 'Already have an account?' },
   'auth.register.login': { ro: 'Conectează-te', ru: 'Войти', en: 'Sign in' },
   'auth.register.mismatch': { ro: 'Parolele nu coincid', ru: 'Пароли не совпадают', en: 'Passwords do not match' },
+  'account.title': { ro: 'Contul meu', ru: 'Личный кабинет', en: 'My account' },
+  'account.tab.profile': { ro: 'Profil', ru: 'Профиль', en: 'Profile' },
+  'account.tab.favorites': { ro: 'Favorite', ru: 'Избранное', en: 'Favourites' },
+  'account.tab.orders': { ro: 'Comenzi', ru: 'История заказов', en: 'Order history' },
+  'account.profile.name': { ro: 'Nume', ru: 'Имя', en: 'Name' },
+  'account.profile.email': { ro: 'E-mail', ru: 'Электронная почта', en: 'Email' },
+  'account.profile.password': { ro: 'Parolă curentă', ru: 'Текущий пароль', en: 'Current password' },
+  'account.profile.newPassword': { ro: 'Parolă nouă', ru: 'Новый пароль', en: 'New password' },
+  'account.profile.confirmPassword': { ro: 'Confirmă parola nouă', ru: 'Подтвердите новый пароль', en: 'Confirm new password' },
+  'account.profile.save': { ro: 'Salvează', ru: 'Сохранить', en: 'Save changes' },
+  'account.profile.saved': { ro: 'Salvat!', ru: 'Сохранено!', en: 'Saved!' },
+  'account.orders.empty': { ro: 'Nu ai comenzi încă.', ru: 'Заказов пока нет.', en: 'No orders yet.' },
+  'account.orders.order': { ro: 'Comanda', ru: 'Заказ', en: 'Order' },
+  'account.orders.date': { ro: 'Data', ru: 'Дата', en: 'Date' },
+  'account.orders.total': { ro: 'Total', ru: 'Итого', en: 'Total' },
+  'account.orders.status': { ro: 'Status', ru: 'Статус', en: 'Status' },
+  'account.orders.status.delivered': { ro: 'Livrat', ru: 'Доставлен', en: 'Delivered' },
+  'account.orders.status.preparing': { ro: 'În pregătire', ru: 'Готовится', en: 'Preparing' },
+  'account.orders.items': { ro: 'produse', ru: 'позиции', en: 'items' },
+  'account.nav': { ro: 'Contul meu', ru: 'Личный кабинет', en: 'My account' },
+  'account.tab.security': { ro: 'Securitate', ru: 'Безопасность', en: 'Security' },
+  'account.security.title': { ro: 'Schimbă parola', ru: 'Изменение пароля', en: 'Change password' },
+  'account.security.newPassword': { ro: 'Parolă nouă', ru: 'Новый пароль', en: 'New password' },
+  'account.security.confirmPassword': { ro: 'Confirmă parola nouă', ru: 'Подтвердите новый пароль', en: 'Confirm new password' },
+  'account.security.save': { ro: 'Salvează parola', ru: 'Сохранить пароль', en: 'Save password' },
+  'account.security.saved': { ro: 'Salvat!', ru: 'Сохранено!', en: 'Saved!' },
+  'account.security.mismatch': { ro: 'Parolele nu coincid', ru: 'Пароли не совпадают', en: 'Passwords do not match' },
 }
 
 export function translate(lang: Lang, key: UiKey) {

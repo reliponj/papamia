@@ -7,6 +7,7 @@ import { ContactsPage } from './pages/ContactsPage'
 import { PizzaBuilderPage } from './pages/PizzaBuilderPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
+import { AccountPage } from './pages/AccountPage'
 
 export const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { path: 'contacts', element: <ContactsPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
+      { path: 'account', element: <AccountPage /> },
     ],
   },
 ])

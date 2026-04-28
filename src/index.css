@@ -1811,3 +1811,239 @@ textarea {
   color: var(--accent);
   text-decoration: underline;
 }
+
+/* ── Account button in header ───────────────────────────────── */
+.site-header__account {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--text);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.site-header__account:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Account page ────────────────────────────────────────────── */
+.account-page {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.account-page__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 600;
+  margin: 0 0 1.75rem;
+}
+
+.account-tabs {
+  display: flex;
+  gap: 0.35rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.account-tabs__btn {
+  padding: 0.6rem 1.1rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  border-radius: 6px 6px 0 0;
+}
+.account-tabs__btn:hover {
+  color: var(--text);
+}
+.account-tabs__btn.is-active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.account-content {
+  animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.account-empty {
+  color: var(--muted);
+  font-size: 1rem;
+  padding: 2rem 0;
+}
+
+/* Profile form */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 480px;
+}
+
+.profile-form__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profile-form__divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0.25rem 0;
+}
+
+.profile-form__error {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--accent);
+}
+
+.profile-form__submit {
+  align-self: flex-start;
+  min-width: 160px;
+  justify-content: center;
+}
+
+/* Favorites grid */
+.favorites-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 560px) {
+  .favorites-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.favorites-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.favorites-card__img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.favorites-card__body {
+  padding: 0.75rem 1rem 0.5rem;
+  flex: 1;
+}
+
+.favorites-card__name {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.favorites-card__price {
+  margin: 0;
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.favorites-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem 0.85rem;
+}
+
+.favorites-card__remove {
+  border: none;
+  background: transparent;
+  color: #ff6b8a;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.favorites-card__remove:hover {
+  transform: scale(1.2);
+}
+
+/* Orders list */
+.orders-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.order-card {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.order-card__id {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.order-card__status {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+}
+.order-card__status--delivered {
+  background: rgba(45, 79, 60, 0.45);
+  color: #7ecf9f;
+}
+.order-card__status--preparing {
+  background: rgba(196, 92, 62, 0.2);
+  color: var(--accent);
+}
+
+.order-card__meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
