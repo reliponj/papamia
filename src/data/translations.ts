@@ -143,9 +143,9 @@ export type UiKey =
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
-    ro: 'Bucătărie italiană autentică din 2007',
-    ru: 'Подлинная итальянская кухня с 2007 года',
-    en: 'Authentic Italian kitchen since 2007',
+    ro: 'Unde trăiește gustul Italiei',
+    ru: 'Там, где живёт вкус Италии',
+    en: 'Where the taste of Italy lives',
   },
   'nav.menu': { ro: 'Meniu', ru: 'Меню', en: 'Menu' },
   'nav.events': { ro: 'Evenimente', ru: 'События', en: 'Events' },
@@ -159,9 +159,9 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   },
   'hero.title': { ro: 'Papa Mia', ru: 'Papa Mia', en: 'Papa Mia' },
   'hero.sub': {
-    ro: 'Ingrediente proaspete, aluat dospit lent și livrare rapidă în oraș.',
-    ru: 'Свежие ингредиенты, медленное тесто и быстрая доставка по городу.',
-    en: 'Fresh ingredients, slow-leavened dough, and fast city-wide delivery.',
+    ro: 'Aromele Italiei la masa ta — pizza autentică, preparată cu pasiune și ingrediente alese.',
+    ru: 'Вкусы Италии — у тебя на столе. Настоящая пицца, приготовленная с душой и лучшими ингредиентами.',
+    en: 'The flavours of Italy at your table — authentic pizza, made with passion and the finest ingredients.',
   },
   'hero.menuCta': { ro: 'Meniu restaurant', ru: 'Меню ресторана', en: 'Restaurant menu' },
   'hero.orderCta': { ro: 'Comandă acum', ru: 'Заказать сейчас', en: 'Order now' },
@@ -193,13 +193,13 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Italian cocktails, spritz, and a curated wine list.',
   },
   'promo.bar.cta': { ro: 'Vezi tot', ru: 'Смотреть все', en: 'See all' },
-  'about.title': { ro: 'Papa Mia Ristorante', ru: 'Papa Mia Ristorante', en: 'Papa Mia Ristorante' },
+  'about.title': { ro: 'Construiește pizza ta', ru: 'Собери свою пиццу', en: 'Build your own pizza' },
   'about.text': {
-    ro: 'Atmosferă caldă, cuptor cu lemn și rețete transmise în familie. Vă așteptăm pentru cină, prânz sau livrare acasă.',
-    ru: 'Тёплая атмосфера, дровяная печь и семейные рецепты. Ждём вас на ужин, обед или доставку домой.',
-    en: 'Warm atmosphere, wood-fired oven, and family recipes. Join us for dinner, lunch, or home delivery.',
+    ro: 'Alege aluatul, sosul și ingredientele preferate — și noi o coacem în cuptorul cu lemn. Fiecare pizza este unică, la fel ca tine.',
+    ru: 'Выбери тесто, соус и любимые начинки — мы испечём её в дровяной печи. Каждая пицца уникальна, как и ты.',
+    en: 'Choose your dough, sauce, and favourite toppings — we bake it in our wood-fired oven. Every pizza is unique, just like you.',
   },
-  'about.reserve': { ro: 'Rezervare', ru: 'Забронировать', en: 'Book a table' },
+  'about.reserve': { ro: 'Construiește acum', ru: 'Собрать сейчас', en: 'Build now' },
   'about.contact': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
   'featured.title': {
     ro: 'Recomandări',

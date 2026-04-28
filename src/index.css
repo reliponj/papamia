@@ -1,4 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+@font-face {
+  font-family: 'Radiant';
+  src: url('./assets/fonts/Radiant Regular/Radiant.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Radiant';
+  src: url('./assets/fonts/Radiant Regular/Radiant Alt .ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Radiant';
+  src: url('./assets/fonts/Radiant Regular/Radiant Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Radiant';
+  src: url('./assets/fonts/Radiant Regular/Radiant Bold Alt.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Radiant Condensed';
+  src: url('./assets/fonts/Radiant Regular/Radiant Bold Condensed.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Radiant Condensed';
+  src: url('./assets/fonts/Radiant Regular/Radiant Bold Alt Condensed.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
 
 :root {
   color-scheme: dark light;
@@ -15,9 +56,14 @@
   --radius: 14px;
   --radius-sm: 10px;
   --shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
-  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Radiant', 'Times New Roman', serif;
+  --font-body: 'Radiant', system-ui, sans-serif;
   --header-h: 72px;
+  /* heading sizes locked at original 17px-base values */
+  --h-section: clamp(2rem, 4vw, 2.85rem);
+  --h-hero: clamp(2.8rem, 7vw, 4.25rem);
+  --h-about-hero: clamp(2rem, 3.5vw, 3rem);
+  --h-account: clamp(1.75rem, 3.5vw, 2.5rem);
 }
 
 *,
@@ -34,7 +80,7 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 25.5px;
   line-height: 1.55;
   color: var(--text);
   background: radial-gradient(1200px 800px at 10% -10%, rgba(212, 184, 114, 0.12), transparent),
@@ -78,7 +124,7 @@ textarea {
 
 .section-title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.85rem);
+  font-size: clamp(34px, 4vw, 48.45px);
   font-weight: 600;
   letter-spacing: 0.02em;
   margin: 0 0 0.35rem;
@@ -109,7 +155,7 @@ textarea {
   border-radius: 999px;
   border: 1px solid transparent;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1.19rem;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   text-decoration: none;
@@ -169,21 +215,23 @@ textarea {
 .site-header__brand {
   display: flex;
   flex-direction: column;
+  gap: 0;
   text-decoration: none;
   color: inherit;
   min-width: 0;
+  line-height: 1;
 }
 
 .site-header__logo {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 34.43px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .site-header__tagline {
-  font-size: 0.72rem;
+  font-size: 1.08rem;
   color: var(--muted);
   white-space: nowrap;
   overflow: hidden;
@@ -383,14 +431,14 @@ textarea {
 .hero__eyebrow {
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  font-size: 0.75rem;
+  font-size: 25.5px;
   color: var(--gold);
   margin: 0 0 0.75rem;
 }
 
 .hero__title {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 7vw, 4.25rem);
+  font-size: clamp(95.2px, 14vw, 144.5px);
   line-height: 0.95;
   margin: 0 0 1rem;
 }
@@ -399,7 +447,7 @@ textarea {
   max-width: 46ch;
   color: var(--muted);
   margin: 0 0 1.75rem;
-  font-size: 1.05rem;
+  font-size: 2.1rem;
 }
 
 .hero__actions {
@@ -457,7 +505,7 @@ textarea {
 
 .promo-card__title {
   font-family: var(--font-display);
-  font-size: 1.65rem;
+  font-size: 28.05px;
   margin: 0;
 }
 
@@ -597,14 +645,14 @@ textarea {
 
 .product-card__title {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 22.95px;
   margin: 0;
 }
 
 .product-card__desc {
   margin: 0;
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 1.15rem;
   flex: 1;
 }
 
@@ -640,7 +688,7 @@ textarea {
 
 .delivery-strip__title {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 29.75px;
   margin: 0 0 0.35rem;
 }
 
@@ -718,11 +766,12 @@ textarea {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  line-height: 1;
 }
 
 .site-footer__muted {
   color: var(--muted);
-  margin: 0.35rem 0 0;
+  margin: 0;
   font-size: 0.92rem;
 }
 
@@ -830,7 +879,7 @@ textarea {
   padding: 1rem 1.25rem;
   border-left: 3px solid var(--gold);
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 22.95px;
   color: var(--text);
   background: rgba(212, 184, 114, 0.08);
 }
@@ -882,7 +931,7 @@ textarea {
 
 .about-hero__title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-size: clamp(34px, 3.5vw, 51px);
   font-weight: 600;
   line-height: 1.1;
   color: var(--text);
@@ -1096,7 +1145,7 @@ textarea {
 
 .chef-card__name {
   font-family: var(--font-display);
-  font-size: 1.2rem;
+  font-size: 20.4px;
   font-weight: 600;
   color: var(--text);
   margin: 0;
@@ -1280,7 +1329,7 @@ textarea {
 .cart-drawer__head h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 25.5px;
 }
 
 .cart-drawer__close {
@@ -1624,7 +1673,7 @@ textarea {
 }
 
 .builder-page__step-title {
-  font-size: 1.25rem;
+  font-size: 21.25px;
   font-weight: 700;
   margin: 0;
 }
@@ -1762,7 +1811,7 @@ textarea {
 }
 
 .auth-card__title {
-  font-size: 1.5rem;
+  font-size: 25.5px;
   font-weight: 700;
   margin: 0 0 1.5rem;
 }
@@ -1840,7 +1889,7 @@ textarea {
 
 .account-page__title {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-size: clamp(29.75px, 3.5vw, 42.5px);
   font-weight: 600;
   margin: 0 0 1.75rem;
 }

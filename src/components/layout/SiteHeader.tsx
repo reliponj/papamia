@@ -4,7 +4,6 @@ import { useCartActions, useCartTotals } from '../../contexts/CartContext'
 import { useFavoriteIds } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
 import type { Lang } from '../../types'
-import { Button } from '../ui/Button'
 
 const LANGS: Lang[] = ['ro', 'ru', 'en']
 
@@ -12,7 +11,7 @@ export function SiteHeader() {
   const { t, lang, setLang } = useLocale()
   const { count } = useCartTotals()
   const favorites = useFavoriteIds()
-  const { openDrawer, toggleDrawer } = useCartActions()
+  const { toggleDrawer } = useCartActions()
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
 
@@ -66,16 +65,6 @@ export function SiteHeader() {
           >
             {t('nav.contacts')}
           </NavLink>
-          <Button
-            variant="primary"
-            className="site-nav__cta"
-            onClick={() => {
-              setMenuOpen(false)
-              openDrawer()
-            }}
-          >
-            {t('nav.order')}
-          </Button>
         </nav>
 
         <div className="site-header__tools">
