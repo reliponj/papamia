@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCartActions, useCartTotals } from '../../contexts/CartContext'
 import { useFavoriteIds } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
@@ -14,6 +14,7 @@ export function SiteHeader() {
   const favorites = useFavoriteIds()
   const { openDrawer, toggleDrawer } = useCartActions()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <header className="site-header">
@@ -93,6 +94,13 @@ export function SiteHeader() {
           <span className="site-header__fav" title={t('favorites.title')}>
             ♥ {favorites.size}
           </span>
+          <button
+            type="button"
+            className="site-header__login"
+            onClick={() => navigate('/login')}
+          >
+            {t('auth.login')}
+          </button>
           <button
             type="button"
             className="site-header__cart"

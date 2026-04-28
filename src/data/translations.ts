@@ -100,6 +100,19 @@ export type UiKey =
   | 'builder.custom'
   | 'builder.toppings.hint'
   | 'builder.preview.empty'
+  | 'auth.login'
+  | 'auth.email'
+  | 'auth.password'
+  | 'auth.login.title'
+  | 'auth.login.submit'
+  | 'auth.login.noAccount'
+  | 'auth.login.register'
+  | 'auth.register.title'
+  | 'auth.register.confirm'
+  | 'auth.register.submit'
+  | 'auth.register.hasAccount'
+  | 'auth.register.login'
+  | 'auth.register.mismatch'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -308,6 +321,19 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     ru: 'Выберите тесто, чтобы начать',
     en: 'Choose dough to start',
   },
+  'auth.login': { ro: 'Conectare', ru: 'Войти', en: 'Sign in' },
+  'auth.email': { ro: 'E-mail', ru: 'Электронная почта', en: 'Email' },
+  'auth.password': { ro: 'Parolă', ru: 'Пароль', en: 'Password' },
+  'auth.login.title': { ro: 'Conectare', ru: 'Вход', en: 'Sign in' },
+  'auth.login.submit': { ro: 'Intră în cont', ru: 'Войти', en: 'Sign in' },
+  'auth.login.noAccount': { ro: 'Nu ai cont?', ru: 'Нет аккаунта?', en: 'No account?' },
+  'auth.login.register': { ro: 'Înregistrează-te', ru: 'Зарегистрируйтесь', en: 'Register' },
+  'auth.register.title': { ro: 'Înregistrare', ru: 'Регистрация', en: 'Register' },
+  'auth.register.confirm': { ro: 'Repetă parola', ru: 'Повторите пароль', en: 'Confirm password' },
+  'auth.register.submit': { ro: 'Creează cont', ru: 'Зарегистрироваться', en: 'Create account' },
+  'auth.register.hasAccount': { ro: 'Ai deja cont?', ru: 'Уже есть аккаунт?', en: 'Already have an account?' },
+  'auth.register.login': { ro: 'Conectează-te', ru: 'Войти', en: 'Sign in' },
+  'auth.register.mismatch': { ro: 'Parolele nu coincid', ru: 'Пароли не совпадают', en: 'Passwords do not match' },
 }
 
 export function translate(lang: Lang, key: UiKey) {

@@ -620,25 +620,27 @@ export function PizzaBuilderPage() {
         {/* price summary — full width across both columns */}
         {(dough || sauce || toppings.length > 0) && (
           <div className="builder-page__price-summary">
-            {dough && (
-              <div className="builder-page__price-row">
-                <span>{dough.name[lang]}</span>
-                <span>{dough.price} {t('menu.currency')}</span>
-              </div>
-            )}
-            {sauce && (
-              <div className="builder-page__price-row">
-                <span>{sauce.name[lang]}</span>
-                <span>{sauce.price} {t('menu.currency')}</span>
-              </div>
-            )}
-            {toppings.map((tp) => (
-              <div key={tp.id} className="builder-page__price-row">
-                <span>{tp.name[lang]}</span>
-                <span>{tp.price} {t('menu.currency')}</span>
-              </div>
-            ))}
-            <div className="builder-page__price-row builder-page__price-row--total">
+            <div className="builder-page__price-grid">
+              {dough && (
+                <div className="builder-page__price-item">
+                  <span className="builder-page__price-label">{dough.name[lang]}</span>
+                  <span className="builder-page__price-val">{dough.price} {t('menu.currency')}</span>
+                </div>
+              )}
+              {sauce && (
+                <div className="builder-page__price-item">
+                  <span className="builder-page__price-label">{sauce.name[lang]}</span>
+                  <span className="builder-page__price-val">{sauce.price} {t('menu.currency')}</span>
+                </div>
+              )}
+              {toppings.map((tp) => (
+                <div key={tp.id} className="builder-page__price-item">
+                  <span className="builder-page__price-label">{tp.name[lang]}</span>
+                  <span className="builder-page__price-val">{tp.price} {t('menu.currency')}</span>
+                </div>
+              ))}
+            </div>
+            <div className="builder-page__price-total">
               <span>{t('builder.total')}</span>
               <strong>{totalPrice} {t('menu.currency')}</strong>
             </div>

@@ -5,6 +5,8 @@ import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
 import { ContactsPage } from './pages/ContactsPage'
 import { PizzaBuilderPage } from './pages/PizzaBuilderPage'
+import { LoginPage } from './pages/LoginPage'
+import { RegisterPage } from './pages/RegisterPage'
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +18,8 @@ export const router = createBrowserRouter([
       { path: 'builder', element: <PizzaBuilderPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contacts', element: <ContactsPage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
     ],
   },
 ])
