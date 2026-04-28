@@ -1288,43 +1288,79 @@ textarea {
   padding: 0.75rem 1.1rem 1rem;
   overflow-y: auto;
   flex: 1;
-  display: grid;
-  gap: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .cart-line {
   display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.65rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.55rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   background: var(--surface);
 }
 
+.cart-line__img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cart-line__info {
+  flex: 1;
+  min-width: 0;
+}
+
 .cart-line__name {
   font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cart-line__meta {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--muted);
-  margin-top: 0.15rem;
+  margin-top: 0;
 }
 
 .cart-line__controls {
-  display: grid;
-  gap: 0.35rem;
-  justify-items: end;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
 }
 
-.cart-line__qty {
-  width: 64px;
-  padding: 0.2rem 0.35rem;
-  border-radius: 8px;
+.cart-line__step {
+  width: 26px;
+  height: 26px;
   border: 1px solid var(--border);
+  border-radius: 6px;
   background: var(--bg);
   color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-line__step:hover {
+  background: var(--surface-hover, var(--border));
+}
+
+.cart-line__count {
+  min-width: 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .cart-line__remove {
@@ -1332,8 +1368,41 @@ textarea {
   background: transparent;
   color: var(--accent);
   cursor: pointer;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   text-decoration: underline;
+  margin-left: 0.2rem;
+}
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.qty-control__step {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty-control__step:hover {
+  background: var(--surface-hover, var(--border));
+}
+
+.qty-control__count {
+  min-width: 22px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .cart-drawer__foot {

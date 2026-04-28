@@ -60,23 +60,33 @@ export function CartDrawer() {
               if (!p) return null
               return (
                 <li key={line.productId} className="cart-line">
-                  <div>
+                  {p.image && (
+                    <img className="cart-line__img" src={p.image} alt={p.name[lang]} />
+                  )}
+                  <div className="cart-line__info">
                     <div className="cart-line__name">{p.name[lang]}</div>
                     <div className="cart-line__meta">
-                      {p.price} {t('menu.currency')} × {line.qty}
+                      {p.price} {t('menu.currency')}
                     </div>
                   </div>
                   <div className="cart-line__controls">
-                    <input
-                      className="cart-line__qty"
-                      type="number"
-                      min={0}
-                      value={line.qty}
-                      aria-label="Quantity"
-                      onChange={(e) =>
-                        setQty(line.productId, Number.parseInt(e.target.value, 10) || 0)
-                      }
-                    />
+                    <button
+                      type="button"
+                      className="cart-line__step"
+                      aria-label="Decrease"
+                      onClick={() => setQty(line.productId, line.qty - 1)}
+                    >
+                      −
+                    </button>
+                    <span className="cart-line__count">{line.qty}</span>
+                    <button
+                      type="button"
+                      className="cart-line__step"
+                      aria-label="Increase"
+                      onClick={() => setQty(line.productId, line.qty + 1)}
+                    >
+                      +
+                    </button>
                     <button
                       type="button"
                       className="cart-line__remove"
@@ -91,7 +101,7 @@ export function CartDrawer() {
 
             {customLines.map((cl) => (
               <li key={cl.id} className="cart-line cart-line--custom">
-                <div>
+                <div className="cart-line__info">
                   <div className="cart-line__name">{cl.label}</div>
                   <div className="cart-line__meta cart-line__meta--custom">
                     {t('builder.custom')}
