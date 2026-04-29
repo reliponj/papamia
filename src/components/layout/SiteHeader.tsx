@@ -65,6 +65,13 @@ export function SiteHeader() {
           >
             {t('nav.contacts')}
           </NavLink>
+          <NavLink
+            to="/blog"
+            className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            {t('nav.blog')}
+          </NavLink>
         </nav>
 
         <div className="site-header__tools">

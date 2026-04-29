@@ -8,6 +8,8 @@ import { PizzaBuilderPage } from './pages/PizzaBuilderPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
+import { BlogPage } from './pages/BlogPage'
+import { BlogPostPage } from './pages/BlogPostPage'
 
 export const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ export const router = createBrowserRouter([
       { path: 'builder', element: <PizzaBuilderPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'contacts', element: <ContactsPage /> },
+      { path: 'blog', element: <BlogPage /> },
+      { path: 'blog/:slug', element: <BlogPostPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'account', element: <AccountPage /> },

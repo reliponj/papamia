@@ -156,6 +156,12 @@ export type UiKey =
   | 'allergen.nuts'
   | 'allergen.soy'
   | 'allergen.alcohol'
+  | 'nav.blog'
+  | 'blog.title'
+  | 'blog.sub'
+  | 'blog.readMore'
+  | 'blog.back'
+  | 'blog.notFound'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -420,6 +426,16 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'allergen.nuts': { ro: 'Nuci', ru: 'Орехи', en: 'Nuts' },
   'allergen.soy': { ro: 'Soia', ru: 'Соя', en: 'Soy' },
   'allergen.alcohol': { ro: 'Alcool', ru: 'Алкоголь', en: 'Alcohol' },
+  'nav.blog': { ro: 'Blog', ru: 'Блог', en: 'Blog' },
+  'blog.title': { ro: 'Blog', ru: 'Блог', en: 'Blog' },
+  'blog.sub': {
+    ro: 'Povești din bucătărie, ingrediente și tradiție italiană.',
+    ru: 'Истории из кухни, ингредиенты и итальянские традиции.',
+    en: 'Stories from the kitchen, ingredients and Italian tradition.',
+  },
+  'blog.readMore': { ro: 'Citește mai mult', ru: 'Читать далее', en: 'Read more' },
+  'blog.back': { ro: '← Înapoi la blog', ru: '← Назад к блогу', en: '← Back to blog' },
+  'blog.notFound': { ro: 'Articolul nu a fost găsit.', ru: 'Статья не найдена.', en: 'Article not found.' },
 }
 
 export function translate(lang: Lang, key: UiKey) {
