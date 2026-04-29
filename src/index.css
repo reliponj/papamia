@@ -1059,6 +1059,13 @@ textarea {
   text-decoration: line-through;
 }
 
+.menu-page__count {
+  max-width: 1200px;
+  margin: 0 auto 1.25rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
 .menu-page__empty {
   max-width: 1200px;
   margin: 3rem auto;
@@ -1413,6 +1420,7 @@ textarea {
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
+  isolation: isolate;
 }
 
 .contacts-page__map {
@@ -1758,13 +1766,27 @@ textarea {
   .builder-page__layout {
     grid-template-columns: 1fr;
   }
+  .builder-page__canvas {
+    position: static;
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .builder-page__panel {
+    grid-column: auto;
+    grid-row: auto;
+    padding-top: 0;
+  }
+  .builder-page__price-summary {
+    grid-column: auto;
+    grid-row: auto;
+  }
 }
 
-/* Canvas — left side, sticky so it doesn't scroll */
 .builder-page__canvas {
   position: sticky;
-  top: 5rem;
-  grid-row: 1;
+  top: calc(var(--header-h) + 1.25rem);
+  grid-column: 1;
+  grid-row: 1 / span 2;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -1807,9 +1829,9 @@ textarea {
   margin: 0;
 }
 
-/* Price summary — spans both grid columns */
 .builder-page__price-summary {
-  grid-column: 1 / -1;
+  grid-column: 2;
+  grid-row: 2;
   padding: 1rem 1.5rem;
   border-radius: var(--radius);
   border: 1px solid var(--border);
@@ -1872,6 +1894,8 @@ textarea {
 
 /* Panel — right side */
 .builder-page__panel {
+  grid-column: 2;
+  grid-row: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

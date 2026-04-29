@@ -86,6 +86,18 @@ export function MenuPage() {
     return result
   }, [cat, search, sort, excludedAllergens, lang])
 
+  const FOUND_LABEL: Record<string, (n: number) => string> = {
+    ro: (n) => `${n} ${n === 1 ? 'preparat găsit' : 'preparate găsite'}`,
+    ru: (n) => {
+      const mod = n % 10
+      const mod100 = n % 100
+      if (mod === 1 && mod100 !== 11) return `${n} блюдо найдено`
+      if (mod >= 2 && mod <= 4 && (mod100 < 10 || mod100 >= 20)) return `${n} блюда найдено`
+      return `${n} блюд найдено`
+    },
+    en: (n) => `${n} ${n === 1 ? 'dish' : 'dishes'} found`,
+  }
+
   const SORT_OPTIONS: { value: SortOption; label: string }[] = [
     { value: 'default', label: t('menu.filter.price') },
     { value: 'priceAsc', label: t('menu.filter.priceAsc') },
@@ -176,6 +188,8 @@ export function MenuPage() {
           </div>
         </div>
       </div>
+
+      <p className="menu-page__count">{FOUND_LABEL[lang](list.length)}</p>
 
       {list.length === 0 ? (
         <p className="menu-page__empty">{t('menu.filter.noResults')}</p>
