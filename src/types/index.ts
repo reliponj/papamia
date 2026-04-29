@@ -10,6 +10,15 @@ export type MenuCategory =
   | 'dolci'
   | 'drinks'
 
+export type Allergen =
+  | 'gluten'
+  | 'dairy'
+  | 'eggs'
+  | 'fish'
+  | 'nuts'
+  | 'soy'
+  | 'alcohol'
+
 export type MenuProduct = {
   id: string
   category: MenuCategory
@@ -18,6 +27,7 @@ export type MenuProduct = {
   price: number
   image: string
   featured?: boolean
+  allergens?: Allergen[]
 }
 
 export type CartLine = {

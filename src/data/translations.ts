@@ -140,6 +140,22 @@ export type UiKey =
   | 'account.security.save'
   | 'account.security.saved'
   | 'account.security.mismatch'
+  | 'menu.search.placeholder'
+  | 'menu.filter.price'
+  | 'menu.filter.priceAsc'
+  | 'menu.filter.priceDesc'
+  | 'menu.filter.nameAsc'
+  | 'menu.filter.nameDesc'
+  | 'menu.filter.allergens'
+  | 'menu.filter.noResults'
+  | 'menu.filter.clearAll'
+  | 'allergen.gluten'
+  | 'allergen.dairy'
+  | 'allergen.eggs'
+  | 'allergen.fish'
+  | 'allergen.nuts'
+  | 'allergen.soy'
+  | 'allergen.alcohol'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -388,6 +404,22 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'account.security.save': { ro: 'Salvează parola', ru: 'Сохранить пароль', en: 'Save password' },
   'account.security.saved': { ro: 'Salvat!', ru: 'Сохранено!', en: 'Saved!' },
   'account.security.mismatch': { ro: 'Parolele nu coincid', ru: 'Пароли не совпадают', en: 'Passwords do not match' },
+  'menu.search.placeholder': { ro: 'Caută în meniu...', ru: 'Поиск по меню...', en: 'Search menu...' },
+  'menu.filter.price': { ro: 'Sortare', ru: 'Сортировка', en: 'Sort' },
+  'menu.filter.priceAsc': { ro: 'Preț: mic → mare', ru: 'Цена: по возрастанию', en: 'Price: low → high' },
+  'menu.filter.priceDesc': { ro: 'Preț: mare → mic', ru: 'Цена: по убыванию', en: 'Price: high → low' },
+  'menu.filter.nameAsc': { ro: 'Nume: A → Z', ru: 'Название: А → Я', en: 'Name: A → Z' },
+  'menu.filter.nameDesc': { ro: 'Nume: Z → A', ru: 'Название: Я → А', en: 'Name: Z → A' },
+  'menu.filter.allergens': { ro: 'Exclude alergeni', ru: 'Исключить аллергены', en: 'Exclude allergens' },
+  'menu.filter.noResults': { ro: 'Niciun produs găsit.', ru: 'Ничего не найдено.', en: 'No items found.' },
+  'menu.filter.clearAll': { ro: 'Resetează', ru: 'Сбросить', en: 'Clear all' },
+  'allergen.gluten': { ro: 'Gluten', ru: 'Глютен', en: 'Gluten' },
+  'allergen.dairy': { ro: 'Lactate', ru: 'Молочное', en: 'Dairy' },
+  'allergen.eggs': { ro: 'Ouă', ru: 'Яйца', en: 'Eggs' },
+  'allergen.fish': { ro: 'Pește', ru: 'Рыба', en: 'Fish' },
+  'allergen.nuts': { ro: 'Nuci', ru: 'Орехи', en: 'Nuts' },
+  'allergen.soy': { ro: 'Soia', ru: 'Соя', en: 'Soy' },
+  'allergen.alcohol': { ro: 'Alcool', ru: 'Алкоголь', en: 'Alcohol' },
 }
 
 export function translate(lang: Lang, key: UiKey) {
