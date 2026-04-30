@@ -162,6 +162,37 @@ export type UiKey =
   | 'blog.readMore'
   | 'blog.back'
   | 'blog.notFound'
+  | 'checkout.title'
+  | 'checkout.form.title'
+  | 'checkout.form.firstName'
+  | 'checkout.form.lastName'
+  | 'checkout.form.phone'
+  | 'checkout.form.email'
+  | 'checkout.form.district'
+  | 'checkout.form.address'
+  | 'checkout.form.notes'
+  | 'checkout.payment.title'
+  | 'checkout.payment.cash'
+  | 'checkout.payment.card'
+  | 'checkout.payment.change'
+  | 'checkout.payment.cardType'
+  | 'checkout.summary.title'
+  | 'checkout.summary.subtotal'
+  | 'checkout.summary.delivery'
+  | 'checkout.summary.deliveryFree'
+  | 'checkout.summary.discount'
+  | 'checkout.summary.total'
+  | 'checkout.promo.label'
+  | 'checkout.promo.placeholder'
+  | 'checkout.promo.apply'
+  | 'checkout.promo.applied'
+  | 'checkout.promo.invalid'
+  | 'checkout.submit'
+  | 'checkout.terms'
+  | 'checkout.deliveryNote'
+  | 'order.success.title'
+  | 'order.success.sub'
+  | 'order.success.back'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -436,6 +467,50 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'blog.readMore': { ro: 'Citește mai mult', ru: 'Читать далее', en: 'Read more' },
   'blog.back': { ro: '← Înapoi la blog', ru: '← Назад к блогу', en: '← Back to blog' },
   'blog.notFound': { ro: 'Articolul nu a fost găsit.', ru: 'Статья не найдена.', en: 'Article not found.' },
+
+  'checkout.title': { ro: 'Finalizare comandă', ru: 'Оформление заказа', en: 'Checkout' },
+  'checkout.form.title': { ro: 'Date de livrare', ru: 'Данные доставки', en: 'Delivery details' },
+  'checkout.form.firstName': { ro: 'Prenume', ru: 'Имя', en: 'First name' },
+  'checkout.form.lastName': { ro: 'Nume', ru: 'Фамилия', en: 'Last name' },
+  'checkout.form.phone': { ro: 'Telefon', ru: 'Телефон', en: 'Phone' },
+  'checkout.form.email': { ro: 'E-mail', ru: 'Электронная почта', en: 'Email' },
+  'checkout.form.district': { ro: 'Sector / Raion', ru: 'Район', en: 'District' },
+  'checkout.form.address': { ro: 'Adresă, apartament', ru: 'Адрес, квартира', en: 'Address, apartment' },
+  'checkout.form.notes': { ro: 'Notă pentru curier (opțional)', ru: 'Примечание (необязательно)', en: 'Note for courier (optional)' },
+  'checkout.payment.title': { ro: 'Metodă de plată', ru: 'Способ оплаты', en: 'Payment method' },
+  'checkout.payment.cash': { ro: 'Numerar', ru: 'Наличными', en: 'Cash' },
+  'checkout.payment.card': { ro: 'Card bancar', ru: 'Банковской картой', en: 'Bank card' },
+  'checkout.payment.change': { ro: 'Rest de la suma (opțional)', ru: 'Сдача с суммы (необязательно)', en: 'Change from amount (optional)' },
+  'checkout.payment.cardType': { ro: 'Tip card', ru: 'Тип карты', en: 'Card type' },
+  'checkout.summary.title': { ro: 'Comanda ta', ru: 'Ваш заказ', en: 'Your order' },
+  'checkout.summary.subtotal': { ro: 'Subtotal', ru: 'Подытог', en: 'Subtotal' },
+  'checkout.summary.delivery': { ro: 'Livrare', ru: 'Доставка', en: 'Delivery' },
+  'checkout.summary.deliveryFree': { ro: 'Gratuit', ru: 'Бесплатно', en: 'Free' },
+  'checkout.summary.total': { ro: 'Total', ru: 'Итого', en: 'Total' },
+  'checkout.summary.discount': { ro: 'Reducere', ru: 'Скидка', en: 'Discount' },
+  'checkout.promo.label': { ro: 'Cod promoțional', ru: 'Промокод', en: 'Promo code' },
+  'checkout.promo.placeholder': { ro: 'Introdu codul', ru: 'Введите код', en: 'Enter code' },
+  'checkout.promo.apply': { ro: 'Aplică', ru: 'Применить', en: 'Apply' },
+  'checkout.promo.applied': { ro: 'Reducere aplicată!', ru: 'Скидка применена!', en: 'Discount applied!' },
+  'checkout.promo.invalid': { ro: 'Cod invalid', ru: 'Неверный код', en: 'Invalid code' },
+  'checkout.submit': { ro: 'Plasează comanda', ru: 'Оформить заказ', en: 'Place order' },
+  'checkout.terms': {
+    ro: 'Sunt de acord cu termenii și condițiile',
+    ru: 'Я согласен с условиями и положениями',
+    en: 'I agree to the terms and conditions',
+  },
+  'checkout.deliveryNote': {
+    ro: 'Comenzi peste 500 MDL — livrare gratuită',
+    ru: 'При заказе от 500 MDL — доставка бесплатно',
+    en: 'Orders over 500 MDL — free delivery',
+  },
+  'order.success.title': { ro: 'Comanda plasată!', ru: 'Заказ оформлен!', en: 'Order placed!' },
+  'order.success.sub': {
+    ro: 'Mulțumim! Curierii noștri vor livra în 35–50 de minute.',
+    ru: 'Спасибо! Курьер доставит ваш заказ за 35–50 минут.',
+    en: 'Thank you! Your order will be delivered in 35–50 minutes.',
+  },
+  'order.success.back': { ro: 'Înapoi la meniu', ru: 'Вернуться в меню', en: 'Back to menu' },
 }
 
 export function translate(lang: Lang, key: UiKey) {

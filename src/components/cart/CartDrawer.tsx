@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getProductById } from '../../data/menu'
 import { useCartActions, useCartState, useCartTotals } from '../../contexts/CartContext'
 import { useLocale } from '../../contexts/LocaleContext'
@@ -8,6 +9,7 @@ export function CartDrawer() {
   const { isDrawerOpen: open } = useCartState()
   const { lines, customLines, total } = useCartTotals()
   const { setQty, closeDrawer, removeLine, removeCustomLine } = useCartActions()
+  const navigate = useNavigate()
   const { lang, t } = useLocale()
 
   useEffect(() => {
@@ -136,7 +138,8 @@ export function CartDrawer() {
             className="cart-drawer__checkout"
             disabled={isEmpty}
             onClick={() => {
-              window.alert('Checkout demo — connect your payment backend here.')
+              closeDrawer()
+              navigate('/checkout')
             }}
           >
             {t('cart.checkout')}

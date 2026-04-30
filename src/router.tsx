@@ -10,6 +10,8 @@ import { RegisterPage } from './pages/RegisterPage'
 import { AccountPage } from './pages/AccountPage'
 import { BlogPage } from './pages/BlogPage'
 import { BlogPostPage } from './pages/BlogPostPage'
+import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderSuccessPage } from './pages/OrderSuccessPage'
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +28,8 @@ export const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'account', element: <AccountPage /> },
+      { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'order-success', element: <OrderSuccessPage /> },
     ],
   },
 ])
