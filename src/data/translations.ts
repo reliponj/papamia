@@ -137,6 +137,7 @@ export type UiKey =
   | 'account.nav'
   | 'account.tab.security'
   | 'account.security.title'
+  | 'account.security.currentPassword'
   | 'account.security.newPassword'
   | 'account.security.confirmPassword'
   | 'account.security.save'
@@ -440,6 +441,7 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'account.nav': { ro: 'Contul meu', ru: 'Личный кабинет', en: 'My account' },
   'account.tab.security': { ro: 'Securitate', ru: 'Безопасность', en: 'Security' },
   'account.security.title': { ro: 'Schimbă parola', ru: 'Изменение пароля', en: 'Change password' },
+  'account.security.currentPassword': { ro: 'Parola curentă', ru: 'Текущий пароль', en: 'Current password' },
   'account.security.newPassword': { ro: 'Parolă nouă', ru: 'Новый пароль', en: 'New password' },
   'account.security.confirmPassword': { ro: 'Confirmă parola nouă', ru: 'Подтвердите новый пароль', en: 'Confirm new password' },
   'account.security.save': { ro: 'Salvează parola', ru: 'Сохранить пароль', en: 'Save password' },

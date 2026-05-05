@@ -2,21 +2,25 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import {
   apiLogin,
   apiRegister,
+  apiGetMe,
   getAccessToken,
   getRefreshToken,
   setTokens,
   clearTokens,
+  type UserMe,
 } from '../services/api'
 
 interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
+  user: UserMe | null
 }
 
 interface AuthApi {
   login: (email: string, password: string) => Promise<void>
   register: (username: string, email: string, password: string) => Promise<void>
   logout: () => void
+  refetchUser: () => Promise<void>
 }
 
 const AuthStateCtx = createContext<AuthState | null>(null)
@@ -25,34 +29,56 @@ const AuthApiCtx = createContext<AuthApi | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState<UserMe | null>(null)
+
+  const loadUser = useCallback(async () => {
+    try {
+      const me = await apiGetMe()
+      setUser(me)
+    } catch {
+      setUser(null)
+    }
+  }, [])
 
   useEffect(() => {
-    // Restore session from storage on mount
     const hasTokens = Boolean(getAccessToken() || getRefreshToken())
-    setIsAuthenticated(hasTokens)
-    setIsLoading(false)
-  }, [])
+    if (hasTokens) {
+      setIsAuthenticated(true)
+      loadUser().finally(() => setIsLoading(false))
+    } else {
+      setIsLoading(false)
+    }
+  }, [loadUser])
 
   const login = useCallback(async (email: string, password: string) => {
     const data = await apiLogin(email, password)
     setTokens(data.accessToken, data.refreshToken)
     setIsAuthenticated(true)
+    const me = await apiGetMe()
+    setUser(me)
   }, [])
 
   const register = useCallback(async (username: string, email: string, password: string) => {
     const data = await apiRegister(username, email, password)
     setTokens(data.accessToken, data.refreshToken)
     setIsAuthenticated(true)
+    const me = await apiGetMe().catch(() => null)
+    setUser(me)
   }, [])
 
   const logout = useCallback(() => {
     clearTokens()
     setIsAuthenticated(false)
+    setUser(null)
   }, [])
 
+  const refetchUser = useCallback(async () => {
+    await loadUser()
+  }, [loadUser])
+
   return (
-    <AuthStateCtx.Provider value={{ isAuthenticated, isLoading }}>
-      <AuthApiCtx.Provider value={{ login, register, logout }}>
+    <AuthStateCtx.Provider value={{ isAuthenticated, isLoading, user }}>
+      <AuthApiCtx.Provider value={{ login, register, logout, refetchUser }}>
         {children}
       </AuthApiCtx.Provider>
     </AuthStateCtx.Provider>

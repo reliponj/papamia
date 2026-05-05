@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLocale } from '../contexts/LocaleContext'
 import { useAuthApi } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
+import { PasswordInput } from '../components/ui/PasswordInput'
 
 export function LoginPage() {
   const { t } = useLocale()
@@ -14,7 +15,7 @@ export function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
     setError('')
     setLoading(true)
@@ -46,13 +47,11 @@ export function LoginPage() {
           </label>
           <label className="auth-form__label">
             {t('auth.password')}
-            <input
-              className="auth-form__input"
-              type="password"
-              required
-              autoComplete="current-password"
+            <PasswordInput
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={setPassword}
+              autoComplete="current-password"
+              required
             />
           </label>
           {error && <p className="auth-form__error">{error}</p>}

@@ -107,4 +107,33 @@ export async function apiLogin(email: string, password: string): Promise<AuthRes
   return res.json()
 }
 
+export interface UserMe {
+  id: string | number
+  username: string
+  email: string
+  [key: string]: unknown
+}
+
+export async function apiGetMe(): Promise<UserMe> {
+  const res = await apiFetch('/api/user/me')
+  if (!res.ok) {
+    throw new Error(`Failed to load user (${res.status})`)
+  }
+  return res.json()
+}
+
+export async function apiChangePassword(
+  CurrentPassword: string,
+  newPassword: string,
+): Promise<void> {
+  const res = await apiFetch('/api/user/me/password', {
+    method: 'PUT',
+    body: JSON.stringify({ CurrentPassword, newPassword }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err?.message ?? `Failed to change password (${res.status})`)
+  }
+}
+
 export { apiFetch }
