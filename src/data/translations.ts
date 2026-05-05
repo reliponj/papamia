@@ -101,6 +101,8 @@ export type UiKey =
   | 'builder.toppings.hint'
   | 'builder.preview.empty'
   | 'auth.login'
+  | 'auth.logout'
+  | 'auth.username'
   | 'auth.email'
   | 'auth.password'
   | 'auth.login.title'
@@ -402,6 +404,8 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Choose dough to start',
   },
   'auth.login': { ro: 'Conectare', ru: 'Войти', en: 'Sign in' },
+  'auth.logout': { ro: 'Ieșire', ru: 'Выйти', en: 'Sign out' },
+  'auth.username': { ro: 'Nume de utilizator', ru: 'Имя пользователя', en: 'Username' },
   'auth.email': { ro: 'E-mail', ru: 'Электронная почта', en: 'Email' },
   'auth.password': { ro: 'Parolă', ru: 'Пароль', en: 'Password' },
   'auth.login.title': { ro: 'Conectare', ru: 'Вход', en: 'Sign in' },

@@ -1,16 +1,31 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLocale } from '../contexts/LocaleContext'
+import { useAuthApi } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
 
 export function LoginPage() {
   const { t } = useLocale()
+  const { login } = useAuthApi()
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    window.alert('Auth demo — connect your backend here.')
+    setError('')
+    setLoading(true)
+    try {
+      await login(email, password)
+      navigate('/account')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -40,8 +55,9 @@ export function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
-          <Button variant="primary" className="auth-form__submit">
-            {t('auth.login.submit')}
+          {error && <p className="auth-form__error">{error}</p>}
+          <Button type="submit" variant="primary" className="auth-form__submit" disabled={loading}>
+            {loading ? '...' : t('auth.login.submit')}
           </Button>
         </form>
         <p className="auth-card__footer">
