@@ -10,6 +10,7 @@ export function SiteFooter() {
           <div className="site-footer__brand">Papa Mia</div>
           <p className="site-footer__muted">{t('brand.tagline')}</p>
         </div>
+
         <div>
           <h3 className="site-footer__title">{t('footer.onlineMenu')}</h3>
           <ul className="site-footer__links">
@@ -17,16 +18,13 @@ export function SiteFooter() {
               <Link to="/menu">{t('nav.menu')}</Link>
             </li>
             <li>
-              <a href="#gallery">{t('gallery.title')}</a>
+              <Link to="/builder">{t('nav.builder')}</Link>
             </li>
           </ul>
         </div>
         <div>
           <h3 className="site-footer__title">{t('footer.info')}</h3>
           <ul className="site-footer__links">
-            <li>
-              <a href="#">{t('footer.allergens')}</a>
-            </li>
             <li>
               <a href="#">{t('footer.privacy')}</a>
             </li>
@@ -48,9 +46,6 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="site-footer__bottom">
-        <span>
-          {t('footer.partner')}: PapaMia.md
-        </span>
         <span>© {new Date().getFullYear()} Papa Mia</span>
       </div>
     </footer>

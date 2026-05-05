@@ -1,9 +1,10 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
 import { getProductById } from '../data/menu'
-import type { CartLine } from '../types'
+import type { CartLine, CustomPizzaLine } from '../types'
 
 export type CartState = {
   lines: CartLine[]
+  customLines: CustomPizzaLine[]
   isDrawerOpen: boolean
 }
 
@@ -11,6 +12,8 @@ type CartAction =
   | { type: 'ADD'; productId: string }
   | { type: 'REMOVE_LINE'; productId: string }
   | { type: 'SET_QTY'; productId: string; qty: number }
+  | { type: 'ADD_CUSTOM_PIZZA'; pizza: Omit<CustomPizzaLine, 'qty'> }
+  | { type: 'REMOVE_CUSTOM_LINE'; id: string }
   | { type: 'CLEAR' }
   | { type: 'OPEN_DRAWER' }
   | { type: 'CLOSE_DRAWER' }
@@ -52,8 +55,19 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           : [...state.lines, { productId: action.productId, qty: q }],
       }
     }
+    case 'ADD_CUSTOM_PIZZA':
+      return {
+        ...state,
+        customLines: [...state.customLines, { ...action.pizza, qty: 1 }],
+        isDrawerOpen: true,
+      }
+    case 'REMOVE_CUSTOM_LINE':
+      return {
+        ...state,
+        customLines: state.customLines.filter((l) => l.id !== action.id),
+      }
     case 'CLEAR':
-      return { ...state, lines: [] }
+      return { ...state, lines: [], customLines: [] }
     case 'OPEN_DRAWER':
       return { ...state, isDrawerOpen: true }
     case 'CLOSE_DRAWER':
@@ -65,7 +79,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
   }
 }
 
-const initialCart: CartState = { lines: [], isDrawerOpen: false }
+const initialCart: CartState = { lines: [], customLines: [], isDrawerOpen: false }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialCart)
@@ -90,7 +104,7 @@ export function useCartDispatch() {
 }
 
 export function useCartTotals() {
-  const { lines } = useCartState()
+  const { lines, customLines } = useCartState()
   return useMemo(() => {
     let count = 0
     let total = 0
@@ -100,8 +114,12 @@ export function useCartTotals() {
       count += line.qty
       total += p.price * line.qty
     }
-    return { count, total, lines }
-  }, [lines])
+    for (const cl of customLines) {
+      count += cl.qty
+      total += cl.price * cl.qty
+    }
+    return { count, total, lines, customLines }
+  }, [lines, customLines])
 }
 
 export function useCartActions() {
@@ -112,6 +130,9 @@ export function useCartActions() {
       removeLine: (productId: string) => dispatch({ type: 'REMOVE_LINE', productId }),
       setQty: (productId: string, qty: number) =>
         dispatch({ type: 'SET_QTY', productId, qty }),
+      addCustomPizza: (pizza: Omit<CustomPizzaLine, 'qty'>) =>
+        dispatch({ type: 'ADD_CUSTOM_PIZZA', pizza }),
+      removeCustomLine: (id: string) => dispatch({ type: 'REMOVE_CUSTOM_LINE', id }),
       clear: () => dispatch({ type: 'CLEAR' }),
       openDrawer: () => dispatch({ type: 'OPEN_DRAWER' }),
       closeDrawer: () => dispatch({ type: 'CLOSE_DRAWER' }),

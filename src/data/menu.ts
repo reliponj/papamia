@@ -18,6 +18,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 95,
     image:
       'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&q=80',
+    allergens: ['gluten', 'dairy'],
   },
   {
     id: 'capricciosa',
@@ -36,6 +37,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 135,
     image:
       'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80',
+    allergens: ['gluten', 'dairy'],
   },
   {
     id: 'italiana',
@@ -53,6 +55,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 220,
     image:
       'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&q=80',
+    allergens: ['gluten', 'dairy'],
   },
   {
     id: 'diavola',
@@ -70,6 +73,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 180,
     image:
       'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&q=80',
+    allergens: ['gluten', 'dairy'],
   },
   {
     id: 'boscaiola',
@@ -88,6 +92,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 235,
     image:
       'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800&q=80',
+    allergens: ['gluten', 'dairy'],
   },
   {
     id: 'burrata-salad',
@@ -105,6 +110,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 165,
     image:
       'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80',
+    allergens: ['dairy', 'nuts'],
   },
   {
     id: 'bruschetta',
@@ -122,6 +128,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 120,
     image:
       'https://images.unsplash.com/photo-1572695157199-bea00591eaa0?w=800&q=80',
+    allergens: ['gluten', 'dairy', 'fish'],
   },
   {
     id: 'carbonara',
@@ -139,6 +146,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 145,
     image:
       'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80',
+    allergens: ['gluten', 'dairy', 'eggs'],
   },
   {
     id: 'risotto-funghi',
@@ -156,6 +164,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 155,
     image:
       'https://images.unsplash.com/photo-1476124369491-e7addf5db871?w=800&q=80',
+    allergens: ['dairy'],
   },
   {
     id: 'tiramisu',
@@ -173,6 +182,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 85,
     image:
       'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80',
+    allergens: ['gluten', 'dairy', 'eggs'],
   },
   {
     id: 'panna-cotta',
@@ -190,6 +200,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 75,
     image:
       'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80',
+    allergens: ['dairy'],
   },
   {
     id: 'aperol-spritz',
@@ -207,6 +218,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 95,
     image:
       'https://images.unsplash.com/photo-1560512820-29e2ae1dd490?w=800&q=80',
+    allergens: ['alcohol'],
   },
   {
     id: 'limoncello-tonic',
@@ -224,6 +236,7 @@ export const MENU_PRODUCTS: MenuProduct[] = [
     price: 85,
     image:
       'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=800&q=80',
+    allergens: ['alcohol'],
   },
 ]
 

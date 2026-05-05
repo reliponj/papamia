@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useCartActions, useCartTotals } from '../../contexts/CartContext'
 import { useFavoriteIds } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
 import type { Lang } from '../../types'
-import { Button } from '../ui/Button'
 
 const LANGS: Lang[] = ['ro', 'ru', 'en']
 
@@ -12,8 +11,9 @@ export function SiteHeader() {
   const { t, lang, setLang } = useLocale()
   const { count } = useCartTotals()
   const favorites = useFavoriteIds()
-  const { openDrawer, toggleDrawer } = useCartActions()
+  const { toggleDrawer } = useCartActions()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <header className="site-header">
@@ -45,6 +45,13 @@ export function SiteHeader() {
             {t('nav.menu')}
           </NavLink>
           <NavLink
+            to="/builder"
+            className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            {t('nav.builder')}
+          </NavLink>
+          <NavLink
             to="/about"
             className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
             onClick={() => setMenuOpen(false)}
@@ -58,16 +65,13 @@ export function SiteHeader() {
           >
             {t('nav.contacts')}
           </NavLink>
-          <Button
-            variant="primary"
-            className="site-nav__cta"
-            onClick={() => {
-              setMenuOpen(false)
-              openDrawer()
-            }}
+          <NavLink
+            to="/blog"
+            className={({ isActive }) => `site-nav__link${isActive ? ' is-active' : ''}`}
+            onClick={() => setMenuOpen(false)}
           >
-            {t('nav.order')}
-          </Button>
+            {t('nav.blog')}
+          </NavLink>
         </nav>
 
         <div className="site-header__tools">
@@ -86,6 +90,25 @@ export function SiteHeader() {
           <span className="site-header__fav" title={t('favorites.title')}>
             ♥ {favorites.size}
           </span>
+          <button
+            type="button"
+            className="site-header__login"
+            onClick={() => navigate('/login')}
+          >
+            {t('auth.login')}
+          </button>
+          <button
+            type="button"
+            className="site-header__account"
+            onClick={() => navigate('/account')}
+            title={t('account.nav')}
+            aria-label={t('account.nav')}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+            </svg>
+          </button>
           <button
             type="button"
             className="site-header__cart"
