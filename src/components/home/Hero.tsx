@@ -14,9 +14,6 @@ export function Hero() {
           <Link to="/menu" className="btn btn--primary">
             {t('hero.menuCta')}
           </Link>
-          <Link to="/menu" className="btn btn--outline">
-            {t('hero.orderCta')}
-          </Link>
         </div>
       </div>
     </section>
