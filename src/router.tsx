@@ -14,6 +14,8 @@ import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
 import { AdminUsersPage } from './pages/admin/AdminUsersPage'
+import { AdminRolesPage } from './pages/admin/AdminRolesPage'
+import { AdminGroupsPage } from './pages/admin/AdminGroupsPage'
 import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 import { AdminProductsPage } from './pages/admin/AdminProductsPage'
 import { AdminAllergensPage } from './pages/admin/AdminAllergensPage'
@@ -46,8 +48,8 @@ export const router = createBrowserRouter([
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'allergens', element: <AdminAllergensPage /> },
       { path: 'users', element: <AdminUsersPage /> },
-      { path: 'roles', element: <AdminUsersPage /> },
-      { path: 'groups', element: <AdminUsersPage /> },
+      { path: 'roles', element: <AdminRolesPage /> },
+      { path: 'groups', element: <AdminGroupsPage /> },
     ],
   },
 ])

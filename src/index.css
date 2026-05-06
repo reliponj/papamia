@@ -2105,14 +2105,14 @@ textarea {
 
 .crm-section__head h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 30px;
   font-weight: 700;
 }
 
 .crm-section__head p {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 20px;
 }
 
 .crm-search {
@@ -2139,7 +2139,7 @@ textarea {
 .crm-form {
   padding: 0.25rem;
   display: grid;
-  gap: 0.65rem;
+  gap: 1.1rem;
   align-content: start;
 }
 
@@ -2150,22 +2150,198 @@ textarea {
 
 .crm-form__actions {
   display: flex;
-  gap: 0.4rem;
-}
-
-.admin-check {
-  display: inline-flex;
-  align-items: center;
   gap: 0.5rem;
-  color: var(--muted);
+  padding-top: 0.25rem;
 }
 
-.field select {
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+/* ── field ────────────────────────────────────── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field > span,
+.field > label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(244, 241, 234, 0.6);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field textarea {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
   color: var(--text);
-  padding: 0.55rem 0.65rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: rgba(212, 184, 114, 0.45);
+  box-shadow: 0 0 0 3px rgba(212, 184, 114, 0.1);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: rgba(244, 241, 234, 0.28);
+}
+
+/* ── Radix Select trigger used inside .field ─── */
+.crm-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  font-size: 15px;
+  font-family: inherit;
+  width: 100%;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+
+.crm-select-trigger:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.crm-select-trigger:focus-visible,
+.crm-select-trigger[data-state='open'] {
+  border-color: rgba(212, 184, 114, 0.45);
+  box-shadow: 0 0 0 3px rgba(212, 184, 114, 0.1);
+}
+
+.crm-select-trigger__icon {
+  color: rgba(244, 241, 234, 0.4);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.crm-select-trigger[data-state='open'] .crm-select-trigger__icon {
+  transform: rotate(180deg);
+}
+
+.crm-select-content {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: #1a2420;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 4px;
+  z-index: 200;
+  min-width: var(--radix-select-trigger-width);
+}
+
+.crm-select-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: rgba(244, 241, 234, 0.75);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.crm-select-item[data-highlighted] {
+  background: rgba(212, 184, 114, 0.12);
+  color: #fff;
+}
+
+.crm-select-item[data-state='checked'] {
+  color: #f5d98a;
+  font-weight: 600;
+}
+
+/* ── Radix Switch for in-stock toggle ─────────── */
+.crm-switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.crm-switch-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(244, 241, 234, 0.8);
+  cursor: pointer;
+  user-select: none;
+}
+
+.crm-switch {
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s;
+  outline: none;
+}
+
+.crm-switch[data-state='checked'] {
+  background: rgba(45, 130, 80, 0.7);
+  border-color: rgba(45, 130, 80, 0.9);
+}
+
+.crm-switch:focus-visible {
+  box-shadow: 0 0 0 3px rgba(212, 184, 114, 0.35);
+}
+
+.crm-switch__thumb {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s ease;
+  will-change: transform;
+}
+
+.crm-switch[data-state='checked'] .crm-switch__thumb {
+  transform: translateX(18px);
+}
+
+/* legacy .field select kept for any other uses */
+.field select {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field select:focus {
+  border-color: rgba(212, 184, 114, 0.45);
+  box-shadow: 0 0 0 3px rgba(212, 184, 114, 0.1);
 }
 
 .crm-table-wrap {
@@ -2190,7 +2366,7 @@ textarea {
 
 .crm-table th {
   color: rgba(212, 184, 114, 0.95);
-  font-size: 11px;
+  font-size: 17px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   background: rgba(255, 255, 255, 0.02);
@@ -2284,10 +2460,12 @@ textarea {
 .crm-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.18rem 0.48rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 999px;
   border: 1px solid var(--border);
-  font-size: 0.75rem;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .crm-badge--admin {

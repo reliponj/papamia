@@ -106,19 +106,27 @@ export function AdminCategoriesPage() {
 
       <AdminModal title={editingId ? 'Edit category' : 'Create category'} open={isModalOpen} onClose={resetForm}>
         <form className="crm-form" onSubmit={onSubmit}>
-          <label className="field">
+          <div className="field">
             <span>Name</span>
-            <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-          </label>
-          <label className="field">
+            <input
+              value={form.name}
+              placeholder="e.g. Pizzas"
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="field">
             <span>Slug</span>
-            <input value={form.slug} onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))} required />
-          </label>
+            <input
+              value={form.slug}
+              placeholder="e.g. pizzas"
+              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
+              required
+            />
+          </div>
           <div className="crm-form__actions">
             <button className="btn btn--primary" type="submit">{editingId ? 'Save' : 'Create'}</button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm}>
-              Cancel
-            </button>
+            <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
           </div>
         </form>
       </AdminModal>
