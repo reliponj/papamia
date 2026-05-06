@@ -16,6 +16,7 @@ import { OrderSuccessPage } from './pages/OrderSuccessPage'
 import { AdminUsersPage } from './pages/admin/AdminUsersPage'
 import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 import { AdminProductsPage } from './pages/admin/AdminProductsPage'
+import { AdminAllergensPage } from './pages/admin/AdminAllergensPage'
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'products', element: <AdminProductsPage /> },
+      { path: 'allergens', element: <AdminAllergensPage /> },
     ],
   },
 ])

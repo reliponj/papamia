@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
-import { ChevronLeft, LayoutGrid, Pizza, Settings, Tags, Users } from 'lucide-react'
+import { ChevronLeft, LayoutGrid, Pizza, Settings, Tags, Users, ShieldAlert } from 'lucide-react'
 import { AdminDataProvider } from '../../contexts/AdminDataContext'
 
 function AdminShell() {
@@ -12,6 +12,7 @@ function AdminShell() {
     { to: '/admin/users', label: 'Users', Icon: Users },
     { to: '/admin/categories', label: 'Categories', Icon: Tags },
     { to: '/admin/products', label: 'Products', Icon: Pizza },
+    { to: '/admin/allergens', label: 'Allergens', Icon: ShieldAlert },
   ]
 
   return (
