@@ -1,5 +1,6 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './components/layout/RootLayout'
+import { AdminLayout } from './components/layout/AdminLayout'
 import { HomePage } from './pages/HomePage'
 import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
@@ -12,6 +13,10 @@ import { BlogPage } from './pages/BlogPage'
 import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { AdminUsersPage } from './pages/admin/AdminUsersPage'
+import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
+import { AdminProductsPage } from './pages/admin/AdminProductsPage'
+import { AdminAllergensPage } from './pages/admin/AdminAllergensPage'
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +35,17 @@ export const router = createBrowserRouter([
       { path: 'account', element: <AccountPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
+    ],
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <Navigate to="/admin/users" replace /> },
+      { path: 'users', element: <AdminUsersPage /> },
+      { path: 'categories', element: <AdminCategoriesPage /> },
+      { path: 'products', element: <AdminProductsPage /> },
+      { path: 'allergens', element: <AdminAllergensPage /> },
     ],
   },
 ])
