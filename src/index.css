@@ -1737,6 +1737,442 @@ textarea {
   font-size: 0.92rem;
 }
 
+/* Admin CRM */
+.admin-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background:
+    radial-gradient(900px 500px at -5% -10%, rgba(212, 184, 114, 0.08), transparent),
+    radial-gradient(900px 500px at 110% 20%, rgba(196, 92, 62, 0.09), transparent),
+    #0b100d;
+  transition: grid-template-columns 0.2s ease;
+}
+
+.admin-shell.is-collapsed {
+  grid-template-columns: 72px 1fr;
+}
+
+.admin-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, #111813 0%, #0d1310 100%);
+  padding: 1rem 0.8rem;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 0.8rem;
+}
+
+.admin-sidebar__panel {
+  padding: 0.25rem;
+}
+
+.admin-sidebar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.admin-sidebar__brand-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #f9f7f2;
+}
+
+.admin-sidebar__logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(196, 92, 62, 0.85), rgba(212, 184, 114, 0.85));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.admin-sidebar__brand {
+  font-family: var(--font-display);
+  font-size: 1.04rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.admin-sidebar__toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.admin-shell.is-collapsed .admin-sidebar__toggle {
+  transform: rotate(180deg);
+}
+
+.admin-sidebar__hint {
+  margin: 0.4rem 0 0;
+  color: rgba(244, 241, 234, 0.68);
+  font-size: 0.74rem;
+}
+
+.admin-sidebar__section-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(212, 184, 114, 0.8);
+  padding: 0.1rem 0.35rem;
+}
+
+.admin-sidebar__group {
+  padding: 0.2rem;
+}
+
+.admin-sidebar__nav {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.admin-nav-link {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.54rem 0.6rem;
+  text-decoration: none;
+  color: rgba(244, 241, 234, 0.72);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: transparent;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+
+.admin-nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-nav-link.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.admin-nav-link--ghost {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.admin-sidebar__footer {
+  padding: 0.2rem;
+}
+
+.admin-shell.is-collapsed .admin-nav-link {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.admin-shell.is-collapsed .admin-sidebar__panel,
+.admin-shell.is-collapsed .admin-sidebar__group,
+.admin-shell.is-collapsed .admin-sidebar__footer {
+  padding-inline: 0.2rem;
+}
+
+.admin-tooltip {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #0f1512;
+  color: var(--text);
+  font-size: 0.72rem;
+  line-height: 1;
+  padding: 0.4rem 0.5rem;
+}
+
+.admin-workspace {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.admin-topbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1rem 1.4rem;
+  background: rgba(15, 21, 18, 0.86);
+  backdrop-filter: blur(10px);
+}
+
+.admin-topbar h1 {
+  margin: 0;
+  font-size: 1.28rem;
+  font-weight: 700;
+}
+
+.admin-topbar p {
+  margin: 0.25rem 0 0;
+  color: rgba(244, 241, 234, 0.68);
+  font-size: 0.9rem;
+}
+
+.admin-content {
+  padding: 1.2rem;
+}
+
+.admin-content__surface {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(23, 31, 27, 0.88), rgba(17, 23, 20, 0.88));
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.3);
+  padding: 0.6rem;
+}
+
+.crm-section {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: #141b17;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.crm-section__head {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.crm-section__head h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+
+.crm-section__head p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.crm-search {
+  min-width: 260px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--text);
+  padding: 0.55rem 0.7rem;
+}
+
+.crm-search:focus-visible {
+  outline: 2px solid rgba(212, 184, 114, 0.35);
+  outline-offset: 1px;
+}
+
+.crm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.crm-form {
+  padding: 0.25rem;
+  display: grid;
+  gap: 0.65rem;
+  align-content: start;
+}
+
+.crm-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.crm-form__actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted);
+}
+
+.field select {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0.55rem 0.65rem;
+}
+
+.crm-table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: #111714;
+  overflow: auto;
+}
+
+.crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+.crm-table th,
+.crm-table td {
+  text-align: left;
+  padding: 0.82rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.crm-table th {
+  color: rgba(212, 184, 114, 0.95);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.crm-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.crm-table tbody tr:hover {
+  background: rgba(212, 184, 114, 0.06);
+}
+
+.crm-table__actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.crm-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 0.9rem;
+}
+
+.crm-icon-btn:hover {
+  border-color: rgba(212, 184, 114, 0.45);
+  background: rgba(212, 184, 114, 0.1);
+}
+
+.crm-icon-btn.is-danger {
+  color: #ff9580;
+}
+
+.crm-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.crm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+}
+
+.crm-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.crm-modal__panel {
+  position: relative;
+  width: min(560px, calc(100vw - 2rem));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #141b17;
+  box-shadow: var(--shadow);
+}
+
+.crm-modal__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.crm-modal__head h3 {
+  margin: 0;
+}
+
+.crm-modal__body {
+  padding: 0.9rem 1rem 1rem;
+}
+
+.crm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.18rem 0.48rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+}
+
+.crm-badge--admin {
+  background: rgba(196, 92, 62, 0.22);
+}
+
+.crm-badge--manager {
+  background: rgba(212, 184, 114, 0.2);
+}
+
+.crm-badge--viewer {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.crm-badge--ok {
+  background: rgba(45, 79, 60, 0.45);
+}
+
+.crm-badge--warn {
+  background: rgba(196, 92, 62, 0.35);
+}
+
+@media (max-width: 1060px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+  .admin-shell.is-collapsed {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-shell.is-collapsed .admin-sidebar {
+    padding-inline: 0.6rem;
+  }
+  .crm-search {
+    min-width: 220px;
+  }
+}
+
 /* ── Pizza Builder ───────────────────────────────────────────── */
 
 .builder-page {
