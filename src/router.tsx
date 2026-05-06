@@ -42,10 +42,12 @@ export const router = createBrowserRouter([
     element: <AdminLayout />,
     children: [
       { index: true, element: <Navigate to="/admin/users" replace /> },
-      { path: 'users', element: <AdminUsersPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'allergens', element: <AdminAllergensPage /> },
+      { path: 'users', element: <AdminUsersPage /> },
+      { path: 'roles', element: <AdminUsersPage /> },
+      { path: 'groups', element: <AdminUsersPage /> },
     ],
   },
 ])
