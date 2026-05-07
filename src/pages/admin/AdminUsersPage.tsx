@@ -1,4 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import * as Select from '@radix-ui/react-select'
+import { ChevronDown, Check } from 'lucide-react'
 import { useAdminData, type AdminUserRole } from '../../contexts/AdminDataContext'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
@@ -96,35 +98,54 @@ export function AdminUsersPage() {
 
       <AdminModal title={editingId ? 'Edit user' : 'Create user'} open={isModalOpen} onClose={resetForm}>
         <form className="crm-form" onSubmit={onSubmit}>
-          <label className="field">
+          <div className="field">
             <span>Name</span>
-            <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-          </label>
-          <label className="field">
+            <input
+              value={form.name}
+              placeholder="Full name"
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="field">
             <span>Email</span>
             <input
               type="email"
               value={form.email}
+              placeholder="user@example.com"
               onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
               required
             />
-          </label>
-          <label className="field">
+          </div>
+          <div className="field">
             <span>Role</span>
-            <select
+            <Select.Root
               value={form.role}
-              onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as AdminUserRole }))}
+              onValueChange={(val) => setForm((p) => ({ ...p, role: val as AdminUserRole }))}
             >
-              <option value="admin">admin</option>
-              <option value="manager">manager</option>
-              <option value="viewer">viewer</option>
-            </select>
-          </label>
+              <Select.Trigger className="crm-select-trigger" aria-label="Role">
+                <Select.Value />
+                <Select.Icon asChild>
+                  <ChevronDown size={16} className="crm-select-trigger__icon" />
+                </Select.Icon>
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className="crm-select-content" position="popper" sideOffset={4}>
+                  <Select.Viewport>
+                    {(['admin', 'manager', 'viewer'] as AdminUserRole[]).map((role) => (
+                      <Select.Item key={role} value={role} className="crm-select-item">
+                        <Select.ItemText>{role}</Select.ItemText>
+                        <Select.ItemIndicator><Check size={14} /></Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </div>
           <div className="crm-form__actions">
             <button className="btn btn--primary" type="submit">{editingId ? 'Save' : 'Create'}</button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm}>
-              Cancel
-            </button>
+            <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
           </div>
         </form>
       </AdminModal>

@@ -101,6 +101,8 @@ export type UiKey =
   | 'builder.toppings.hint'
   | 'builder.preview.empty'
   | 'auth.login'
+  | 'auth.logout'
+  | 'auth.username'
   | 'auth.email'
   | 'auth.password'
   | 'auth.login.title'
@@ -135,6 +137,7 @@ export type UiKey =
   | 'account.nav'
   | 'account.tab.security'
   | 'account.security.title'
+  | 'account.security.currentPassword'
   | 'account.security.newPassword'
   | 'account.security.confirmPassword'
   | 'account.security.save'
@@ -402,6 +405,8 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Choose dough to start',
   },
   'auth.login': { ro: 'Conectare', ru: 'Войти', en: 'Sign in' },
+  'auth.logout': { ro: 'Ieșire', ru: 'Выйти', en: 'Sign out' },
+  'auth.username': { ro: 'Nume de utilizator', ru: 'Имя пользователя', en: 'Username' },
   'auth.email': { ro: 'E-mail', ru: 'Электронная почта', en: 'Email' },
   'auth.password': { ro: 'Parolă', ru: 'Пароль', en: 'Password' },
   'auth.login.title': { ro: 'Conectare', ru: 'Вход', en: 'Sign in' },
@@ -436,6 +441,7 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'account.nav': { ro: 'Contul meu', ru: 'Личный кабинет', en: 'My account' },
   'account.tab.security': { ro: 'Securitate', ru: 'Безопасность', en: 'Security' },
   'account.security.title': { ro: 'Schimbă parola', ru: 'Изменение пароля', en: 'Change password' },
+  'account.security.currentPassword': { ro: 'Parola curentă', ru: 'Текущий пароль', en: 'Current password' },
   'account.security.newPassword': { ro: 'Parolă nouă', ru: 'Новый пароль', en: 'New password' },
   'account.security.confirmPassword': { ro: 'Confirmă parola nouă', ru: 'Подтвердите новый пароль', en: 'Confirm new password' },
   'account.security.save': { ro: 'Salvează parola', ru: 'Сохранить пароль', en: 'Save password' },

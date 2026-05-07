@@ -100,7 +100,7 @@ export function AdminAllergensPage() {
       <header className="crm-section__head">
         <div>
           <h2>Allergens</h2>
-          <p>Maintain allergen labels used on the menu (API-backed).</p>
+          <p>Maintain allergen labels used on the menu.</p>
         </div>
         <div className="crm-toolbar">
           <input
@@ -179,15 +179,16 @@ export function AdminAllergensPage() {
             void submitAllergen()
           }}
         >
-          <label className="field">
+          <div className="field">
             <span>Name</span>
             <input
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder="e.g. Gluten"
               required
               autoFocus
             />
-          </label>
+          </div>
           <div className="crm-form__actions">
             <button className="btn btn--primary" type="submit" disabled={saving}>
               {saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
