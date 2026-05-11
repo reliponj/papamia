@@ -196,6 +196,22 @@ export type UiKey =
   | 'order.success.title'
   | 'order.success.sub'
   | 'order.success.back'
+  | 'nav.reviews'
+  | 'reviews.title'
+  | 'reviews.sub'
+  | 'reviews.write.title'
+  | 'reviews.write.rating'
+  | 'reviews.write.placeholder'
+  | 'reviews.write.submit'
+  | 'reviews.write.submitted'
+  | 'reviews.write.loginPrompt'
+  | 'reviews.write.loginLink'
+  | 'reviews.list.title'
+  | 'reviews.list.empty'
+  | 'reviews.list.loading'
+  | 'reviews.list.error'
+  | 'reviews.star'
+  | 'reviews.stars'
 
 const UI: Record<UiKey, Record<Lang, string>> = {
   'brand.tagline': {
@@ -517,6 +533,47 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Thank you! Your order will be delivered in 35–50 minutes.',
   },
   'order.success.back': { ro: 'Înapoi la meniu', ru: 'Вернуться в меню', en: 'Back to menu' },
+
+  'nav.reviews': { ro: 'Recenzii', ru: 'Отзывы', en: 'Reviews' },
+  'reviews.title': { ro: 'Recenzii', ru: 'Отзывы', en: 'Reviews' },
+  'reviews.sub': {
+    ro: 'Părerile clienților noștri — sincere și nefiltrate.',
+    ru: 'Мнения наших гостей — честные и нефильтрованные.',
+    en: 'Our guests\' opinions — honest and unfiltered.',
+  },
+  'reviews.write.title': { ro: 'Lasă o recenzie', ru: 'Оставить отзыв', en: 'Write a review' },
+  'reviews.write.rating': { ro: 'Evaluare', ru: 'Оценка', en: 'Rating' },
+  'reviews.write.placeholder': {
+    ro: 'Împărtășește experiența ta...',
+    ru: 'Поделитесь своим впечатлением...',
+    en: 'Share your experience...',
+  },
+  'reviews.write.submit': { ro: 'Trimite recenzia', ru: 'Отправить отзыв', en: 'Submit review' },
+  'reviews.write.submitted': {
+    ro: 'Recenzia ta a fost trimisă!',
+    ru: 'Ваш отзыв отправлен!',
+    en: 'Your review has been submitted!',
+  },
+  'reviews.write.loginPrompt': {
+    ro: 'Pentru a lăsa o recenzie, te rugăm să',
+    ru: 'Чтобы оставить отзыв, пожалуйста,',
+    en: 'To write a review, please',
+  },
+  'reviews.write.loginLink': { ro: 'te conectezi', ru: 'войдите в аккаунт', en: 'sign in' },
+  'reviews.list.title': { ro: 'Toate recenziile', ru: 'Все отзывы', en: 'All reviews' },
+  'reviews.list.empty': {
+    ro: 'Nu există recenzii încă. Fii primul!',
+    ru: 'Отзывов пока нет. Будьте первым!',
+    en: 'No reviews yet. Be the first!',
+  },
+  'reviews.list.loading': { ro: 'Se încarcă...', ru: 'Загрузка...', en: 'Loading...' },
+  'reviews.list.error': {
+    ro: 'Nu s-au putut încărca recenziile.',
+    ru: 'Не удалось загрузить отзывы.',
+    en: 'Could not load reviews.',
+  },
+  'reviews.star': { ro: 'stea', ru: 'звезда', en: 'star' },
+  'reviews.stars': { ro: 'stele', ru: 'звёзд', en: 'stars' },
 }
 
 export function translate(lang: Lang, key: UiKey) {

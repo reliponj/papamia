@@ -1,96 +1,156 @@
-import { useState } from 'react'
-import * as Select from '@radix-ui/react-select'
-import { ChevronDown, Check } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
+import {
+  type AdminPermissionGroup,
+  listPermissionGroups,
+  createPermissionGroup,
+  updatePermissionGroup,
+  deletePermissionGroup,
+} from '../../api/adminPermissionGroups'
 
-type Group = { id: string; name: string; role: string; members: number }
+type Form = { name: string; code: string; description: string }
 
-const INITIAL: Group[] = [
-  { id: '1', name: 'Kitchen staff', role: 'viewer',  members: 4 },
-  { id: '2', name: 'Managers',      role: 'manager', members: 2 },
-  { id: '3', name: 'Admins',        role: 'admin',   members: 1 },
-]
-
-const ROLES = ['admin', 'manager', 'viewer'] as const
+const EMPTY_FORM: Form = { name: '', code: '', description: '' }
 
 export function AdminGroupsPage() {
-  const [groups, setGroups] = useState<Group[]>(INITIAL)
+  const [groups, setGroups] = useState<AdminPermissionGroup[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+
   const [isModalOpen, setModalOpen] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [form, setForm] = useState({ name: '', role: 'viewer' })
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [form, setForm] = useState<Form>(EMPTY_FORM)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      setGroups(await listPermissionGroups())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load groups')
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => { void load() }, [load])
+
+  function openCreate() {
+    setEditingId(null)
+    setForm(EMPTY_FORM)
+    setModalOpen(true)
+  }
+
+  function openEdit(group: AdminPermissionGroup) {
+    setEditingId(group.id)
+    setForm({ name: group.name, code: group.code, description: group.description })
+    setModalOpen(true)
+  }
 
   function resetForm() {
-    setForm({ name: '', role: 'viewer' })
+    setForm(EMPTY_FORM)
     setEditingId(null)
     setModalOpen(false)
   }
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     const name = form.name.trim()
-    if (!name) return
-    if (editingId) {
-      setGroups((prev) => prev.map((g) => g.id === editingId ? { ...g, name, role: form.role } : g))
-    } else {
-      setGroups((prev) => [...prev, { id: String(Date.now()), name, role: form.role, members: 0 }])
+    const code = form.code.trim()
+    if (!name || !code) return
+    setSaving(true)
+    setError(null)
+    try {
+      const payload = {
+        name,
+        code,
+        description: form.description.trim(),
+        permissionIds: editingId !== null
+          ? (groups.find((g) => g.id === editingId)?.permissionIds ?? [])
+          : [],
+      }
+      if (editingId !== null) {
+        const updated = await updatePermissionGroup(editingId, payload)
+        setGroups((prev) => prev.map((g) => g.id === updated.id ? updated : g))
+      } else {
+        const created = await createPermissionGroup(payload)
+        setGroups((prev) => [...prev, created])
+      }
+      resetForm()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Save failed')
+    } finally {
+      setSaving(false)
     }
-    resetForm()
+  }
+
+  async function onDelete(id: number) {
+    setError(null)
+    try {
+      await deletePermissionGroup(id)
+      setGroups((prev) => prev.filter((g) => g.id !== id))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Delete failed')
+    }
   }
 
   return (
     <section className="crm-section">
       <header className="crm-section__head">
         <div>
-          <h2>Groups</h2>
-          <p>Organize staff into groups with shared role permissions.</p>
+          <h2>Permission Groups</h2>
+          <p>Organize permissions into named groups for easier role management.</p>
         </div>
         <div className="crm-toolbar">
-          <button className="btn btn--primary" type="button" onClick={() => setModalOpen(true)}>+ Add</button>
+          <button className="btn btn--primary" type="button" onClick={openCreate}>+ Add</button>
         </div>
       </header>
 
+      {error && <p className="crm-error">{error}</p>}
+
       <div className="crm-table-wrap">
-        <table className="crm-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Default role</th>
-              <th>Members</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map((group) => (
-              <tr key={group.id}>
-                <td>{group.name}</td>
-                <td>
-                  <span className={`crm-badge crm-badge--${group.role}`}>{group.role}</span>
-                </td>
-                <td>{group.members}</td>
-                <td className="crm-table__actions">
-                  <AdminIconButton
-                    label="Edit group"
-                    onClick={() => {
-                      setEditingId(group.id)
-                      setForm({ name: group.name, role: group.role })
-                      setModalOpen(true)
-                    }}
-                  >✎</AdminIconButton>
-                  <AdminIconButton
-                    label="Delete group"
-                    className="is-danger"
-                    onClick={() => setGroups((prev) => prev.filter((g) => g.id !== group.id))}
-                  >🗑</AdminIconButton>
-                </td>
+        {loading ? (
+          <p className="crm-loading">Loading…</p>
+        ) : (
+          <table className="crm-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>Permissions</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {groups.map((group) => (
+                <tr key={group.id}>
+                  <td>{group.name}</td>
+                  <td><span className="crm-badge crm-badge--viewer">{group.code}</span></td>
+                  <td>{group.description}</td>
+                  <td>{group.permissionIds.length}</td>
+                  <td className="crm-table__actions">
+                    <AdminIconButton label="Edit group" onClick={() => openEdit(group)}>✎</AdminIconButton>
+                    <AdminIconButton
+                      label="Delete group"
+                      className="is-danger"
+                      onClick={() => void onDelete(group.id)}
+                    >🗑</AdminIconButton>
+                  </td>
+                </tr>
+              ))}
+              {groups.length === 0 && (
+                <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--color-muted)' }}>No groups yet</td></tr>
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
-      <AdminModal title={editingId ? 'Edit group' : 'Create group'} open={isModalOpen} onClose={resetForm}>
-        <form className="crm-form" onSubmit={onSubmit}>
+      <AdminModal title={editingId !== null ? 'Edit group' : 'Create group'} open={isModalOpen} onClose={resetForm}>
+        <form className="crm-form" onSubmit={(e) => void onSubmit(e)}>
           <div className="field">
             <span>Name</span>
             <input
@@ -101,30 +161,26 @@ export function AdminGroupsPage() {
             />
           </div>
           <div className="field">
-            <span>Default role</span>
-            <Select.Root value={form.role} onValueChange={(val) => setForm((p) => ({ ...p, role: val }))}>
-              <Select.Trigger className="crm-select-trigger" aria-label="Default role">
-                <Select.Value />
-                <Select.Icon asChild>
-                  <ChevronDown size={16} className="crm-select-trigger__icon" />
-                </Select.Icon>
-              </Select.Trigger>
-              <Select.Portal>
-                <Select.Content className="crm-select-content" position="popper" sideOffset={4}>
-                  <Select.Viewport>
-                    {ROLES.map((role) => (
-                      <Select.Item key={role} value={role} className="crm-select-item">
-                        <Select.ItemText>{role}</Select.ItemText>
-                        <Select.ItemIndicator><Check size={14} /></Select.ItemIndicator>
-                      </Select.Item>
-                    ))}
-                  </Select.Viewport>
-                </Select.Content>
-              </Select.Portal>
-            </Select.Root>
+            <span>Code</span>
+            <input
+              value={form.code}
+              placeholder="e.g. kitchen_staff"
+              onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))}
+              required
+            />
+          </div>
+          <div className="field">
+            <span>Description</span>
+            <input
+              value={form.description}
+              placeholder="What does this group cover?"
+              onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+            />
           </div>
           <div className="crm-form__actions">
-            <button className="btn btn--primary" type="submit">{editingId ? 'Save' : 'Create'}</button>
+            <button className="btn btn--primary" type="submit" disabled={saving}>
+              {saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
+            </button>
             <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
           </div>
         </form>
