@@ -1,4 +1,4 @@
-import { Navigate, createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './components/layout/RootLayout'
 import { AdminLayout } from './components/layout/AdminLayout'
 import { RequireAdmin } from './components/admin/RequireAdmin'
@@ -29,6 +29,7 @@ import { AdminIngridientsPage } from './pages/admin/AdminIngridientsPage'
 import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
 import { AdminOrdersPage } from './pages/admin/AdminOrdersPage'
 import { AdminOrderDetailPage } from './pages/admin/AdminOrderDetailPage'
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 
 export const router = createBrowserRouter([
   {
@@ -58,7 +59,7 @@ export const router = createBrowserRouter([
       </RequireAdmin>
     ),
     children: [
-      { index: true, element: <Navigate to="/admin/users" replace /> },
+      { index: true, element: <AdminDashboardPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'allergens', element: <AdminAllergensPage /> },

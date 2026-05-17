@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import {
   ChevronLeft, ChevronDown,
-  LayoutGrid, Pizza, Users, Settings, Image, Ticket,
+  LayoutGrid, Pizza, Users, Settings, Image, Ticket, LayoutDashboard,
 } from 'lucide-react'
+import { getAdminBreadcrumbs, getAdminPageTitle } from '../../pages/admin/adminNavMeta'
 
 type NavChild = { to: string; label: string }
 type NavGroup = {
@@ -17,8 +18,8 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    id: 'menu',
-    label: 'Menu',
+    id: 'catalog',
+    label: 'Catalog',
     icon: <Pizza size={16} strokeWidth={1.75} />,
     children: [
       { to: '/admin/categories', label: 'Categories' },
@@ -48,8 +49,8 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: 'users',
-    label: 'Users',
+    id: 'access',
+    label: 'Access',
     icon: <Users size={16} strokeWidth={1.75} />,
     children: [
       { to: '/admin/users',  label: 'User list' },
@@ -60,8 +61,11 @@ const NAV_GROUPS: NavGroup[] = [
 ]
 
 function useActiveGroup(groups: NavGroup[], pathname: string): string | null {
+  if (pathname === '/admin' || pathname === '/admin/') return null
   for (const g of groups) {
-    if (g.children.some((c) => pathname.startsWith(c.to))) return g.id
+    if (g.children.some((c) => pathname === c.to || pathname.startsWith(`${c.to}/`))) {
+      return g.id
+    }
   }
   return null
 }
@@ -70,6 +74,9 @@ function AdminShell() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const { pathname } = useLocation()
   const activeGroup = useActiveGroup(NAV_GROUPS, pathname)
+  const breadcrumbs = getAdminBreadcrumbs(pathname)
+  const pageTitle = getAdminPageTitle(pathname)
+  const isDashboard = pathname === '/admin' || pathname === '/admin/'
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(NAV_GROUPS.map((g) => [g.id, g.id === activeGroup]))
   )
@@ -114,6 +121,31 @@ function AdminShell() {
 
           {/* ── Nav ─────────────────────────────────── */}
           <nav className="admin-sidebar__nav" aria-label="Main navigation">
+            <Tooltip.Root disableHoverableContent>
+              <Tooltip.Trigger asChild>
+                <NavLink
+                  to="/admin"
+                  end
+                  className={({ isActive }) =>
+                    `admin-nav-dashboard${isActive ? ' is-active' : ''}`
+                  }
+                  aria-label="Dashboard"
+                >
+                  <span className="admin-nav-link__icon">
+                    <LayoutDashboard size={16} strokeWidth={1.75} />
+                  </span>
+                  {sidebarOpen && <span className="admin-nav-link__label">Dashboard</span>}
+                </NavLink>
+              </Tooltip.Trigger>
+              {!sidebarOpen && (
+                <Tooltip.Portal>
+                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
+                    Dashboard
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              )}
+            </Tooltip.Root>
+
             {NAV_GROUPS.map((group) => {
               const isGroupActive = group.id === activeGroup
               const isExpanded = openGroups[group.id] ?? false
@@ -209,8 +241,27 @@ function AdminShell() {
 
         <div className="admin-workspace">
           <header className="admin-topbar">
-            <h1>Admin CRM</h1>
-            <p>Manage core entities and relationships.</p>
+            <nav className="admin-breadcrumbs" aria-label="Breadcrumb">
+              {breadcrumbs.map((crumb, i) => {
+                const isLast = i === breadcrumbs.length - 1
+                return (
+                  <span key={`${crumb.label}-${i}`} className="admin-breadcrumbs__item">
+                    {i > 0 && <span className="admin-breadcrumbs__sep">/</span>}
+                    {crumb.to && !isLast ? (
+                      <Link to={crumb.to}>{crumb.label}</Link>
+                    ) : (
+                      <span aria-current={isLast ? 'page' : undefined}>{crumb.label}</span>
+                    )}
+                  </span>
+                )
+              })}
+            </nav>
+            <h1>{pageTitle}</h1>
+            <p>
+              {isDashboard
+                ? 'Overview and shortcuts for the back-office.'
+                : 'Manage core entities and relationships.'}
+            </p>
           </header>
           <main className="admin-content">
             <div className="admin-content__surface">
