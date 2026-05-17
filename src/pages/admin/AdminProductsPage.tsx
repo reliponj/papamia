@@ -1,4 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
+import * as Select from '@radix-ui/react-select'
+import * as Switch from '@radix-ui/react-switch'
+import { ChevronDown, Check } from 'lucide-react'
 import { useAdminData } from '../../contexts/AdminDataContext'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
@@ -17,27 +20,21 @@ export function AdminProductsPage() {
   })
 
   const categoryNameById = useMemo(
-    () => new Map(categories.map((category) => [category.id, category.name])),
+    () => new Map(categories.map((c) => [c.id, c.name])),
     [categories],
   )
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return products
-    return products.filter((product) => {
-      const categoryName = categoryNameById.get(product.categoryId) ?? ''
-      return `${product.name} ${categoryName}`.toLowerCase().includes(q)
+    return products.filter((p) => {
+      const cat = categoryNameById.get(p.categoryId) ?? ''
+      return `${p.name} ${cat}`.toLowerCase().includes(q)
     })
   }, [products, query, categoryNameById])
 
   function resetForm() {
-    setForm({
-      name: '',
-      price: '0',
-      categoryId: categories[0]?.id ?? '',
-      image: '',
-      inStock: true,
-    })
+    setForm({ name: '', price: '0', categoryId: categories[0]?.id ?? '', image: '', inStock: true })
     setEditingId(null)
     setModalOpen(false)
   }
@@ -45,19 +42,14 @@ export function AdminProductsPage() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const parsedPrice = Number.parseFloat(form.price)
-    if (!form.name.trim() || !Number.isFinite(parsedPrice) || parsedPrice < 0) return
-    if (!form.categoryId) return
-
+    if (!form.name.trim() || !Number.isFinite(parsedPrice) || parsedPrice < 0 || !form.categoryId) return
     const payload = {
       name: form.name.trim(),
       price: parsedPrice,
       categoryId: form.categoryId,
-      image:
-        form.image.trim() ||
-        'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=80',
+      image: form.image.trim() || 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=300&q=80',
       inStock: form.inStock,
     }
-
     if (editingId) updateProduct(editingId, payload)
     else addProduct(payload)
     resetForm()
@@ -65,13 +57,7 @@ export function AdminProductsPage() {
 
   function openCreate() {
     setEditingId(null)
-    setForm({
-      name: '',
-      price: '0',
-      categoryId: categories[0]?.id ?? '',
-      image: '',
-      inStock: true,
-    })
+    setForm({ name: '', price: '0', categoryId: categories[0]?.id ?? '', image: '', inStock: true })
     setModalOpen(true)
   }
 
@@ -89,9 +75,7 @@ export function AdminProductsPage() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button className="btn btn--primary" type="button" onClick={openCreate}>
-            + Add
-          </button>
+          <button className="btn btn--primary" type="button" onClick={openCreate}>+ Add</button>
         </div>
       </header>
 
@@ -99,20 +83,13 @@ export function AdminProductsPage() {
         <table className="crm-table">
           <thead>
             <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Price</th>
-              <th>Category</th>
-              <th>Stock</th>
-              <th>Actions</th>
+              <th>Image</th><th>Name</th><th>Price</th><th>Category</th><th>Stock</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((product) => (
               <tr key={product.id}>
-                <td>
-                  <img src={product.image} alt={product.name} className="crm-thumb" loading="lazy" />
-                </td>
+                <td><img src={product.image} alt={product.name} className="crm-thumb" loading="lazy" /></td>
                 <td>{product.name}</td>
                 <td>{product.price.toFixed(2)} MDL</td>
                 <td>{categoryNameById.get(product.categoryId) ?? 'No category'}</td>
@@ -135,12 +112,8 @@ export function AdminProductsPage() {
                       })
                       setModalOpen(true)
                     }}
-                  >
-                    ✎
-                  </AdminIconButton>
-                  <AdminIconButton label="Delete product" className="is-danger" onClick={() => removeProduct(product.id)}>
-                    🗑
-                  </AdminIconButton>
+                  >✎</AdminIconButton>
+                  <AdminIconButton label="Delete product" className="is-danger" onClick={() => removeProduct(product.id)}>🗑</AdminIconButton>
                 </td>
               </tr>
             ))}
@@ -152,8 +125,14 @@ export function AdminProductsPage() {
         <form className="crm-form" onSubmit={onSubmit}>
           <label className="field">
             <span>Name</span>
-            <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
+            <input
+              value={form.name}
+              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder="e.g. Margherita"
+              required
+            />
           </label>
+
           <label className="field">
             <span>Price (MDL)</span>
             <input
@@ -165,37 +144,60 @@ export function AdminProductsPage() {
               required
             />
           </label>
-          <label className="field">
+
+          <div className="field">
             <span>Category</span>
-            <select
+            <Select.Root
               value={form.categoryId}
-              onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))}
-              required
+              onValueChange={(val) => setForm((p) => ({ ...p, categoryId: val }))}
             >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              <Select.Trigger className="crm-select-trigger" aria-label="Category">
+                <Select.Value placeholder="Select category" />
+                <Select.Icon asChild>
+                  <ChevronDown size={16} className="crm-select-trigger__icon" />
+                </Select.Icon>
+              </Select.Trigger>
+              <Select.Portal>
+                <Select.Content className="crm-select-content" position="popper" sideOffset={4}>
+                  <Select.Viewport>
+                    {categories.map((cat) => (
+                      <Select.Item key={cat.id} value={cat.id} className="crm-select-item">
+                        <Select.ItemText>{cat.name}</Select.ItemText>
+                        <Select.ItemIndicator>
+                          <Check size={14} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
+          </div>
+
           <label className="field">
             <span>Image URL</span>
-            <input value={form.image} onChange={(e) => setForm((p) => ({ ...p, image: e.target.value }))} />
-          </label>
-          <label className="admin-check">
             <input
-              type="checkbox"
-              checked={form.inStock}
-              onChange={(e) => setForm((p) => ({ ...p, inStock: e.target.checked }))}
+              value={form.image}
+              onChange={(e) => setForm((p) => ({ ...p, image: e.target.value }))}
+              placeholder="https://…"
             />
-            <span>In stock</span>
           </label>
+
+          <div className="crm-switch-row">
+            <label className="crm-switch-label" htmlFor="instock-switch">In stock</label>
+            <Switch.Root
+              id="instock-switch"
+              className="crm-switch"
+              checked={form.inStock}
+              onCheckedChange={(val) => setForm((p) => ({ ...p, inStock: val }))}
+            >
+              <Switch.Thumb className="crm-switch__thumb" />
+            </Switch.Root>
+          </div>
+
           <div className="crm-form__actions">
             <button className="btn btn--primary" type="submit">{editingId ? 'Save' : 'Create'}</button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm}>
-              Cancel
-            </button>
+            <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
           </div>
         </form>
       </AdminModal>

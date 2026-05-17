@@ -1,90 +1,184 @@
 import { useState } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
-import { ChevronLeft, LayoutGrid, Pizza, Settings, Tags, Users, ShieldAlert } from 'lucide-react'
+import {
+  ChevronLeft, ChevronDown,
+  LayoutGrid, Pizza, Users, Settings,
+} from 'lucide-react'
 import { AdminDataProvider } from '../../contexts/AdminDataContext'
 
-function AdminShell() {
-  const [isOpen, setIsOpen] = useState(true)
+type NavChild = { to: string; label: string }
+type NavGroup = {
+  id: string
+  label: string
+  icon: React.ReactNode
+  children: NavChild[]
+}
 
-  const links = [
-    { to: '/admin/users', label: 'Users', Icon: Users },
-    { to: '/admin/categories', label: 'Categories', Icon: Tags },
-    { to: '/admin/products', label: 'Products', Icon: Pizza },
-    { to: '/admin/allergens', label: 'Allergens', Icon: ShieldAlert },
-  ]
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: 'menu',
+    label: 'Menu',
+    icon: <Pizza size={16} strokeWidth={1.75} />,
+    children: [
+      { to: '/admin/categories', label: 'Categories' },
+      { to: '/admin/products',   label: 'Products'   },
+      { to: '/admin/allergens',  label: 'Allergens'  },
+    ],
+  },
+  {
+    id: 'users',
+    label: 'Users',
+    icon: <Users size={16} strokeWidth={1.75} />,
+    children: [
+      { to: '/admin/users',  label: 'User list' },
+      { to: '/admin/roles',  label: 'Roles'     },
+      { to: '/admin/groups', label: 'Groups'    },
+    ],
+  },
+]
+
+function useActiveGroup(groups: NavGroup[], pathname: string): string | null {
+  for (const g of groups) {
+    if (g.children.some((c) => pathname.startsWith(c.to))) return g.id
+  }
+  return null
+}
+
+function AdminShell() {
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const { pathname } = useLocation()
+  const activeGroup = useActiveGroup(NAV_GROUPS, pathname)
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(NAV_GROUPS.map((g) => [g.id, g.id === activeGroup]))
+  )
+
+  function toggleGroup(id: string) {
+    setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
 
   return (
-    <Tooltip.Provider delayDuration={200}>
+    <Tooltip.Provider delayDuration={150}>
       <Collapsible.Root
-        className={`admin-shell${isOpen ? '' : ' is-collapsed'}`}
-        open={isOpen}
-        onOpenChange={setIsOpen}
+        className={`admin-shell${sidebarOpen ? '' : ' is-collapsed'}`}
+        open={sidebarOpen}
+        onOpenChange={setSidebarOpen}
       >
         <aside className="admin-sidebar">
+          {/* ── Panel (brand + hint) ─────────────────── */}
           <div className="admin-sidebar__panel">
             <div className="admin-sidebar__head">
               <div className="admin-sidebar__brand-wrap">
                 <div className="admin-sidebar__logo">
                   <LayoutGrid size={14} />
                 </div>
-                {isOpen && <div className="admin-sidebar__brand">Papa Mia CRM</div>}
+                {sidebarOpen && (
+                  <span className="admin-sidebar__brand">Papa Mia CRM</span>
+                )}
               </div>
               <Collapsible.Trigger asChild>
                 <button
                   type="button"
                   className="admin-sidebar__toggle"
-                  aria-label={isOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                  aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                 >
-                  <ChevronLeft size={16} />
+                  <ChevronLeft size={15} />
                 </button>
               </Collapsible.Trigger>
             </div>
-
-            {isOpen && <p className="admin-sidebar__hint">Restaurant back-office</p>}
+            {sidebarOpen && (
+              <p className="admin-sidebar__hint">Restaurant back-office</p>
+            )}
           </div>
 
-          <div className="admin-sidebar__group">
-            {isOpen && <div className="admin-sidebar__section-title">Core entities</div>}
+          {/* ── Nav ─────────────────────────────────── */}
+          <nav className="admin-sidebar__nav" aria-label="Main navigation">
+            {NAV_GROUPS.map((group) => {
+              const isGroupActive = group.id === activeGroup
+              const isExpanded = openGroups[group.id] ?? false
 
-            <nav className="admin-sidebar__nav">
-              {links.map(({ to, label, Icon }) => (
-                <Tooltip.Root key={to} disableHoverableContent>
-                  <Tooltip.Trigger asChild>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `admin-nav-link admin-nav-link--ghost${isActive ? ' is-active' : ''}`
-                      }
-                    >
-                      <Icon size={16} />
-                      {isOpen && <span>{label}</span>}
-                    </NavLink>
-                  </Tooltip.Trigger>
-                  {!isOpen && (
+              if (!sidebarOpen) {
+                return (
+                  <Tooltip.Root key={group.id} disableHoverableContent>
+                    <Tooltip.Trigger asChild>
+                      <button
+                        type="button"
+                        className={`admin-nav-group__trigger${isGroupActive ? ' is-active' : ''}`}
+                        onClick={() => toggleGroup(group.id)}
+                        aria-label={group.label}
+                      >
+                        <span className="admin-nav-link__icon">{group.icon}</span>
+                      </button>
+                    </Tooltip.Trigger>
                     <Tooltip.Portal>
-                      <Tooltip.Content className="admin-tooltip" side="right" sideOffset={8}>
-                        {label}
+                      <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
+                        {group.label}
                       </Tooltip.Content>
                     </Tooltip.Portal>
-                  )}
-                </Tooltip.Root>
-              ))}
-            </nav>
-          </div>
+                  </Tooltip.Root>
+                )
+              }
 
+              return (
+                <Collapsible.Root
+                  key={group.id}
+                  open={isExpanded}
+                  onOpenChange={() => toggleGroup(group.id)}
+                  className="admin-nav-group"
+                >
+                  <Collapsible.Trigger asChild>
+                    <button
+                      type="button"
+                      className={`admin-nav-group__trigger${isGroupActive ? ' is-active' : ''}`}
+                    >
+                      <span className="admin-nav-link__icon">{group.icon}</span>
+                      <span className="admin-nav-link__label">{group.label}</span>
+                      <ChevronDown
+                        size={14}
+                        className={`admin-nav-group__chevron${isExpanded ? ' is-open' : ''}`}
+                      />
+                    </button>
+                  </Collapsible.Trigger>
+
+                  <Collapsible.Content className="admin-nav-group__content">
+                    <ul className="admin-nav-group__list">
+                      {group.children.map((child) => (
+                        <li key={child.to}>
+                          <NavLink
+                            to={child.to}
+                            className={({ isActive }) =>
+                              `admin-nav-child${isActive ? ' is-active' : ''}`
+                            }
+                          >
+                            <span className="admin-nav-child__dot" />
+                            {child.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </Collapsible.Content>
+                </Collapsible.Root>
+              )
+            })}
+          </nav>
+
+          {/* ── Footer (Settings) ────────────────────── */}
           <div className="admin-sidebar__footer">
             <Tooltip.Root disableHoverableContent>
               <Tooltip.Trigger asChild>
-                <button type="button" className="admin-nav-link admin-nav-link--ghost">
-                  <Settings size={16} />
-                  {isOpen && <span>Settings</span>}
+                <button type="button" className="admin-nav-group__trigger" aria-label="Settings">
+                  <span className="admin-nav-link__icon">
+                    <Settings size={16} strokeWidth={1.75} />
+                  </span>
+                  {sidebarOpen && (
+                    <span className="admin-nav-link__label">Settings</span>
+                  )}
                 </button>
               </Tooltip.Trigger>
-              {!isOpen && (
+              {!sidebarOpen && (
                 <Tooltip.Portal>
-                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={8}>
+                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
                     Settings
                   </Tooltip.Content>
                 </Tooltip.Portal>

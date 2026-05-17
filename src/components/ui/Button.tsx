@@ -10,12 +10,13 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({
   variant = 'primary',
   className = '',
+  type = 'button',
   children,
   ...rest
-}: Props) {
+}: Props & { type?: 'button' | 'submit' | 'reset' }) {
   const cls = ['btn', `btn--${variant}`, className].filter(Boolean).join(' ')
   return (
-    <button type="button" className={cls} {...rest}>
+    <button type={type} className={cls} {...rest}>
       {children}
     </button>
   )
