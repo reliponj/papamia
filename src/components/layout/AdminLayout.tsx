@@ -31,7 +31,10 @@ const NAV_GROUPS: NavGroup[] = [
     id: 'content',
     label: 'Content',
     icon: <Image size={16} strokeWidth={1.75} />,
-    children: [{ to: '/admin/banners', label: 'Banners' }],
+    children: [
+      { to: '/admin/banners', label: 'Banners' },
+      { to: '/admin/articles', label: 'Articles' },
+    ],
   },
   {
     id: 'users',

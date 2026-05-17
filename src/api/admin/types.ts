@@ -29,3 +29,15 @@ export type BannerPayload = {
   link: string
   sort: number
 }
+
+export type ArticleDto = {
+  id: number
+  createdAt: string
+  text: string
+  imageUrl: string
+}
+
+export type ArticlePayload = {
+  text: string
+  imageUrl: string
+}
