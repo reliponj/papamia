@@ -11,15 +11,33 @@ const ORDER: MenuCategory[] = [
   'drinks',
 ]
 
+const ALL_LABEL: Record<string, string> = {
+  ro: 'Toate',
+  ru: 'Все',
+  en: 'All',
+}
+
+export type CategoryFilter = MenuCategory | 'all'
+
 type Props = {
-  active: MenuCategory
-  onChange: (c: MenuCategory) => void
+  active: CategoryFilter
+  onChange: (c: CategoryFilter) => void
 }
 
 export function CategoryTabs({ active, onChange }: Props) {
   const { lang } = useLocale()
   return (
     <div className="category-tabs" role="tablist" aria-label="Menu categories">
+      <button
+        key="all"
+        type="button"
+        role="tab"
+        aria-selected={active === 'all'}
+        className={`category-tabs__btn${active === 'all' ? ' is-active' : ''}`}
+        onClick={() => onChange('all')}
+      >
+        {ALL_LABEL[lang]}
+      </button>
       {ORDER.map((cat) => (
         <button
           key={cat}

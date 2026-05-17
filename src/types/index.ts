@@ -10,6 +10,15 @@ export type MenuCategory =
   | 'dolci'
   | 'drinks'
 
+export type Allergen =
+  | 'gluten'
+  | 'dairy'
+  | 'eggs'
+  | 'fish'
+  | 'nuts'
+  | 'soy'
+  | 'alcohol'
+
 export type MenuProduct = {
   id: string
   category: MenuCategory
@@ -18,9 +27,20 @@ export type MenuProduct = {
   price: number
   image: string
   featured?: boolean
+  allergens?: Allergen[]
 }
 
 export type CartLine = {
   productId: string
   qty: number
+}
+
+export type CustomPizzaLine = {
+  id: string
+  label: string
+  price: number
+  qty: number
+  doughId: string
+  sauceId: string
+  toppingIds: string[]
 }
