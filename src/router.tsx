@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './components/layout/RootLayout'
 import { AdminLayout } from './components/layout/AdminLayout'
+import { RequireAdmin } from './components/admin/RequireAdmin'
 import { HomePage } from './pages/HomePage'
 import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
@@ -43,7 +44,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
     children: [
       { index: true, element: <Navigate to="/admin/users" replace /> },
       { path: 'categories', element: <AdminCategoriesPage /> },

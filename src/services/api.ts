@@ -1,4 +1,11 @@
-const BASE_URL = 'https://dev.api.papamia.reliponj.online'
+const DEFAULT_API_BASE = 'https://dev.api.papamia.reliponj.online'
+
+export function getApiBaseUrl(): string {
+  const raw = import.meta.env.VITE_API_BASE_URL?.trim()
+  return (raw && raw.length > 0 ? raw : DEFAULT_API_BASE).replace(/\/$/, '')
+}
+
+const BASE_URL = getApiBaseUrl()
 
 const ACCESS_TOKEN_KEY = 'papamia-access-token'
 const REFRESH_TOKEN_KEY = 'papamia-refresh-token'

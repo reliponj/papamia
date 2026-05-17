@@ -4,13 +4,13 @@ import {
   deleteAllergen,
   listAllergens,
   updateAllergen,
-  type AdminAllergen,
-} from '../../api/adminAllergens'
+  type AllergenDto,
+} from '../../api/admin/allergen'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
 
 export function AdminAllergensPage() {
-  const [items, setItems] = useState<AdminAllergen[]>([])
+  const [items, setItems] = useState<AllergenDto[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -84,7 +84,7 @@ export function AdminAllergensPage() {
     setModalOpen(true)
   }
 
-  async function onDelete(row: AdminAllergen) {
+  async function onDelete(row: AllergenDto) {
     if (!window.confirm(`Delete allergen “${row.name}”?`)) return
     setError(null)
     try {
