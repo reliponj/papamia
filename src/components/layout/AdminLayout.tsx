@@ -4,7 +4,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import {
   ChevronLeft, ChevronDown,
-  LayoutGrid, Pizza, Users, Settings, Image, Ticket, LayoutDashboard,
+  LayoutGrid, Pizza, Users, Image, Ticket, LayoutDashboard,
 } from 'lucide-react'
 import { getAdminBreadcrumbs, getAdminPageTitle } from '../../pages/admin/adminNavMeta'
 
@@ -85,6 +85,25 @@ function AdminShell() {
     setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }))
   }
 
+  const isDashboardActive = pathname === '/admin' || pathname === '/admin/'
+  const dashboardClassName = `admin-nav-group__trigger${isDashboardActive ? ' is-active' : ''}`
+
+  function renderDashboardLink(collapsed: boolean) {
+    return (
+      <NavLink
+        to="/admin"
+        end
+        className={dashboardClassName}
+        aria-label={collapsed ? 'Dashboard' : undefined}
+      >
+        <span className="admin-nav-link__icon">
+          <LayoutDashboard size={16} strokeWidth={1.75} />
+        </span>
+        {!collapsed && <span className="admin-nav-link__label">Dashboard</span>}
+      </NavLink>
+    )
+  }
+
   return (
     <Tooltip.Provider delayDuration={150}>
       <Collapsible.Root
@@ -100,9 +119,7 @@ function AdminShell() {
                 <div className="admin-sidebar__logo">
                   <LayoutGrid size={14} />
                 </div>
-                {sidebarOpen && (
-                  <span className="admin-sidebar__brand">Papa Mia CRM</span>
-                )}
+                <span className="admin-sidebar__brand">Papa Mia CRM</span>
               </div>
               <Collapsible.Trigger asChild>
                 <button
@@ -114,37 +131,23 @@ function AdminShell() {
                 </button>
               </Collapsible.Trigger>
             </div>
-            {sidebarOpen && (
-              <p className="admin-sidebar__hint">Restaurant back-office</p>
-            )}
+            <p className="admin-sidebar__hint">Restaurant back-office</p>
           </div>
 
           {/* ── Nav ─────────────────────────────────── */}
           <nav className="admin-sidebar__nav" aria-label="Main navigation">
-            <Tooltip.Root disableHoverableContent>
-              <Tooltip.Trigger asChild>
-                <NavLink
-                  to="/admin"
-                  end
-                  className={({ isActive }) =>
-                    `admin-nav-dashboard${isActive ? ' is-active' : ''}`
-                  }
-                  aria-label="Dashboard"
-                >
-                  <span className="admin-nav-link__icon">
-                    <LayoutDashboard size={16} strokeWidth={1.75} />
-                  </span>
-                  {sidebarOpen && <span className="admin-nav-link__label">Dashboard</span>}
-                </NavLink>
-              </Tooltip.Trigger>
-              {!sidebarOpen && (
+            {sidebarOpen ? (
+              renderDashboardLink(false)
+            ) : (
+              <Tooltip.Root disableHoverableContent>
+                <Tooltip.Trigger asChild>{renderDashboardLink(true)}</Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
                     Dashboard
                   </Tooltip.Content>
                 </Tooltip.Portal>
-              )}
-            </Tooltip.Root>
+              </Tooltip.Root>
+            )}
 
             {NAV_GROUPS.map((group) => {
               const isGroupActive = group.id === activeGroup
@@ -215,28 +218,6 @@ function AdminShell() {
             })}
           </nav>
 
-          {/* ── Footer (Settings) ────────────────────── */}
-          <div className="admin-sidebar__footer">
-            <Tooltip.Root disableHoverableContent>
-              <Tooltip.Trigger asChild>
-                <button type="button" className="admin-nav-group__trigger" aria-label="Settings">
-                  <span className="admin-nav-link__icon">
-                    <Settings size={16} strokeWidth={1.75} />
-                  </span>
-                  {sidebarOpen && (
-                    <span className="admin-nav-link__label">Settings</span>
-                  )}
-                </button>
-              </Tooltip.Trigger>
-              {!sidebarOpen && (
-                <Tooltip.Portal>
-                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
-                    Settings
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              )}
-            </Tooltip.Root>
-          </div>
         </aside>
 
         <div className="admin-workspace">
