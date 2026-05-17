@@ -1,22 +1,5 @@
 export type AdminBreadcrumb = { label: string; to?: string }
 
-const ROUTE_LABELS: Record<string, string> = {
-  '/admin': 'Dashboard',
-  '/admin/categories': 'Categories',
-  '/admin/products': 'Products',
-  '/admin/allergens': 'Allergens',
-  '/admin/ingredients': 'Ingredients',
-  '/admin/banners': 'Banners',
-  '/admin/articles': 'Articles',
-  '/admin/locations': 'Locations',
-  '/admin/reviews': 'Reviews',
-  '/admin/orders': 'Orders',
-  '/admin/promocodes': 'Promo codes',
-  '/admin/users': 'User list',
-  '/admin/roles': 'Roles',
-  '/admin/groups': 'Groups',
-}
-
 const GROUP_BY_PREFIX: { prefix: string; label: string }[] = [
   { prefix: '/admin/categories', label: 'Catalog' },
   { prefix: '/admin/products', label: 'Catalog' },
@@ -40,9 +23,10 @@ function groupForPath(pathname: string): string | null {
   return null
 }
 
+/** Navigation trail only — current page title lives in the section header above the table. */
 export function getAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
   if (pathname === '/admin' || pathname === '/admin/') {
-    return [{ label: 'Dashboard' }]
+    return [{ label: 'Admin' }]
   }
 
   const crumbs: AdminBreadcrumb[] = [{ label: 'Dashboard', to: '/admin' }]
@@ -50,24 +34,9 @@ export function getAdminBreadcrumbs(pathname: string): AdminBreadcrumb[] {
   if (group) crumbs.push({ label: group })
 
   if (pathname.startsWith('/admin/orders/')) {
-    const tail = pathname.slice('/admin/orders/'.length)
     crumbs.push({ label: 'Orders', to: '/admin/orders' })
-    if (tail === 'new') {
-      crumbs.push({ label: 'New order' })
-    } else {
-      crumbs.push({ label: `#${tail}` })
-    }
     return crumbs
   }
 
-  const label = ROUTE_LABELS[pathname]
-  if (label) crumbs.push({ label })
-  else crumbs.push({ label: pathname.replace('/admin/', '') })
-
   return crumbs
-}
-
-export function getAdminPageTitle(pathname: string): string {
-  const crumbs = getAdminBreadcrumbs(pathname)
-  return crumbs[crumbs.length - 1]?.label ?? 'Admin'
 }

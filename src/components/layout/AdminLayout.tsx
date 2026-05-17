@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronDown,
   LayoutGrid, Pizza, Users, Image, Ticket, LayoutDashboard,
 } from 'lucide-react'
-import { getAdminBreadcrumbs, getAdminPageTitle } from '../../pages/admin/adminNavMeta'
+import { getAdminBreadcrumbs } from '../../pages/admin/adminNavMeta'
 
 type NavChild = { to: string; label: string }
 type NavGroup = {
@@ -75,8 +75,6 @@ function AdminShell() {
   const { pathname } = useLocation()
   const activeGroup = useActiveGroup(NAV_GROUPS, pathname)
   const breadcrumbs = getAdminBreadcrumbs(pathname)
-  const pageTitle = getAdminPageTitle(pathname)
-  const isDashboard = pathname === '/admin' || pathname === '/admin/'
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(NAV_GROUPS.map((g) => [g.id, g.id === activeGroup]))
   )
@@ -237,12 +235,6 @@ function AdminShell() {
                 )
               })}
             </nav>
-            <h1>{pageTitle}</h1>
-            <p>
-              {isDashboard
-                ? 'Overview and shortcuts for the back-office.'
-                : 'Manage core entities and relationships.'}
-            </p>
           </header>
           <main className="admin-content">
             <div className="admin-content__surface">

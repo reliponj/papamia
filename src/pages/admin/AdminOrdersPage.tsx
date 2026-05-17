@@ -60,7 +60,6 @@ export function AdminOrdersPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Orders"
-        description="View and manage customer orders."
         searchPlaceholder="Search by name, phone, or email"
         query={crud.query}
         onQueryChange={crud.setQuery}

@@ -6,6 +6,7 @@ import { listReviews } from '../../api/admin/review'
 import { ORDER_STATUS_LABELS } from '../../api/admin/types'
 import { AdminApiError } from '../../api/admin/http'
 import { AdminAlert } from './_shared/AdminAlert'
+import { AdminPageHeader } from './_shared/AdminPageHeader'
 
 type DashboardStats = {
   ordersToday: number
@@ -113,11 +114,7 @@ export function AdminDashboardPage() {
 
   return (
     <section className="crm-section admin-dashboard">
-      <header className="admin-dashboard__intro">
-        <h2>Dashboard</h2>
-        <p>Overview of today&apos;s activity and quick links to common tasks.</p>
-      </header>
-
+      <AdminPageHeader title="Dashboard" />
       {error && <AdminAlert message={error} />}
 
       <div className="admin-dashboard__tiles" aria-busy={loading}>

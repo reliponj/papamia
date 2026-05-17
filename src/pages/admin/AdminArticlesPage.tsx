@@ -90,7 +90,6 @@ export function AdminArticlesPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Articles"
-        description="Blog posts shown on the storefront."
         searchPlaceholder="Search articles"
         query={crud.query}
         onQueryChange={crud.setQuery}

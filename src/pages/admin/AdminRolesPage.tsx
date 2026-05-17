@@ -134,7 +134,6 @@ export function AdminRolesPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Roles"
-        description="Permission roles assigned to users."
         searchPlaceholder="Search roles"
         query={crud.query}
         onQueryChange={crud.setQuery}

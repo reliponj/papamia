@@ -128,7 +128,6 @@ export function AdminGroupsPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Permission groups"
-        description="Group permissions for role assignment."
         searchPlaceholder="Search groups"
         query={crud.query}
         onQueryChange={crud.setQuery}

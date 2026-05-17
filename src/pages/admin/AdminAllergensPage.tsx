@@ -76,7 +76,6 @@ export function AdminAllergensPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Allergens"
-        description="Maintain allergen labels used on the menu."
         searchPlaceholder="Search allergens"
         query={crud.query}
         onQueryChange={crud.setQuery}

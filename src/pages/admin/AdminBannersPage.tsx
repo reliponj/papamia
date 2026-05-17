@@ -81,7 +81,6 @@ export function AdminBannersPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Banners"
-        description="Homepage carousel slides (image, link, sort order)."
         searchPlaceholder="Search banners"
         query={crud.query}
         onQueryChange={crud.setQuery}

@@ -85,7 +85,6 @@ export function AdminIngridientsPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Ingredients"
-        description="Pizza builder: dough, sauce, extras."
         searchPlaceholder="Search ingredients"
         query={crud.query}
         onQueryChange={crud.setQuery}

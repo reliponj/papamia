@@ -133,7 +133,6 @@ export function AdminPromocodesPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Promo codes"
-        description="Discount codes for checkout."
         searchPlaceholder="Search by code"
         query={crud.query}
         onQueryChange={crud.setQuery}

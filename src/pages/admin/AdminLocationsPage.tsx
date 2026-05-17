@@ -116,7 +116,6 @@ export function AdminLocationsPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Locations"
-        description="Restaurant branches for contacts and maps."
         searchPlaceholder="Search locations"
         query={crud.query}
         onQueryChange={crud.setQuery}

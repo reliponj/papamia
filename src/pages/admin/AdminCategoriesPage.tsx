@@ -110,7 +110,6 @@ export function AdminCategoriesPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Categories"
-        description="Organize products by menu groups."
         searchPlaceholder="Search categories"
         query={crud.query}
         onQueryChange={crud.setQuery}

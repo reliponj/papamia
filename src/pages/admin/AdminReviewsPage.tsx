@@ -116,7 +116,6 @@ export function AdminReviewsPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Reviews"
-        description="Moderate customer reviews from the public site."
         searchPlaceholder="Search by author or text"
         query={crud.query}
         onQueryChange={crud.setQuery}

@@ -198,7 +198,6 @@ export function AdminProductsPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Products"
-        description="Menu items. Prices in MDL (stored in minor units on API)."
         searchPlaceholder="Search products"
         query={crud.query}
         onQueryChange={crud.setQuery}

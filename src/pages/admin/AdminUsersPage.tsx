@@ -156,7 +156,6 @@ export function AdminUsersPage() {
     <section className="crm-section">
       <AdminPageHeader
         title="Users"
-        description="Staff and customer accounts (API)."
         searchPlaceholder="Search users"
         query={crud.query}
         onQueryChange={crud.setQuery}
