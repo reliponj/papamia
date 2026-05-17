@@ -26,6 +26,9 @@ import { AdminArticlesPage } from './pages/admin/AdminArticlesPage'
 import { AdminLocationsPage } from './pages/admin/AdminLocationsPage'
 import { AdminPromocodesPage } from './pages/admin/AdminPromocodesPage'
 import { AdminIngridientsPage } from './pages/admin/AdminIngridientsPage'
+import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
+import { AdminOrdersPage } from './pages/admin/AdminOrdersPage'
+import { AdminOrderDetailPage } from './pages/admin/AdminOrderDetailPage'
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +70,10 @@ export const router = createBrowserRouter([
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'roles', element: <AdminRolesPage /> },
       { path: 'groups', element: <AdminGroupsPage /> },
+      { path: 'reviews', element: <AdminReviewsPage /> },
+      { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'orders/new', element: <AdminOrderDetailPage /> },
+      { path: 'orders/:id', element: <AdminOrderDetailPage /> },
     ],
   },
 ])

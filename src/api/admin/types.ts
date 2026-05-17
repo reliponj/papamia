@@ -202,3 +202,77 @@ export type ProductCreatePayload = {
 export type ProductUpdatePayload = ProductCreatePayload & {
   isActive: boolean
 }
+
+export type ReviewDto = {
+  id: number
+  userId: number | null
+  authorName: string
+  rating: number
+  text: string
+  createdAt: string
+  isHidden: boolean
+}
+
+export type ReviewUpdatePayload = {
+  authorName: string
+  rating: number
+  text: string
+  isHidden: boolean
+}
+
+export type OrderStatus = 0 | 1 | 2 | 3
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  0: 'New',
+  1: 'Processing',
+  2: 'Done',
+  3: 'Cancelled',
+}
+
+export type OrderLineItem = {
+  productId: number
+  quantity: number
+}
+
+export type OrderCustomPizzaItem = {
+  customPizzaId: number
+  quantity: number
+}
+
+export type OrderDto = {
+  id: number
+  userId: number | null
+  promocodeId: number | null
+  firstName: string
+  lastName: string
+  phone: string
+  email: string
+  district: string
+  address: string
+  note: string | null
+  paymentKind: number
+  cardProvider: number | null
+  createdAt: string
+  status: OrderStatus
+  items: OrderLineItem[]
+  customPizzaItems: OrderCustomPizzaItem[]
+}
+
+export type OrderCreatePayload = {
+  firstName: string
+  lastName: string
+  phone: string
+  email: string
+  district: string
+  address: string
+  note: string | null
+  promocodeId: number | null
+  paymentKind: number
+  cardProvider: number | null
+  items: OrderLineItem[]
+  customPizzaItems: OrderCustomPizzaItem[]
+}
+
+export type OrderUpdatePayload = OrderCreatePayload & {
+  status: OrderStatus
+}

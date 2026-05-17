@@ -35,13 +35,17 @@ const NAV_GROUPS: NavGroup[] = [
       { to: '/admin/banners', label: 'Banners' },
       { to: '/admin/articles', label: 'Articles' },
       { to: '/admin/locations', label: 'Locations' },
+      { to: '/admin/reviews', label: 'Reviews' },
     ],
   },
   {
     id: 'sales',
     label: 'Sales',
     icon: <Ticket size={16} strokeWidth={1.75} />,
-    children: [{ to: '/admin/promocodes', label: 'Promo codes' }],
+    children: [
+      { to: '/admin/orders', label: 'Orders' },
+      { to: '/admin/promocodes', label: 'Promo codes' },
+    ],
   },
   {
     id: 'users',

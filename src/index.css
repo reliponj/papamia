@@ -2265,6 +2265,94 @@ textarea {
   padding-top: 0.25rem;
 }
 
+.crm-form--wide {
+  max-width: 52rem;
+}
+
+.crm-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.crm-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.crm-detail-header h2 {
+  margin: 0.35rem 0 0;
+  font-size: 1.35rem;
+}
+
+.crm-back-link {
+  font-size: 0.9rem;
+  color: rgba(212, 184, 114, 0.85);
+  text-decoration: none;
+}
+
+.crm-back-link:hover {
+  text-decoration: underline;
+}
+
+.crm-fieldset {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 0;
+}
+
+.crm-fieldset legend {
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(244, 241, 234, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.crm-line-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.crm-line-hint {
+  font-size: 0.85rem;
+  color: rgba(244, 241, 234, 0.45);
+}
+
+.crm-table-link {
+  font-size: 0.88rem;
+  color: rgba(212, 184, 114, 0.9);
+  text-decoration: none;
+}
+
+.crm-table-link:hover {
+  text-decoration: underline;
+}
+
+.admin-field-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: rgba(244, 241, 234, 0.65);
+}
+
+.admin-field-inline select {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  padding: 0.35rem 0.5rem;
+}
+
 /* ── field ────────────────────────────────────── */
 .field {
   display: flex;
