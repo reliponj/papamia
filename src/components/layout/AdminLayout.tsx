@@ -4,7 +4,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import {
   ChevronLeft, ChevronDown,
-  LayoutGrid, Pizza, Users, Settings,
+  LayoutGrid, Pizza, Users, Settings, Image,
 } from 'lucide-react'
 import { AdminDataProvider } from '../../contexts/AdminDataContext'
 
@@ -26,6 +26,12 @@ const NAV_GROUPS: NavGroup[] = [
       { to: '/admin/products',   label: 'Products'   },
       { to: '/admin/allergens',  label: 'Allergens'  },
     ],
+  },
+  {
+    id: 'content',
+    label: 'Content',
+    icon: <Image size={16} strokeWidth={1.75} />,
+    children: [{ to: '/admin/banners', label: 'Banners' }],
   },
   {
     id: 'users',

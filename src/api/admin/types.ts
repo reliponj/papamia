@@ -16,3 +16,16 @@ export type AllergenDto = {
 export type AllergenPayload = {
   name: string
 }
+
+export type BannerDto = {
+  id: number
+  imageUrl: string
+  link: string
+  sort: number
+}
+
+export type BannerPayload = {
+  imageUrl: string
+  link: string
+  sort: number
+}
