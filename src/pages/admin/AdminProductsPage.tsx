@@ -3,6 +3,7 @@ import * as Select from '@radix-ui/react-select'
 import * as Switch from '@radix-ui/react-switch'
 import { ChevronDown, Check } from 'lucide-react'
 import { listCategories, type CategoryDto } from '../../api/admin/category'
+import { listAllergens, type AllergenDto } from '../../api/admin/allergen'
 import {
   createProduct,
   deleteProduct,
@@ -20,6 +21,14 @@ import { AdminAlert } from './_shared/AdminAlert'
 import { FormField } from './_shared/FormField'
 import { AdminConfirmModal } from './_shared/AdminConfirmModal'
 import { useCrudResource } from './_shared/useCrudResource'
+import {
+  AllergenPillPicker,
+  parseProductAllergens,
+  serializeProductAllergens,
+} from './_shared/AllergenPillPicker'
+
+const WEIGHT_TYPES = ['g', 'ml'] as const
+type WeightType = (typeof WEIGHT_TYPES)[number]
 
 type FormState = {
   name: string
@@ -27,8 +36,8 @@ type FormState = {
   priceMdl: string
   imageUrl: string
   weight: number
-  weightType: string
-  allergens: string
+  weightType: WeightType
+  selectedAllergens: string[]
   categoryId: string
   isActive: boolean
 }
@@ -40,7 +49,7 @@ const emptyForm = (categoryId: string): FormState => ({
   imageUrl: '',
   weight: 500,
   weightType: 'g',
-  allergens: '',
+  selectedAllergens: [],
   categoryId,
   isActive: true,
 })
@@ -57,15 +66,16 @@ function toPayload(form: FormState): ProductCreatePayload | null {
     price: majorToMinor(priceMajor),
     imageUrl: form.imageUrl.trim(),
     weight: Number(form.weight),
-    weightType: form.weightType.trim() || 'g',
-    allergens: form.allergens.trim(),
+    weightType: form.weightType,
+    allergens: serializeProductAllergens(form.selectedAllergens),
     categoryId,
   }
 }
 
 export function AdminProductsPage() {
   const [categories, setCategories] = useState<CategoryDto[]>([])
-  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [allergens, setAllergens] = useState<AllergenDto[]>([])
+  const [catalogLoading, setCatalogLoading] = useState(true)
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const categoryFilterRef = useRef<number | undefined>(undefined)
 
@@ -92,19 +102,23 @@ export function AdminProductsPage() {
 
   useEffect(() => {
     let cancelled = false
-    setCategoriesLoading(true)
-    listCategories()
-      .then((list) => {
-        if (!cancelled) {
-          list.sort((a, b) => a.sort - b.sort)
-          setCategories(list)
-        }
+    setCatalogLoading(true)
+    Promise.all([listCategories(), listAllergens()])
+      .then(([categoryList, allergenList]) => {
+        if (cancelled) return
+        categoryList.sort((a, b) => a.sort - b.sort)
+        allergenList.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+        setCategories(categoryList)
+        setAllergens(allergenList)
       })
       .catch(() => {
-        if (!cancelled) setCategories([])
+        if (!cancelled) {
+          setCategories([])
+          setAllergens([])
+        }
       })
       .finally(() => {
-        if (!cancelled) setCategoriesLoading(false)
+        if (!cancelled) setCatalogLoading(false)
       })
     return () => {
       cancelled = true
@@ -138,14 +152,15 @@ export function AdminProductsPage() {
 
   function openEdit(row: ProductListDto) {
     setEditingId(row.id)
+    const weightType: WeightType = row.weightType === 'ml' ? 'ml' : 'g'
     setForm({
       name: row.name,
       description: row.description,
       priceMdl: minorToMajor(row.price).toFixed(2),
       imageUrl: row.imageUrl,
       weight: row.weight,
-      weightType: row.weightType,
-      allergens: row.allergens,
+      weightType,
+      selectedAllergens: parseProductAllergens(row.allergens, allergens),
       categoryId: String(row.categoryId),
       isActive: row.isActive,
     })
@@ -203,7 +218,7 @@ export function AdminProductsPage() {
         onQueryChange={crud.setQuery}
         onAdd={openCreate}
         onRefresh={() => void crud.reload()}
-        loading={crud.loading || categoriesLoading}
+        loading={crud.loading || catalogLoading}
         extra={
           <Select.Root value={categoryFilter} onValueChange={setCategoryFilter}>
             <Select.Trigger className="crm-select-trigger crm-select-trigger--compact" aria-label="Filter by category">
@@ -347,25 +362,36 @@ export function AdminProductsPage() {
             />
           </FormField>
           <FormField label="Weight">
-            <input
-              type="number"
-              min={0}
-              value={form.weight}
-              onChange={(e) => setForm((p) => ({ ...p, weight: Number(e.target.value) }))}
-            />
-          </FormField>
-          <FormField label="Weight type">
-            <input
-              value={form.weightType}
-              onChange={(e) => setForm((p) => ({ ...p, weightType: e.target.value }))}
-              placeholder="g"
-            />
+            <div className="crm-inline-fields">
+              <input
+                type="number"
+                min={0}
+                value={form.weight}
+                onChange={(e) => setForm((p) => ({ ...p, weight: Number(e.target.value) }))}
+              />
+              <select
+                value={form.weightType}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    weightType: e.target.value === 'ml' ? 'ml' : 'g',
+                  }))
+                }
+                aria-label="Weight unit"
+              >
+                {WEIGHT_TYPES.map((unit) => (
+                  <option key={unit} value={unit}>
+                    {unit}
+                  </option>
+                ))}
+              </select>
+            </div>
           </FormField>
           <FormField label="Allergens">
-            <input
-              value={form.allergens}
-              onChange={(e) => setForm((p) => ({ ...p, allergens: e.target.value }))}
-              placeholder="comma-separated or free text"
+            <AllergenPillPicker
+              allergens={allergens}
+              selected={form.selectedAllergens}
+              onChange={(selectedAllergens) => setForm((p) => ({ ...p, selectedAllergens }))}
             />
           </FormField>
           <div className="crm-switch-row">
