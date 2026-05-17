@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './components/layout/RootLayout'
 import { AdminLayout } from './components/layout/AdminLayout'
 import { RequireAdmin } from './components/admin/RequireAdmin'
+import { RequireAuth } from './components/auth/RequireAuth'
 import { HomePage } from './pages/HomePage'
 import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
@@ -42,10 +43,17 @@ export const router = createBrowserRouter([
       { path: 'about', element: <AboutPage /> },
       { path: 'contacts', element: <ContactsPage /> },
       { path: 'blog', element: <BlogPage /> },
-      { path: 'blog/:slug', element: <BlogPostPage /> },
+      { path: 'blog/:id', element: <BlogPostPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
-      { path: 'account', element: <AccountPage /> },
+      {
+        path: 'account',
+        element: (
+          <RequireAuth>
+            <AccountPage />
+          </RequireAuth>
+        ),
+      },
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'reviews', element: <ReviewsPage /> },

@@ -1,23 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { formatPriceMdl } from '../api/money'
+import { listMyOrders } from '../api/public/order'
+import type { Order, OrderStatus } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
-import { useFavoriteIds, useFavoritesApi } from '../contexts/FavoritesContext'
-import { MENU_PRODUCTS } from '../data/menu'
+import { useFavoriteProducts, useFavoritesApi } from '../contexts/FavoritesContext'
 import { Button } from '../components/ui/Button'
 import { PasswordInput } from '../components/ui/PasswordInput'
 import { useCartActions } from '../contexts/CartContext'
-import { useAuthState } from '../contexts/AuthContext'
-import { apiChangePassword } from '../services/api'
+import { useAuthState, useAuthApi } from '../contexts/AuthContext'
+import { apiChangePassword, apiUpdateMe } from '../services/api'
+import type { UiKey } from '../data/translations'
 
 type Tab = 'profile' | 'favorites' | 'orders' | 'security'
 
-const MOCK_ORDERS = [
-  { id: '#1042', date: '2024-12-15', total: 385, status: 'delivered' as const, items: 4 },
-  { id: '#1031', date: '2024-11-28', total: 220, status: 'delivered' as const, items: 2 },
-  { id: '#1028', date: '2024-11-10', total: 510, status: 'delivered' as const, items: 5 },
-]
+const ORDER_STATUS_KEYS: Record<OrderStatus, UiKey> = {
+  0: 'order.status.new',
+  1: 'order.status.process',
+  2: 'order.status.done',
+  3: 'order.status.cancel',
+}
+
+function orderItemCount(order: Order): number {
+  const productQty = order.items.reduce((s, i) => s + i.quantity, 0)
+  const pizzaQty = order.customPizzaItems.reduce((s, i) => s + i.quantity, 0)
+  return productQty + pizzaQty
+}
 
 export function AccountPage() {
-  const { t, lang } = useLocale()
+  const { t } = useLocale()
   const [tab, setTab] = useState<Tab>('profile')
 
   return (
@@ -32,14 +42,14 @@ export function AccountPage() {
             className={`account-tabs__btn${tab === id ? ' is-active' : ''}`}
             onClick={() => setTab(id)}
           >
-            {t(`account.tab.${id}` as Parameters<typeof t>[0])}
+            {t(`account.tab.${id}` as UiKey)}
           </button>
         ))}
       </div>
 
       <div className="account-content">
         {tab === 'profile' && <ProfileTab />}
-        {tab === 'favorites' && <FavoritesTab lang={lang} />}
+        {tab === 'favorites' && <FavoritesTab />}
         {tab === 'orders' && <OrdersTab />}
         {tab === 'security' && <SecurityTab />}
       </div>
@@ -50,12 +60,34 @@ export function AccountPage() {
 function ProfileTab() {
   const { t } = useLocale()
   const { user, isLoading } = useAuthState()
+  const { refetchUser } = useAuthApi()
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  function handleSubmit(e: React.SyntheticEvent) {
+  useEffect(() => {
+    if (user) {
+      setUsername(user.username ?? '')
+      setEmail(user.email ?? '')
+    }
+  }, [user])
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
+    setError('')
+    setLoading(true)
+    try {
+      await apiUpdateMe({ username, email })
+      await refetchUser()
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (isLoading) {
@@ -63,15 +95,16 @@ function ProfileTab() {
   }
 
   return (
-    <form className="profile-form" onSubmit={handleSubmit}>
+    <form className="profile-form" onSubmit={(e) => void handleSubmit(e)}>
       <div className="profile-form__section">
         <label className="auth-form__label">
           {t('auth.username')}
           <input
             className="auth-form__input"
             type="text"
-            value={user?.username ?? ''}
-            readOnly
+            required
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
         </label>
         <label className="auth-form__label">
@@ -79,14 +112,16 @@ function ProfileTab() {
           <input
             className="auth-form__input"
             type="email"
-            value={user?.email ?? ''}
-            readOnly
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
         </label>
+        {error && <p className="profile-form__error">{error}</p>}
       </div>
 
-      <Button type="submit" variant="primary" className="profile-form__submit">
-        {saved ? t('account.profile.saved') : t('account.profile.save')}
+      <Button type="submit" variant="primary" className="profile-form__submit" disabled={loading}>
+        {saved ? t('account.profile.saved') : loading ? '...' : t('account.profile.save')}
       </Button>
     </form>
   )
@@ -101,7 +136,7 @@ function SecurityTab() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit(e: React.SyntheticEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (newPw !== confirmPw) {
       setError(t('account.security.mismatch'))
@@ -124,13 +159,16 @@ function SecurityTab() {
   }
 
   return (
-    <form className="profile-form" onSubmit={handleSubmit}>
+    <form className="profile-form" onSubmit={(e) => void handleSubmit(e)}>
       <div className="profile-form__section">
         <label className="auth-form__label">
           {t('account.security.currentPassword')}
           <PasswordInput
             value={currentPw}
-            onChange={(v) => { setCurrentPw(v); setError('') }}
+            onChange={(v) => {
+              setCurrentPw(v)
+              setError('')
+            }}
             autoComplete="current-password"
             required
           />
@@ -139,7 +177,10 @@ function SecurityTab() {
           {t('account.security.newPassword')}
           <PasswordInput
             value={newPw}
-            onChange={(v) => { setNewPw(v); setError('') }}
+            onChange={(v) => {
+              setNewPw(v)
+              setError('')
+            }}
             autoComplete="new-password"
             required
           />
@@ -148,7 +189,10 @@ function SecurityTab() {
           {t('account.security.confirmPassword')}
           <PasswordInput
             value={confirmPw}
-            onChange={(v) => { setConfirmPw(v); setError('') }}
+            onChange={(v) => {
+              setConfirmPw(v)
+              setError('')
+            }}
             autoComplete="new-password"
             required
           />
@@ -163,40 +207,30 @@ function SecurityTab() {
   )
 }
 
-function FavoritesTab({ lang }: { lang: string }) {
+function FavoritesTab() {
   const { t } = useLocale()
-  const favoriteIds = useFavoriteIds()
+  const favorites = useFavoriteProducts()
   const { toggle } = useFavoritesApi()
   const { add, openDrawer } = useCartActions()
 
-  const favoriteProducts = MENU_PRODUCTS.filter((p) => favoriteIds.has(p.id))
-
-  if (favoriteProducts.length === 0) {
+  if (favorites.length === 0) {
     return <p className="account-empty">{t('favorites.empty')}</p>
   }
 
   return (
     <ul className="favorites-grid">
-      {favoriteProducts.map((product) => (
-        <li key={product.id} className="favorites-card">
-          <img
-            src={product.image}
-            alt={product.name[lang as keyof typeof product.name]}
-            className="favorites-card__img"
-          />
+      {favorites.map(({ productId, snapshot }) => (
+        <li key={productId} className="favorites-card">
+          <img src={snapshot.imageUrl} alt={snapshot.name} className="favorites-card__img" />
           <div className="favorites-card__body">
-            <p className="favorites-card__name">
-              {product.name[lang as keyof typeof product.name]}
-            </p>
-            <p className="favorites-card__price">
-              {product.price} {t('menu.currency')}
-            </p>
+            <p className="favorites-card__name">{snapshot.name}</p>
+            <p className="favorites-card__price">{formatPriceMdl(snapshot.price)}</p>
           </div>
           <div className="favorites-card__actions">
             <Button
               variant="primary"
               onClick={() => {
-                add(product.id)
+                add(productId, snapshot)
                 openDrawer()
               }}
             >
@@ -205,7 +239,7 @@ function FavoritesTab({ lang }: { lang: string }) {
             <button
               type="button"
               className="favorites-card__remove"
-              onClick={() => toggle(product.id)}
+              onClick={() => toggle(productId, snapshot)}
               title={t('cart.remove')}
             >
               ♥
@@ -218,35 +252,58 @@ function FavoritesTab({ lang }: { lang: string }) {
 }
 
 function OrdersTab() {
-  const { t } = useLocale()
+  const { t, lang } = useLocale()
+  const [orders, setOrders] = useState<Order[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  if (MOCK_ORDERS.length === 0) {
-    return <p className="account-empty">{t('account.orders.empty')}</p>
-  }
+  useEffect(() => {
+    let cancelled = false
+    listMyOrders()
+      .then((items) => {
+        if (!cancelled) setOrders(items)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load orders')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  if (loading) return <p className="account-empty">...</p>
+  if (error) return <p className="account-empty">{error}</p>
+  if (orders.length === 0) return <p className="account-empty">{t('account.orders.empty')}</p>
 
   return (
     <ul className="orders-list">
-      {MOCK_ORDERS.map((order) => (
-        <li key={order.id} className="order-card">
-          <div className="order-card__row">
-            <span className="order-card__id">
-              {t('account.orders.order')} {order.id}
-            </span>
-            <span className={`order-card__status order-card__status--${order.status}`}>
-              {t(`account.orders.status.${order.status}` as Parameters<typeof t>[0])}
-            </span>
-          </div>
-          <div className="order-card__meta">
-            <span className="order-card__date">{order.date}</span>
-            <span className="order-card__items">
-              {order.items} {t('account.orders.items')}
-            </span>
-            <span className="order-card__total">
-              {order.total} {t('menu.currency')}
-            </span>
-          </div>
-        </li>
-      ))}
+      {orders.map((order) => {
+        const count = orderItemCount(order)
+        const date = new Date(order.createdAt).toLocaleDateString(
+          lang === 'ro' ? 'ro-RO' : lang === 'ru' ? 'ru-RU' : 'en-GB',
+        )
+        return (
+          <li key={order.id} className="order-card">
+            <div className="order-card__row">
+              <span className="order-card__id">
+                {t('account.orders.order')} #{order.id}
+              </span>
+              <span className={`order-card__status order-card__status--${order.status}`}>
+                {t(ORDER_STATUS_KEYS[order.status])}
+              </span>
+            </div>
+            <div className="order-card__meta">
+              <span className="order-card__date">{date}</span>
+              <span className="order-card__items">
+                {count} {t('account.orders.items')}
+              </span>
+            </div>
+          </li>
+        )
+      })}
     </ul>
   )
 }

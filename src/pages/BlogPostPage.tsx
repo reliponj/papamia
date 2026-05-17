@@ -1,5 +1,7 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getPostBySlug } from '../data/blog'
+import { getArticle } from '../api/public/article'
+import type { Article } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
 import type { Lang } from '../types'
 
@@ -11,42 +13,79 @@ function formatDate(iso: string, lang: Lang) {
 }
 
 export function BlogPostPage() {
-  const { slug } = useParams<{ slug: string }>()
+  const { id: idParam } = useParams<{ id: string }>()
   const { t, lang } = useLocale()
-  const post = slug ? getPostBySlug(slug) : undefined
+  const [post, setPost] = useState<Article | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
-  if (!post) {
+  useEffect(() => {
+    const id = Number(idParam)
+    if (!Number.isFinite(id)) {
+      setNotFound(true)
+      setLoading(false)
+      return
+    }
+    let cancelled = false
+    getArticle(id)
+      .then((article) => {
+        if (!cancelled) setPost(article)
+      })
+      .catch(() => {
+        if (!cancelled) setNotFound(true)
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [idParam])
+
+  if (loading) {
     return (
       <div className="blog-post section">
-        <p className="blog-post__not-found">{t('blog.notFound')}</p>
-        <Link to="/blog" className="blog-post__back">{t('blog.back')}</Link>
+        <p>...</p>
       </div>
     )
   }
 
-  const paragraphs = post.body[lang as Lang].split('\n\n').filter(Boolean)
+  if (notFound || !post) {
+    return (
+      <div className="blog-post section">
+        <p className="blog-post__not-found">{t('blog.notFound')}</p>
+        <Link to="/blog" className="blog-post__back">
+          {t('blog.back')}
+        </Link>
+      </div>
+    )
+  }
+
+  const paragraphs = post.text.split('\n').filter((line) => line.trim() !== '')
 
   return (
     <article className="blog-post section">
       <div className="blog-post__hero">
-        <img src={post.image} alt={post.title[lang as Lang]} className="blog-post__hero-img" />
+        <img src={post.imageUrl} alt="" className="blog-post__hero-img" />
         <div className="blog-post__hero-overlay" />
         <div className="blog-post__hero-content">
-          <time className="blog-post__date" dateTime={post.date}>
-            {formatDate(post.date, lang as Lang)}
+          <time className="blog-post__date" dateTime={post.createdAt}>
+            {formatDate(post.createdAt, lang)}
           </time>
-          <h1 className="blog-post__title">{post.title[lang as Lang]}</h1>
         </div>
       </div>
 
       <div className="blog-post__body">
-        <p className="blog-post__lead">{post.excerpt[lang as Lang]}</p>
         {paragraphs.map((para, i) => (
-          <p key={i} className="blog-post__para">{para}</p>
+          <p key={i} className="blog-post__para">
+            {para}
+          </p>
         ))}
       </div>
 
-      <Link to="/blog" className="blog-post__back">{t('blog.back')}</Link>
+      <Link to="/blog" className="blog-post__back">
+        {t('blog.back')}
+      </Link>
     </article>
   )
 }
