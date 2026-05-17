@@ -93,3 +93,50 @@ export type IngridientPayload = {
   name: string
   type: IngridientType
 }
+
+export type CategoryDto = {
+  id: number
+  name: string
+  icon: string
+  description: string
+  sort: number
+}
+
+export type CategoryPayload = {
+  name: string
+  icon: string
+  description: string
+  sort: number
+}
+
+export type ProductListDto = {
+  id: number
+  name: string
+  description: string
+  price: number
+  imageUrl: string
+  weight: number
+  weightType: string
+  allergens: string
+  isActive: boolean
+  categoryId: number
+}
+
+export type ProductDto = ProductListDto & {
+  category?: CategoryDto
+}
+
+export type ProductCreatePayload = {
+  name: string
+  description: string
+  price: number
+  imageUrl: string
+  weight: number
+  weightType: string
+  allergens: string
+  categoryId: number
+}
+
+export type ProductUpdatePayload = ProductCreatePayload & {
+  isActive: boolean
+}

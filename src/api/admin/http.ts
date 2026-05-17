@@ -55,8 +55,17 @@ export async function adminRequest<T>(
   method: HttpMethod,
   path: string,
   body?: unknown,
+  query?: Record<string, string | number | undefined>,
 ): Promise<T> {
-  const normalized = path.startsWith('/') ? path : `/${path}`
+  let normalized = path.startsWith('/') ? path : `/${path}`
+  if (query) {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) params.set(key, String(value))
+    }
+    const qs = params.toString()
+    if (qs) normalized += `?${qs}`
+  }
   const res = await apiFetch(normalized, {
     method,
     body: body !== undefined ? JSON.stringify(body) : undefined,
