@@ -41,3 +41,55 @@ export type ArticlePayload = {
   text: string
   imageUrl: string
 }
+
+export type LocationDto = {
+  id: number
+  name: string
+  address: string
+  phoneNumber: string
+  worktime: string
+  latitude: number
+  longitude: number
+  imageUrl: string
+}
+
+export type LocationPayload = {
+  name: string
+  address: string
+  phoneNumber: string
+  worktime: string
+  latitude: number
+  longitude: number
+  imageUrl: string
+}
+
+export type PromocodeDto = {
+  id: number
+  code: string
+  percent: number
+  expiryDate: string
+  isActive: boolean
+}
+
+export type PromocodeCreatePayload = {
+  code: string
+  percent: number
+  expiryDate: string
+}
+
+export type PromocodeUpdatePayload = PromocodeCreatePayload & {
+  isActive: boolean
+}
+
+export type IngridientType = 0 | 1 | 2
+
+export type IngridientDto = {
+  id: number
+  name: string
+  type: IngridientType
+}
+
+export type IngridientPayload = {
+  name: string
+  type: IngridientType
+}
