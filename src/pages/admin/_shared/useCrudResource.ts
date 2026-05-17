@@ -75,6 +75,10 @@ export function useCrudResource<T>(config: CrudResourceConfig<T>) {
     }
   }, [])
 
+  const replaceItems = useCallback((next: T[]) => {
+    setItems(next)
+  }, [])
+
   return {
     items,
     filteredItems,
@@ -87,6 +91,7 @@ export function useCrudResource<T>(config: CrudResourceConfig<T>) {
     reload,
     upsertItem,
     removeItemById,
+    replaceItems,
     runMutation,
   }
 }

@@ -2780,6 +2780,7 @@ textarea {
   text-align: left;
   padding: 0.82rem 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  vertical-align: middle;
 }
 
 .crm-table th {
@@ -2798,9 +2799,68 @@ textarea {
   background: rgba(212, 184, 114, 0.06);
 }
 
+.crm-table tbody tr.is-dragging {
+  opacity: 0.55;
+  background: rgba(212, 184, 114, 0.1);
+}
+
+.crm-table__col-drag {
+  width: 2.5rem;
+  padding-inline: 0.5rem;
+  text-align: center;
+}
+
+.crm-table__col-order {
+  width: 2.5rem;
+  color: rgba(244, 241, 234, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+.crm-table__col-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+  padding-block: 0.65rem;
+}
+
 .crm-table__actions {
-  display: flex;
-  gap: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  vertical-align: middle;
+}
+
+.crm-table__drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(244, 241, 234, 0.45);
+  cursor: grab;
+  touch-action: none;
+}
+
+.crm-table__drag-handle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(244, 241, 234, 0.85);
+}
+
+.crm-table__drag-handle:active {
+  cursor: grabbing;
+}
+
+.crm-table__sort-hint {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.82rem;
+  color: rgba(244, 241, 234, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .crm-icon-btn {

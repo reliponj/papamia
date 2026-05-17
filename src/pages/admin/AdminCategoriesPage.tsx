@@ -3,6 +3,7 @@ import {
   createCategory,
   deleteCategory,
   listCategories,
+  reorderCategories,
   updateCategory,
   type CategoryDto,
 } from '../../api/admin/category'
@@ -89,6 +90,22 @@ export function AdminCategoriesPage() {
     }, 'Delete failed')
   }
 
+  const sortDisabled = crud.query.trim().length > 0
+
+  async function handleReorder(next: CategoryDto[]) {
+    const previous = crud.items
+    const withSort = next.map((cat, index) => ({ ...cat, sort: index }))
+    crud.replaceItems(withSort)
+    try {
+      await crud.runMutation(async () => {
+        const saved = await reorderCategories(withSort)
+        crud.replaceItems(saved)
+      }, 'Reorder failed')
+    } catch {
+      crud.replaceItems(previous)
+    }
+  }
+
   return (
     <section className="crm-section">
       <AdminPageHeader
@@ -106,7 +123,12 @@ export function AdminCategoriesPage() {
 
       <AdminDataTable
         columns={[
-          { key: 'sort', header: 'Sort', render: (row) => row.sort },
+          {
+            key: 'order',
+            header: '#',
+            className: 'crm-table__col-order',
+            render: (_row, index) => index + 1,
+          },
           { key: 'name', header: 'Name', render: (row) => row.name },
           { key: 'icon', header: 'Icon', render: (row) => row.icon || '—' },
           {
@@ -120,6 +142,11 @@ export function AdminCategoriesPage() {
         rowKey={(row) => row.id}
         loading={crud.loading}
         emptyMessage="No categories yet."
+        sortable={{
+          onReorder: handleReorder,
+          disabled: sortDisabled,
+          disabledHint: 'Clear search to reorder categories by drag and drop.',
+        }}
         actions={(row) => (
           <>
             <AdminIconButton label="Edit category" onClick={() => openEdit(row)}>

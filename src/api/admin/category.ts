@@ -50,3 +50,16 @@ export async function updateCategory(id: number, payload: CategoryPayload): Prom
 export async function deleteCategory(id: number): Promise<void> {
   await adminRequest<void>('DELETE', `${BASE}/${id}`)
 }
+
+/** Persist display order (sort = 0 … n−1) after drag-and-drop. */
+export async function reorderCategories(ordered: CategoryDto[]): Promise<CategoryDto[]> {
+  const updates = ordered.map((cat, index) =>
+    updateCategory(cat.id, {
+      name: cat.name,
+      icon: cat.icon,
+      description: cat.description,
+      sort: index,
+    })
+  )
+  return Promise.all(updates)
+}
