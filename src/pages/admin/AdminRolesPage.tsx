@@ -1,191 +1,268 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  createRole,
+  deleteRole,
+  getRole,
+  listRoles,
+  updateRole,
+  type RoleListDto,
+} from '../../api/admin/role'
+import type { RolePayload } from '../../api/admin/types'
+import { listPermissionGroups, type PermissionGroupDto } from '../../api/admin/permission-group'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
-import {
-  type AdminRole,
-  listRoles,
-  createRole,
-  updateRole,
-  deleteRole,
-} from '../../api/adminRoles'
+import { AdminPageHeader } from './_shared/AdminPageHeader'
+import { AdminDataTable } from './_shared/AdminDataTable'
+import { AdminAlert } from './_shared/AdminAlert'
+import { FormField } from './_shared/FormField'
+import { AdminConfirmModal } from './_shared/AdminConfirmModal'
+import { useCrudResource } from './_shared/useCrudResource'
+import { PermissionPicker } from './_shared/PermissionPicker'
 
-type Form = { name: string; code: string; description: string }
+type FormState = {
+  name: string
+  code: string
+  description: string
+  isSystem: boolean
+}
 
-const EMPTY_FORM: Form = { name: '', code: '', description: '' }
+const emptyForm: FormState = {
+  name: '',
+  code: '',
+  description: '',
+  isSystem: false,
+}
 
 export function AdminRolesPage() {
-  const [roles, setRoles] = useState<AdminRole[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
+  const crud = useCrudResource<RoleListDto>({
+    loadItems: listRoles,
+    getId: (row) => row.id,
+    sortItems: (a, b) => a.name.localeCompare(b.name),
+    filterItem: (row, q) =>
+      `${row.name} ${row.code} ${row.description}`.toLowerCase().includes(q),
+  })
 
-  const [isModalOpen, setModalOpen] = useState(false)
+  const [permissionGroups, setPermissionGroups] = useState<PermissionGroupDto[]>([])
+  const [permissionIds, setPermissionIds] = useState<number[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [form, setForm] = useState<Form>(EMPTY_FORM)
+  const [isModalOpen, setModalOpen] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [deleteTarget, setDeleteTarget] = useState<RoleListDto | null>(null)
+  const [detailLoading, setDetailLoading] = useState(false)
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      setRoles(await listRoles())
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load roles')
-    } finally {
-      setLoading(false)
-    }
+  useEffect(() => {
+    listPermissionGroups()
+      .then(setPermissionGroups)
+      .catch(() => setPermissionGroups([]))
   }, [])
 
-  useEffect(() => { void load() }, [load])
+  function resetForm() {
+    setForm(emptyForm)
+    setPermissionIds([])
+    setEditingId(null)
+    setModalOpen(false)
+    setDetailLoading(false)
+  }
 
   function openCreate() {
     setEditingId(null)
-    setForm(EMPTY_FORM)
+    setForm(emptyForm)
+    setPermissionIds([])
     setModalOpen(true)
   }
 
-  function openEdit(role: AdminRole) {
-    setEditingId(role.id)
-    setForm({ name: role.name, code: role.code, description: role.description })
+  async function openEdit(row: RoleListDto) {
+    setEditingId(row.id)
+    setForm({
+      name: row.name,
+      code: row.code,
+      description: row.description,
+      isSystem: row.isSystem,
+    })
+    setPermissionIds([])
     setModalOpen(true)
-  }
-
-  function resetForm() {
-    setForm(EMPTY_FORM)
-    setEditingId(null)
-    setModalOpen(false)
-  }
-
-  async function onSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const name = form.name.trim()
-    const code = form.code.trim()
-    if (!name || !code) return
-    setSaving(true)
-    setError(null)
+    setDetailLoading(true)
     try {
-      const payload = {
-        name,
-        code,
-        description: form.description.trim(),
-        isSystem: false,
-        permissionIds: [],
-      }
+      const detail = await getRole(row.id)
+      setPermissionIds(detail.permissionIds)
+      setForm({
+        name: detail.name,
+        code: detail.code,
+        description: detail.description,
+        isSystem: detail.isSystem,
+      })
+    } catch (e) {
+      crud.setError(e instanceof Error ? e.message : 'Failed to load role')
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
+  async function submitRole() {
+    const payload: RolePayload = {
+      name: form.name.trim(),
+      code: form.code.trim().toLowerCase(),
+      description: form.description.trim(),
+      isSystem: form.isSystem,
+      permissionIds,
+    }
+    if (!payload.name || !payload.code) return
+
+    await crud.runMutation(async () => {
       if (editingId !== null) {
         const updated = await updateRole(editingId, payload)
-        setRoles((prev) => prev.map((r) => r.id === updated.id ? updated : r))
+        crud.upsertItem(updated)
       } else {
         const created = await createRole(payload)
-        setRoles((prev) => [...prev, created])
+        crud.upsertItem(created)
       }
       resetForm()
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Save failed')
-    } finally {
-      setSaving(false)
-    }
+    }, 'Save failed')
   }
 
-  async function onDelete(id: number) {
-    setError(null)
-    try {
-      await deleteRole(id)
-      setRoles((prev) => prev.filter((r) => r.id !== id))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Delete failed')
-    }
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const target = deleteTarget
+    await crud.runMutation(async () => {
+      await deleteRole(target.id)
+      crud.removeItemById(target.id)
+      setDeleteTarget(null)
+    }, 'Delete failed')
   }
 
   return (
     <section className="crm-section">
-      <header className="crm-section__head">
-        <div>
-          <h2>Roles</h2>
-          <p>Define permission roles assigned to staff accounts.</p>
-        </div>
-        <div className="crm-toolbar">
-          <button className="btn btn--primary" type="button" onClick={openCreate}>+ Add</button>
-        </div>
-      </header>
+      <AdminPageHeader
+        title="Roles"
+        description="Permission roles assigned to users."
+        searchPlaceholder="Search roles"
+        query={crud.query}
+        onQueryChange={crud.setQuery}
+        onAdd={openCreate}
+        onRefresh={() => void crud.reload()}
+        loading={crud.loading}
+      />
 
-      {error && <p className="crm-error">{error}</p>}
+      {crud.error && <AdminAlert message={crud.error} />}
 
-      <div className="crm-table-wrap">
-        {loading ? (
-          <p className="crm-loading">Loading…</p>
-        ) : (
-          <table className="crm-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Code</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {roles.map((role) => (
-                <tr key={role.id}>
-                  <td>
-                    <span className={`crm-badge crm-badge--${role.code === 'admin' ? 'admin' : role.code === 'manager' ? 'manager' : 'viewer'}`}>
-                      {role.name}
-                    </span>
-                  </td>
-                  <td>{role.code}</td>
-                  <td>{role.description}</td>
-                  <td className="crm-table__actions">
-                    <AdminIconButton label="Edit role" onClick={() => openEdit(role)}>✎</AdminIconButton>
-                    <AdminIconButton
-                      label="Delete role"
-                      className="is-danger"
-                      onClick={() => void onDelete(role.id)}
-                    >🗑</AdminIconButton>
-                  </td>
-                </tr>
-              ))}
-              {roles.length === 0 && (
-                <tr><td colSpan={4} style={{ textAlign: 'center', color: 'var(--color-muted)' }}>No roles yet</td></tr>
-              )}
-            </tbody>
-          </table>
+      <AdminDataTable
+        columns={[
+          {
+            key: 'name',
+            header: 'Name',
+            render: (row) => (
+              <span
+                className={`crm-badge crm-badge--${
+                  row.code === 'admin' ? 'admin' : row.code === 'moderator' ? 'manager' : 'viewer'
+                }`}
+              >
+                {row.name}
+              </span>
+            ),
+          },
+          { key: 'code', header: 'Code', render: (row) => row.code },
+          { key: 'description', header: 'Description', render: (row) => row.description || '—' },
+          {
+            key: 'system',
+            header: 'System',
+            render: (row) => (row.isSystem ? 'Yes' : 'No'),
+          },
+        ]}
+        rows={crud.filteredItems}
+        rowKey={(row) => row.id}
+        loading={crud.loading}
+        emptyMessage="No roles yet."
+        actions={(row) => (
+          <>
+            <AdminIconButton label="Edit role" onClick={() => void openEdit(row)}>
+              ✎
+            </AdminIconButton>
+            <AdminIconButton
+              label="Delete role"
+              className="is-danger"
+              onClick={() => setDeleteTarget(row)}
+              disabled={row.isSystem}
+            >
+              🗑
+            </AdminIconButton>
+          </>
         )}
-      </div>
+      />
 
-      <AdminModal title={editingId !== null ? 'Edit role' : 'Create role'} open={isModalOpen} onClose={resetForm}>
-        <form className="crm-form" onSubmit={(e) => void onSubmit(e)}>
-          <div className="field">
-            <span>Name</span>
+      <AdminModal
+        title={editingId !== null ? 'Edit role' : 'Create role'}
+        open={isModalOpen}
+        onClose={resetForm}
+      >
+        <form
+          className="crm-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void submitRole()
+          }}
+        >
+          <FormField label="Name">
             <input
               value={form.name}
-              placeholder="e.g. Manager"
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               required
             />
-          </div>
-          <div className="field">
-            <span>Code</span>
+          </FormField>
+          <FormField label="Code">
             <input
               value={form.code}
-              placeholder="e.g. manager"
               onChange={(e) => setForm((p) => ({ ...p, code: e.target.value }))}
               required
+              disabled={editingId !== null && form.isSystem}
             />
-          </div>
-          <div className="field">
-            <span>Description</span>
+          </FormField>
+          <FormField label="Description">
             <input
               value={form.description}
-              placeholder="What can this role do?"
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
             />
-          </div>
+          </FormField>
+          {editingId !== null && (
+            <label className="admin-check">
+              <input
+                type="checkbox"
+                checked={form.isSystem}
+                onChange={(e) => setForm((p) => ({ ...p, isSystem: e.target.checked }))}
+              />
+              System role
+            </label>
+          )}
+          <p className="admin-permission-picker__heading">Permissions</p>
+          {detailLoading ? (
+            <p className="admin-table-state">Loading permissions…</p>
+          ) : (
+            <PermissionPicker
+              groups={permissionGroups}
+              selectedIds={permissionIds}
+              onChange={setPermissionIds}
+            />
+          )}
           <div className="crm-form__actions">
-            <button className="btn btn--primary" type="submit" disabled={saving}>
-              {saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
+            <button className="btn btn--primary" type="submit" disabled={crud.saving || detailLoading}>
+              {crud.saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
             </button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
+            <button className="btn btn--ghost" type="button" onClick={resetForm} disabled={crud.saving}>
+              Cancel
+            </button>
           </div>
         </form>
       </AdminModal>
+
+      <AdminConfirmModal
+        open={deleteTarget !== null}
+        title="Delete role"
+        message={deleteTarget ? `Delete role “${deleteTarget.name}”?` : ''}
+        confirmLabel="Delete"
+        danger
+        loading={crud.saving}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </section>
   )
 }

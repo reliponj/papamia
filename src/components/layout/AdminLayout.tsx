@@ -6,7 +6,6 @@ import {
   ChevronLeft, ChevronDown,
   LayoutGrid, Pizza, Users, Settings, Image, Ticket,
 } from 'lucide-react'
-import { AdminDataProvider } from '../../contexts/AdminDataContext'
 
 type NavChild = { to: string; label: string }
 type NavGroup = {
@@ -221,9 +220,5 @@ function AdminShell() {
 }
 
 export function AdminLayout() {
-  return (
-    <AdminDataProvider>
-      <AdminShell />
-    </AdminDataProvider>
-  )
+  return <AdminShell />
 }

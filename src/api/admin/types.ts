@@ -8,6 +8,68 @@ export type RoleListDto = {
   isSystem: boolean
 }
 
+export type PermissionDto = {
+  id: number
+  name: string
+  code: string
+  description: string
+}
+
+export type RoleDto = RoleListDto & {
+  permissions?: PermissionDto[]
+}
+
+export type RolePayload = {
+  name: string
+  code: string
+  description: string
+  isSystem: boolean
+  permissionIds: number[]
+}
+
+export type UserDto = {
+  id: number
+  username: string
+  email: string
+  lastLogin: string | null
+  lastIp: string | null
+}
+
+export type UserCreatePayload = {
+  username: string
+  password: string
+  email: string
+}
+
+export type UserUpdatePayload = {
+  username: string
+  email: string
+}
+
+export type PermissionGroupDto = {
+  id: number
+  name: string
+  code: string
+  description: string
+  permissions: PermissionDto[]
+}
+
+export type PermissionGroupCreatePayload = {
+  name: string
+  code: string
+  description: string
+}
+
+export type PermissionGroupUpdatePayload = PermissionGroupCreatePayload & {
+  permissionIds: number[]
+}
+
+export type PermissionPayload = {
+  name: string
+  code: string
+  description: string
+}
+
 export type AllergenDto = {
   id: number
   name: string

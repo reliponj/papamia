@@ -1,32 +1,9 @@
-import { AdminApiError, adminRequest, isRecord, parseId, unwrapList } from './http'
+import { AdminApiError } from './http'
 import type { RoleListDto } from './types'
-
-function parseRole(raw: unknown): RoleListDto | null {
-  if (!isRecord(raw)) return null
-  const id = parseId(raw.id)
-  const name = raw.name
-  const code = raw.code
-  const description = raw.description
-  const isSystem = raw.isSystem
-  if (
-    id === null ||
-    typeof name !== 'string' ||
-    typeof code !== 'string' ||
-    typeof description !== 'string' ||
-    typeof isSystem !== 'boolean'
-  ) {
-    return null
-  }
-  return { id, name, code, description, isSystem }
-}
-
-function parseRoleList(raw: unknown): RoleListDto[] {
-  return unwrapList(raw).map(parseRole).filter((x): x is RoleListDto => x !== null)
-}
+import { fetchUserRoles as fetchUserRolesFromApi } from './user'
 
 export async function fetchUserRoles(userId: number): Promise<RoleListDto[]> {
-  const data = await adminRequest<unknown>('GET', `/api/admin/user/${userId}/roles`)
-  return parseRoleList(data)
+  return fetchUserRolesFromApi(userId)
 }
 
 export const ADMIN_ROLE_CODES = new Set(['admin', 'moderator'])
