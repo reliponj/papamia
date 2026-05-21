@@ -14,6 +14,7 @@ import { AccountPage } from './pages/AccountPage'
 import { BlogPage } from './pages/BlogPage'
 import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderDetailPage } from './pages/OrderDetailPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { TermsPage } from './pages/TermsPage'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
         ),
       },
       { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'orders/:id', element: <OrderDetailPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'reviews', element: <ReviewsPage /> },
       { path: 'favorites', element: <FavoritesPage /> },

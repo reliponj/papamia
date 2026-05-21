@@ -1,27 +1,16 @@
-import type { Product } from '../../api/public/types'
 import { useLocale } from '../../contexts/LocaleContext'
-import { useFavoriteProducts } from '../../contexts/FavoritesContext'
+import { useFavoriteProducts, useFavoritesLoading } from '../../contexts/FavoritesContext'
 import { ProductCard } from '../menu/ProductCard'
 import { ButtonLink } from '../ui/Button'
-
-function toProduct(productId: number, snapshot: { name: string; price: number; imageUrl: string }): Product {
-  return {
-    id: productId,
-    name: snapshot.name,
-    description: '',
-    price: snapshot.price,
-    imageUrl: snapshot.imageUrl,
-    weight: 0,
-    weightType: 'g',
-    allergens: '',
-    isActive: true,
-    categoryId: 0,
-  }
-}
 
 export function FavoritesList() {
   const { t } = useLocale()
   const favorites = useFavoriteProducts()
+  const loading = useFavoritesLoading()
+
+  if (loading) {
+    return <p className="favorites-empty">...</p>
+  }
 
   if (favorites.length === 0) {
     return (
@@ -36,8 +25,8 @@ export function FavoritesList() {
 
   return (
     <div className="menu-page__grid favorites-page__grid">
-      {favorites.map(({ productId, snapshot }) => (
-        <ProductCard key={productId} product={toProduct(productId, snapshot)} />
+      {favorites.map((product) => (
+        <ProductCard key={product.id} product={product} />
       ))}
     </div>
   )

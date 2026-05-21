@@ -1,8 +1,5 @@
-import { majorToMinor } from '../api/money'
-
-/** Display-only base price (MDL); order total is calculated on the backend. */
-export const CUSTOM_PIZZA_BASE_MAJOR = 99
-export const CUSTOM_PIZZA_EXTRA_MAJOR = 5
+import type { Ingredient } from '../api/public/types'
+import type { CustomPizzaPreview } from '../types'
 
 const DOUGH_COLORS: Record<string, string> = {
   classic: '#e8c97a',
@@ -134,7 +131,24 @@ export function swatchForIngredient(name: string, type: 0 | 1 | 2, id: number): 
   return SWATCHES[Math.abs(id) % SWATCHES.length]
 }
 
-/** Client-side estimate for custom pizza (minor units). */
-export function estimateCustomPizzaPriceMinor(extraCount: number): number {
-  return majorToMinor(CUSTOM_PIZZA_BASE_MAJOR + extraCount * CUSTOM_PIZZA_EXTRA_MAJOR)
+/** Sum ingredient prices (minor units) for live builder preview. */
+export function sumIngredientPricesMinor(ingredients: Pick<Ingredient, 'price'>[]): number {
+  return ingredients.reduce((sum, i) => sum + i.price, 0)
+}
+
+export function previewFromIngredientIds(
+  ingridientIds: number[],
+  byId: Map<number, Ingredient>,
+): CustomPizzaPreview {
+  const dough = ingridientIds.map((id) => byId.get(id)).find((i) => i?.type === 0)
+  const sauce = ingridientIds.map((id) => byId.get(id)).find((i) => i?.type === 1)
+  const toppingNames = ingridientIds
+    .map((id) => byId.get(id))
+    .filter((i): i is Ingredient => i !== undefined && i.type === 2)
+    .map((i) => i.name)
+  return {
+    doughName: dough?.name ?? '',
+    sauceName: sauce?.name ?? '',
+    toppingNames,
+  }
 }

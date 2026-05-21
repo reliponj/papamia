@@ -18,6 +18,7 @@ type ButtonProps = BaseProps &
 
 type LinkButtonProps = BaseProps & {
   to: string
+  state?: unknown
   onClick?: () => void
 }
 
@@ -47,11 +48,12 @@ export function ButtonLink({
   size = 'md',
   className = '',
   to,
+  state,
   children,
   onClick,
 }: LinkButtonProps) {
   return (
-    <Link to={to} className={btnClass(variant, size, className)} onClick={onClick}>
+    <Link to={to} state={state} className={btnClass(variant, size, className)} onClick={onClick}>
       {children}
     </Link>
   )

@@ -15,7 +15,7 @@ import { FormField } from './_shared/FormField'
 import { AdminConfirmModal } from './_shared/AdminConfirmModal'
 import { useCrudResource } from './_shared/useCrudResource'
 
-const emptyForm = { text: '', imageUrl: '' }
+const emptyForm = { title: '', text: '', imageUrl: '' }
 
 function formatDate(iso: string): string {
   try {
@@ -36,7 +36,9 @@ export function AdminArticlesPage() {
     getId: (row) => row.id,
     sortItems: (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
     filterItem: (row, q) =>
-      row.text.toLowerCase().includes(q) || row.imageUrl.toLowerCase().includes(q),
+      row.title.toLowerCase().includes(q) ||
+      row.text.toLowerCase().includes(q) ||
+      row.imageUrl.toLowerCase().includes(q),
   })
 
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -58,13 +60,17 @@ export function AdminArticlesPage() {
 
   function openEdit(row: ArticleDto) {
     setEditingId(row.id)
-    setForm({ text: row.text, imageUrl: row.imageUrl })
+    setForm({ title: row.title, text: row.text, imageUrl: row.imageUrl })
     setModalOpen(true)
   }
 
   async function submitArticle() {
-    const payload = { text: form.text.trim(), imageUrl: form.imageUrl.trim() }
-    if (!payload.text || !payload.imageUrl) return
+    const payload = {
+      title: form.title.trim(),
+      text: form.text.trim(),
+      imageUrl: form.imageUrl.trim(),
+    }
+    if (!payload.title || !payload.text || !payload.imageUrl) return
 
     await crud.runMutation(async () => {
       if (editingId !== null) {
@@ -106,6 +112,11 @@ export function AdminArticlesPage() {
             key: 'createdAt',
             header: 'Created',
             render: (row) => formatDate(row.createdAt),
+          },
+          {
+            key: 'title',
+            header: 'Title',
+            render: (row) => row.title,
           },
           {
             key: 'text',
@@ -157,6 +168,13 @@ export function AdminArticlesPage() {
             void submitArticle()
           }}
         >
+          <FormField label="Title">
+            <input
+              value={form.title}
+              onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+              required
+            />
+          </FormField>
           <FormField label="Text">
             <textarea
               value={form.text}

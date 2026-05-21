@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { listMyOrders } from '../api/public/order'
 import type { Order, OrderStatus } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
@@ -26,11 +27,25 @@ function orderItemCount(order: Order): number {
 
 export function AccountPage() {
   const { t } = useLocale()
-  const [tab, setTab] = useState<Tab>('profile')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { logout } = useAuthApi()
+  const initialTab = (location.state as { tab?: Tab } | null)?.tab
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'profile')
+
+  function handleLogout() {
+    logout()
+    navigate('/')
+  }
 
   return (
     <div className="account-page section">
-      <h1 className="account-page__title">{t('account.title')}</h1>
+      <div className="account-page__head">
+        <h1 className="account-page__title">{t('account.title')}</h1>
+        <button type="button" className="btn btn--secondary account-page__logout" onClick={handleLogout}>
+          {t('auth.logout')}
+        </button>
+      </div>
 
       <div className="account-tabs">
         {(['profile', 'favorites', 'orders', 'security'] as Tab[]).map((id) => (
@@ -244,21 +259,23 @@ function OrdersTab() {
           lang === 'ro' ? 'ro-RO' : lang === 'ru' ? 'ru-RU' : 'en-GB',
         )
         return (
-          <li key={order.id} className="order-card">
-            <div className="order-card__row">
-              <span className="order-card__id">
-                {t('account.orders.order')} #{order.id}
-              </span>
-              <span className={`order-card__status order-card__status--${order.status}`}>
-                {t(ORDER_STATUS_KEYS[order.status])}
-              </span>
-            </div>
-            <div className="order-card__meta">
-              <span className="order-card__date">{date}</span>
-              <span className="order-card__items">
-                {count} {t('account.orders.items')}
-              </span>
-            </div>
+          <li key={order.id}>
+            <Link to={`/orders/${order.id}`} className="order-card order-card--link">
+              <div className="order-card__row">
+                <span className="order-card__id">
+                  {t('account.orders.order')} #{order.id}
+                </span>
+                <span className={`order-card__status order-card__status--${order.status}`}>
+                  {t(ORDER_STATUS_KEYS[order.status])}
+                </span>
+              </div>
+              <div className="order-card__meta">
+                <span className="order-card__date">{date}</span>
+                <span className="order-card__items">
+                  {count} {t('account.orders.items')}
+                </span>
+              </div>
+            </Link>
           </li>
         )
       })}

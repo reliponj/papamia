@@ -1,5 +1,5 @@
 import * as Select from '@radix-ui/react-select'
-import { ChevronDown, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useLocale } from '../../contexts/LocaleContext'
 import type { Lang } from '../../types'
 
@@ -12,9 +12,6 @@ export function LangSelect() {
     <Select.Root value={lang} onValueChange={(v) => setLang(v as Lang)}>
       <Select.Trigger className="app-select-trigger app-select-trigger--compact" aria-label={t('aria.lang')}>
         <Select.Value />
-        <Select.Icon className="app-select-trigger__icon">
-          <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
-        </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
         <Select.Content className="app-select-content" position="popper" sideOffset={6} align="end">

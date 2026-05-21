@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import type { Product } from '../../api/public/types'
 import { formatPriceMdl } from '../../api/money'
+import { PublicApiError } from '../../api/public/http'
 import { useCartActions, useCartTotals } from '../../contexts/CartContext'
 import { useFavoritesApi } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
@@ -14,6 +16,7 @@ export function ProductCard({ product }: Props) {
   const { add, setQty } = useCartActions()
   const { toggle, has } = useFavoritesApi()
   const { lines } = useCartTotals()
+  const [favBusy, setFavBusy] = useState(false)
   const isFav = has(product.id)
   const line = lines.find((l) => l.productId === product.id)
   const qty = line?.qty ?? 0
@@ -33,7 +36,17 @@ export function ProductCard({ product }: Props) {
           className={`product-card__heart${isFav ? ' is-active' : ''}`}
           aria-pressed={isFav}
           aria-label={t('favorites.title')}
-          onClick={() => toggle(product.id, snapshot)}
+          disabled={favBusy}
+          onClick={() => {
+            setFavBusy(true)
+            void toggle(product.id, snapshot)
+              .catch((err) => {
+                if (err instanceof PublicApiError && err.message === 'product_not_found') {
+                  window.alert(t('favorites.error.notFound'))
+                }
+              })
+              .finally(() => setFavBusy(false))
+          }}
         >
           <span aria-hidden>♥</span>
         </button>

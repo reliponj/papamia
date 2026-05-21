@@ -2,13 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createCustomPizza, listIngredients } from '../api/public/pizza-constructor'
 import type { Ingredient } from '../api/public/types'
 import { formatPriceMdl } from '../api/money'
+import { PublicApiError } from '../api/public/http'
 import { useLocale } from '../contexts/LocaleContext'
 import { useCartActions } from '../contexts/CartContext'
-import {
-  CUSTOM_PIZZA_EXTRA_MAJOR,
-  estimateCustomPizzaPriceMinor,
-  swatchForIngredient,
-} from '../utils/pizzaBuilderUi'
+import type { UiKey } from '../data/translations'
+import { sumIngredientPricesMinor, swatchForIngredient } from '../utils/pizzaBuilderUi'
 import { PizzaPreview } from '../components/pizza/PizzaPreview'
 import { Button } from '../components/ui/Button'
 
@@ -16,6 +14,10 @@ type UiIngredient = Ingredient & { color: string }
 
 type Step = 0 | 1 | 2
 type StepDirection = 'forward' | 'back'
+
+const BUILDER_ERROR_KEYS: Record<string, UiKey> = {
+  invalid_ingridients: 'builder.error.invalidIngredients',
+}
 
 export function PizzaBuilderPage() {
   const { t } = useLocale()
@@ -65,12 +67,19 @@ export function PizzaBuilderPage() {
     }
   }, [])
 
+  const selectedIngredients = useMemo(() => {
+    const list: UiIngredient[] = []
+    if (dough) list.push(dough)
+    if (sauce) list.push(sauce)
+    list.push(...toppings)
+    return list
+  }, [dough, sauce, toppings])
+
   const totalPriceMinor = useMemo(
-    () => estimateCustomPizzaPriceMinor(toppings.length),
-    [toppings.length],
+    () => sumIngredientPricesMinor(selectedIngredients),
+    [selectedIngredients],
   )
   const totalPriceLabel = formatPriceMdl(totalPriceMinor)
-  const extraPriceLabel = `${CUSTOM_PIZZA_EXTRA_MAJOR} ${t('menu.currency')}`
   const previewKey = `${dough?.id ?? 'x'}-${sauce?.id ?? 'x'}-${toppings.map((x) => x.id).join(',')}`
   const hasSelection = Boolean(dough || sauce || toppings.length > 0 || step > 0)
 
@@ -113,7 +122,7 @@ export function PizzaBuilderPage() {
       addCustomPizza({
         id: `custom-${created.id}-${Date.now()}`,
         customPizzaId: created.id,
-        price: totalPriceMinor,
+        price: created.totalPrice,
         ingredientIds,
         preview: {
           doughName: dough.name,
@@ -124,7 +133,13 @@ export function PizzaBuilderPage() {
       flashAddedNotice()
       openDrawer()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add pizza')
+      const msg =
+        err instanceof PublicApiError && BUILDER_ERROR_KEYS[err.message]
+          ? t(BUILDER_ERROR_KEYS[err.message])
+          : err instanceof Error
+            ? err.message
+            : 'Failed to add pizza'
+      setError(msg)
     } finally {
       setAdding(false)
     }
@@ -134,6 +149,15 @@ export function PizzaBuilderPage() {
     0: t('builder.step.dough'),
     1: t('builder.step.sauce'),
     2: t('builder.step.toppings'),
+  }
+
+  function renderOptionPrice(ingredient: UiIngredient, showPlus = false) {
+    const label = formatPriceMdl(ingredient.price)
+    return (
+      <span className="builder-option__price">
+        {showPlus ? `+${label}` : label}
+      </span>
+    )
   }
 
   return (
@@ -160,10 +184,7 @@ export function PizzaBuilderPage() {
             ))}
           </div>
 
-          <div
-            key={step}
-            className={`builder-step-panel builder-step-panel--${stepDir}`}
-          >
+          <div key={step} className={`builder-step-panel builder-step-panel--${stepDir}`}>
             <h2 className="builder-page__step-title">{stepTitles[step]}</h2>
 
             {loading && <p className="builder-page__loading">{t('builder.loading')}</p>}
@@ -185,6 +206,7 @@ export function PizzaBuilderPage() {
                     >
                       <span className="builder-option__swatch" style={{ background: d.color }} />
                       <span className="builder-option__name">{d.name}</span>
+                      {renderOptionPrice(d)}
                     </button>
                   </li>
                 ))}
@@ -202,6 +224,7 @@ export function PizzaBuilderPage() {
                     >
                       <span className="builder-option__swatch" style={{ background: s.color }} />
                       <span className="builder-option__name">{s.name}</span>
+                      {renderOptionPrice(s)}
                     </button>
                   </li>
                 ))}
@@ -223,7 +246,7 @@ export function PizzaBuilderPage() {
                         >
                           <span className="builder-option__swatch" style={{ background: tp.color }} />
                           <span className="builder-option__name">{tp.name}</span>
-                          <span className="builder-option__price">+{extraPriceLabel}</span>
+                          {renderOptionPrice(tp, true)}
                         </button>
                       </li>
                     )
@@ -274,7 +297,7 @@ export function PizzaBuilderPage() {
           </div>
         </div>
 
-        {(dough || sauce || toppings.length > 0) && (
+        {selectedIngredients.length > 0 && (
           <div className="builder-page__price-summary">
             <div className="builder-page__price-total">
               <span>{t('builder.total')}</span>

@@ -64,6 +64,15 @@ export type UiKey =
   | 'favorites.remove'
   | 'favorites.itemOne'
   | 'favorites.itemMany'
+  | 'favorites.error.notFound'
+  | 'blog.comments.title'
+  | 'blog.comments.empty'
+  | 'blog.comments.placeholder'
+  | 'blog.comments.submit'
+  | 'blog.comments.loginPrompt'
+  | 'blog.comments.loginLink'
+  | 'blog.comments.error.required'
+  | 'blog.comments.error.notFound'
   | 'contacts.title'
   | 'contacts.sub'
   | 'contacts.section.locations'
@@ -105,6 +114,7 @@ export type UiKey =
   | 'builder.added'
   | 'builder.adding'
   | 'builder.loading'
+  | 'builder.error.invalidIngredients'
   | 'auth.login'
   | 'auth.logout'
   | 'auth.username'
@@ -237,6 +247,15 @@ export type UiKey =
   | 'order.success.sub'
   | 'order.success.back'
   | 'order.success.account'
+  | 'order.detail.back'
+  | 'order.detail.loading'
+  | 'order.detail.notFound'
+  | 'order.detail.summary'
+  | 'order.detail.payment'
+  | 'order.detail.delivery'
+  | 'order.detail.items'
+  | 'order.detail.product'
+  | 'order.detail.allOrders'
   | 'order.status.new'
   | 'order.status.process'
   | 'order.status.done'
@@ -410,6 +429,39 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'favorites.remove': { ro: 'Elimină din favorite', ru: 'Убрать из избранного', en: 'Remove from wishlist' },
   'favorites.itemOne': { ro: 'preparat', ru: 'блюдо', en: 'dish' },
   'favorites.itemMany': { ro: 'preparate', ru: 'блюда', en: 'dishes' },
+  'favorites.error.notFound': {
+    ro: 'Produsul nu este disponibil.',
+    ru: 'Товар недоступен.',
+    en: 'Product is not available.',
+  },
+  'blog.comments.title': { ro: 'Comentarii', ru: 'Комментарии', en: 'Comments' },
+  'blog.comments.empty': {
+    ro: 'Fii primul care comentează.',
+    ru: 'Будьте первым, кто оставит комментарий.',
+    en: 'Be the first to comment.',
+  },
+  'blog.comments.placeholder': {
+    ro: 'Scrie un comentariu…',
+    ru: 'Напишите комментарий…',
+    en: 'Write a comment…',
+  },
+  'blog.comments.submit': { ro: 'Trimite', ru: 'Отправить', en: 'Post comment' },
+  'blog.comments.loginPrompt': {
+    ro: 'Pentru a comenta,',
+    ru: 'Чтобы оставить комментарий,',
+    en: 'To comment,',
+  },
+  'blog.comments.loginLink': { ro: 'conectează-te', ru: 'войдите в аккаунт', en: 'sign in' },
+  'blog.comments.error.required': {
+    ro: 'Introduceți textul comentariului.',
+    ru: 'Введите текст комментария.',
+    en: 'Please enter comment text.',
+  },
+  'blog.comments.error.notFound': {
+    ro: 'Articolul nu a fost găsit.',
+    ru: 'Статья не найдена.',
+    en: 'Article not found.',
+  },
   'contacts.title': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
   'contacts.section.locations': { ro: 'Locații', ru: 'Локации', en: 'Locations' },
   'contacts.section.contacts': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
@@ -503,6 +555,11 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   },
   'builder.adding': { ro: 'Se adaugă…', ru: 'Добавляем…', en: 'Adding…' },
   'builder.loading': { ro: 'Se încarcă…', ru: 'Загрузка…', en: 'Loading…' },
+  'builder.error.invalidIngredients': {
+    ro: 'Combinație invalidă de ingrediente. Alege din nou.',
+    ru: 'Неверный набор ингредиентов. Выберите заново.',
+    en: 'Invalid ingredient selection. Please choose again.',
+  },
   'auth.login': { ro: 'Conectare', ru: 'Войти', en: 'Sign in' },
   'auth.logout': { ro: 'Ieșire', ru: 'Выйти', en: 'Sign out' },
   'auth.username': { ro: 'Nume de utilizator', ru: 'Имя пользователя', en: 'Username' },
@@ -732,6 +789,15 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   },
   'order.success.back': { ro: 'Înapoi la meniu', ru: 'Вернуться в меню', en: 'Back to menu' },
   'order.success.account': { ro: 'Contul meu', ru: 'Мой аккаунт', en: 'My account' },
+  'order.detail.back': { ro: 'Înapoi', ru: 'Назад', en: 'Back' },
+  'order.detail.loading': { ro: 'Se încarcă comanda…', ru: 'Загрузка заказа…', en: 'Loading order…' },
+  'order.detail.notFound': { ro: 'Comanda nu a fost găsită.', ru: 'Заказ не найден.', en: 'Order not found.' },
+  'order.detail.summary': { ro: 'Rezumat', ru: 'Сводка', en: 'Summary' },
+  'order.detail.payment': { ro: 'Plată', ru: 'Оплата', en: 'Payment' },
+  'order.detail.delivery': { ro: 'Livrare', ru: 'Доставка', en: 'Delivery' },
+  'order.detail.items': { ro: 'Produse', ru: 'Состав заказа', en: 'Items' },
+  'order.detail.product': { ro: 'Produs', ru: 'Товар', en: 'Product' },
+  'order.detail.allOrders': { ro: 'Toate comenzile', ru: 'Все заказы', en: 'All orders' },
   'order.status.new': { ro: 'Nou', ru: 'Новый', en: 'New' },
   'order.status.process': { ro: 'În lucru', ru: 'В обработке', en: 'Processing' },
   'order.status.done': { ro: 'Finalizat', ru: 'Выполнен', en: 'Completed' },

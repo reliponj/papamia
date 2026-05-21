@@ -1,5 +1,5 @@
 import { Trash2 } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatPriceMdl } from '../../api/money'
 import { useCartActions, useCartState, useCartTotals } from '../../contexts/CartContext'
@@ -7,35 +7,59 @@ import { useLocale } from '../../contexts/LocaleContext'
 import { CustomPizzaCartItem } from '../pizza/CustomPizzaCartItem'
 import { Button } from '../ui/Button'
 
+const DRAWER_MS = 320
+
 export function CartDrawer() {
   const { isDrawerOpen: open } = useCartState()
   const { lines, customLines, total } = useCartTotals()
   const { setQty, closeDrawer, removeLine, removeCustomLine, setCustomQty } = useCartActions()
   const navigate = useNavigate()
   const { t } = useLocale()
+  const [mounted, setMounted] = useState(open)
+  const [closing, setClosing] = useState(false)
 
   useEffect(() => {
-    if (!open) return
+    if (open) {
+      setMounted(true)
+      setClosing(false)
+      return
+    }
+    if (!mounted) return
+    setClosing(true)
+    const timer = window.setTimeout(() => {
+      setMounted(false)
+      setClosing(false)
+    }, DRAWER_MS)
+    return () => window.clearTimeout(timer)
+  }, [open, mounted])
+
+  useEffect(() => {
+    if (!mounted || closing) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeDrawer()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, closeDrawer])
+  }, [mounted, closing, closeDrawer])
 
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
+    document.body.style.overflow = mounted && !closing ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [open])
+  }, [mounted, closing])
 
-  if (!open) return null
+  if (!mounted) return null
 
   const isEmpty = lines.length === 0 && customLines.length === 0
 
   return (
-    <div className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div
+      className={`cart-drawer${closing ? ' is-closing' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cart-title"
+    >
       <button
         type="button"
         className="cart-drawer__backdrop"
