@@ -1,5 +1,6 @@
-import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
 import type { CartLine, CartLineSnapshot, CustomPizzaLine } from '../types'
+import { loadCartFromCookie, saveCartToCookie } from '../utils/cartStorage'
 
 export type CartState = {
   lines: CartLine[]
@@ -115,8 +116,21 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 const initialCart: CartState = { lines: [], customLines: [], isDrawerOpen: false }
 
+function initCartState(): CartState {
+  const persisted = loadCartFromCookie()
+  return {
+    ...initialCart,
+    lines: persisted.lines,
+    customLines: persisted.customLines,
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, initialCart)
+  const [state, dispatch] = useReducer(cartReducer, initialCart, initCartState)
+
+  useEffect(() => {
+    saveCartToCookie({ lines: state.lines, customLines: state.customLines })
+  }, [state.lines, state.customLines])
 
   return (
     <CartStateContext.Provider value={state}>

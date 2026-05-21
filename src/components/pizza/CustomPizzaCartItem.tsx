@@ -41,7 +41,7 @@ export function CustomPizzaCartItem({
         </div>
         <div className="checkout-summary__info">
           <div className="checkout-summary__name">{t('builder.custom')}</div>
-          {qty > 1 && <div className="checkout-summary__qty">× {qty}</div>}
+          <div className="checkout-summary__qty">× {qty}</div>
         </div>
         <div className="checkout-summary__price">{formatPriceMdl(lineTotal)}</div>
       </>

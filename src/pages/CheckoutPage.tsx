@@ -395,7 +395,7 @@ export function CheckoutPage() {
               </li>
             ))}
             {customLines.map((cl) => (
-              <li key={cl.id} className="checkout-summary__item checkout-summary__item--custom">
+              <li key={cl.id} className="checkout-summary__item">
                 <CustomPizzaCartItem
                   preview={cl.preview}
                   price={cl.price}
