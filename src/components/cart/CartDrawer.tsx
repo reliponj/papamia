@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatPriceMdl } from '../../api/money'
@@ -9,7 +10,7 @@ import { Button } from '../ui/Button'
 export function CartDrawer() {
   const { isDrawerOpen: open } = useCartState()
   const { lines, customLines, total } = useCartTotals()
-  const { setQty, closeDrawer, removeLine, removeCustomLine } = useCartActions()
+  const { setQty, closeDrawer, removeLine, removeCustomLine, setCustomQty } = useCartActions()
   const navigate = useNavigate()
   const { t } = useLocale()
 
@@ -92,9 +93,10 @@ export function CartDrawer() {
                   <button
                     type="button"
                     className="cart-line__remove"
+                    aria-label={t('cart.remove')}
                     onClick={() => removeLine(line.productId)}
                   >
-                    {t('cart.remove')}
+                    <Trash2 size={16} strokeWidth={2} aria-hidden />
                   </button>
                 </div>
               </li>
@@ -106,6 +108,7 @@ export function CartDrawer() {
                 preview={cl.preview}
                 price={cl.price}
                 qty={cl.qty}
+                onSetQty={(qty) => setCustomQty(cl.id, qty)}
                 onRemove={() => removeCustomLine(cl.id)}
                 variant="drawer"
               />

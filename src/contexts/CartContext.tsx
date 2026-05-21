@@ -12,6 +12,7 @@ type CartAction =
   | { type: 'REMOVE_LINE'; productId: number }
   | { type: 'SET_QTY'; productId: number; qty: number }
   | { type: 'ADD_CUSTOM_PIZZA'; pizza: Omit<CustomPizzaLine, 'qty'> }
+  | { type: 'SET_CUSTOM_QTY'; id: string; qty: number }
   | { type: 'REMOVE_CUSTOM_LINE'; id: string }
   | { type: 'CLEAR' }
   | { type: 'OPEN_DRAWER' }
@@ -57,12 +58,43 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ),
       }
     }
-    case 'ADD_CUSTOM_PIZZA':
+    case 'ADD_CUSTOM_PIZZA': {
+      const sameIngredients = state.customLines.find((l) =>
+        l.ingredientIds.length === action.pizza.ingredientIds.length &&
+        l.ingredientIds.every((id, i) => id === action.pizza.ingredientIds[i]),
+      )
+      if (sameIngredients) {
+        return {
+          ...state,
+          customLines: state.customLines.map((l) =>
+            l.id === sameIngredients.id ? { ...l, qty: l.qty + 1 } : l,
+          ),
+          isDrawerOpen: true,
+        }
+      }
       return {
         ...state,
         customLines: [...state.customLines, { ...action.pizza, qty: 1 }],
         isDrawerOpen: true,
       }
+    }
+    case 'SET_CUSTOM_QTY': {
+      const q = Math.max(0, Math.floor(action.qty))
+      if (q === 0) {
+        return {
+          ...state,
+          customLines: state.customLines.filter((l) => l.id !== action.id),
+        }
+      }
+      const existing = state.customLines.find((l) => l.id === action.id)
+      if (!existing) return state
+      return {
+        ...state,
+        customLines: state.customLines.map((l) =>
+          l.id === action.id ? { ...l, qty: q } : l,
+        ),
+      }
+    }
     case 'REMOVE_CUSTOM_LINE':
       return {
         ...state,
@@ -133,6 +165,8 @@ export function useCartActions() {
         dispatch({ type: 'SET_QTY', productId, qty }),
       addCustomPizza: (pizza: Omit<CustomPizzaLine, 'qty'>) =>
         dispatch({ type: 'ADD_CUSTOM_PIZZA', pizza }),
+      setCustomQty: (id: string, qty: number) =>
+        dispatch({ type: 'SET_CUSTOM_QTY', id, qty }),
       removeCustomLine: (id: string) => dispatch({ type: 'REMOVE_CUSTOM_LINE', id }),
       clear: () => dispatch({ type: 'CLEAR' }),
       openDrawer: () => dispatch({ type: 'OPEN_DRAWER' }),

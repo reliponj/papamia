@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { formatPriceMdl } from '../../api/money'
 import type { CustomPizzaPreview } from '../../types'
 import { useLocale } from '../../contexts/LocaleContext'
@@ -7,6 +8,7 @@ type Props = {
   preview: CustomPizzaPreview
   price: number
   qty?: number
+  onSetQty?: (qty: number) => void
   onRemove?: () => void
   variant?: 'drawer' | 'checkout'
 }
@@ -19,7 +21,14 @@ function toPreviewIngredients(preview: CustomPizzaPreview) {
   }
 }
 
-export function CustomPizzaCartItem({ preview, price, qty = 1, onRemove, variant = 'drawer' }: Props) {
+export function CustomPizzaCartItem({
+  preview,
+  price,
+  qty = 1,
+  onSetQty,
+  onRemove,
+  variant = 'drawer',
+}: Props) {
   const { t } = useLocale()
   const { dough, sauce, toppings } = toPreviewIngredients(preview)
   const lineTotal = price * qty
@@ -46,15 +55,41 @@ export function CustomPizzaCartItem({ preview, price, qty = 1, onRemove, variant
       </div>
       <div className="cart-line__info">
         <div className="cart-line__name">{t('builder.custom')}</div>
-        <div className="cart-line__meta">{formatPriceMdl(lineTotal)}</div>
+        <div className="cart-line__meta">{formatPriceMdl(price)}</div>
       </div>
-      {onRemove && (
-        <div className="cart-line__controls">
-          <button type="button" className="cart-line__remove" onClick={onRemove}>
-            {t('cart.remove')}
+      <div className="cart-line__controls">
+        {onSetQty && (
+          <>
+            <button
+              type="button"
+              className="cart-line__step"
+              aria-label="Decrease"
+              onClick={() => onSetQty(qty - 1)}
+            >
+              −
+            </button>
+            <span className="cart-line__count">{qty}</span>
+            <button
+              type="button"
+              className="cart-line__step"
+              aria-label="Increase"
+              onClick={() => onSetQty(qty + 1)}
+            >
+              +
+            </button>
+          </>
+        )}
+        {onRemove && (
+          <button
+            type="button"
+            className="cart-line__remove"
+            aria-label={t('cart.remove')}
+            onClick={onRemove}
+          >
+            <Trash2 size={16} strokeWidth={2} aria-hidden />
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </li>
   )
 }
