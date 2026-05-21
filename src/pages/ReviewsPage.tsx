@@ -88,7 +88,7 @@ function ReviewCard({ review }: { review: Review }) {
 
 export function ReviewsPage() {
   const { t } = useLocale()
-  const { isAuthenticated, user } = useAuthState()
+  const { isAuthenticated } = useAuthState()
 
   const [reviews, setReviews] = useState<Review[]>([])
   const [loadState, setLoadState] = useState<'idle' | 'loading' | 'error'>('loading')

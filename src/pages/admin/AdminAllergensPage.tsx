@@ -1,81 +1,37 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   createAllergen,
   deleteAllergen,
   listAllergens,
   updateAllergen,
-  type AdminAllergen,
-} from '../../api/adminAllergens'
+  type AllergenDto,
+} from '../../api/admin/allergen'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
+import { AdminPageHeader } from './_shared/AdminPageHeader'
+import { AdminDataTable } from './_shared/AdminDataTable'
+import { AdminAlert } from './_shared/AdminAlert'
+import { FormField } from './_shared/FormField'
+import { AdminConfirmModal } from './_shared/AdminConfirmModal'
+import { useCrudResource } from './_shared/useCrudResource'
 
 export function AdminAllergensPage() {
-  const [items, setItems] = useState<AdminAllergen[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [query, setQuery] = useState('')
+  const crud = useCrudResource<AllergenDto>({
+    loadItems: listAllergens,
+    getId: (row) => row.id,
+    sortItems: (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+    filterItem: (row, q) => row.name.toLowerCase().includes(q),
+  })
+
   const [editingId, setEditingId] = useState<number | null>(null)
   const [isModalOpen, setModalOpen] = useState(false)
   const [form, setForm] = useState({ name: '' })
-  const [saving, setSaving] = useState(false)
-
-  const load = useCallback(async () => {
-    setError(null)
-    setLoading(true)
-    try {
-      const list = await listAllergens()
-      list.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-      setItems(list)
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to load allergens')
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    void load()
-  }, [load])
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return items
-    return items.filter((row) => row.name.toLowerCase().includes(q))
-  }, [items, query])
+  const [deleteTarget, setDeleteTarget] = useState<AllergenDto | null>(null)
 
   function resetForm() {
     setForm({ name: '' })
     setEditingId(null)
     setModalOpen(false)
-  }
-
-  async function submitAllergen() {
-    const name = form.name.trim()
-    if (!name) return
-    setSaving(true)
-    setError(null)
-    try {
-      if (editingId !== null) {
-        const updated = await updateAllergen(editingId, { name })
-        setItems((prev) => {
-          const next = prev.map((x) => (x.id === updated.id ? updated : x))
-          next.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-          return next
-        })
-      } else {
-        const created = await createAllergen({ name })
-        setItems((prev) => {
-          const next = [...prev.filter((x) => x.id !== created.id), created]
-          next.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-          return next
-        })
-      }
-      resetForm()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed')
-    } finally {
-      setSaving(false)
-    }
   }
 
   function openCreate() {
@@ -84,88 +40,76 @@ export function AdminAllergensPage() {
     setModalOpen(true)
   }
 
-  async function onDelete(row: AdminAllergen) {
-    if (!window.confirm(`Delete allergen “${row.name}”?`)) return
-    setError(null)
-    try {
-      await deleteAllergen(row.id)
-      setItems((prev) => prev.filter((x) => x.id !== row.id))
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Delete failed')
-    }
+  function openEdit(row: AllergenDto) {
+    setEditingId(row.id)
+    setForm({ name: row.name })
+    setModalOpen(true)
+  }
+
+  async function submitAllergen() {
+    const name = form.name.trim()
+    if (!name) return
+
+    await crud.runMutation(async () => {
+      if (editingId !== null) {
+        const updated = await updateAllergen(editingId, { name })
+        crud.upsertItem(updated)
+      } else {
+        const created = await createAllergen({ name })
+        crud.upsertItem(created)
+      }
+      resetForm()
+    }, 'Save failed')
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const target = deleteTarget
+    await crud.runMutation(async () => {
+      await deleteAllergen(target.id)
+      crud.removeItemById(target.id)
+      setDeleteTarget(null)
+    }, 'Delete failed')
   }
 
   return (
     <section className="crm-section">
-      <header className="crm-section__head">
-        <div>
-          <h2>Allergens</h2>
-          <p>Maintain allergen labels used on the menu.</p>
-        </div>
-        <div className="crm-toolbar">
-          <input
-            className="crm-search"
-            placeholder="Search allergens"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <button className="btn btn--primary" type="button" onClick={openCreate} disabled={loading}>
-            + Add
-          </button>
-          <button className="btn btn--ghost" type="button" onClick={() => void load()} disabled={loading}>
-            Refresh
-          </button>
-        </div>
-      </header>
+      <AdminPageHeader
+        title="Allergens"
+        searchPlaceholder="Search allergens"
+        query={crud.query}
+        onQueryChange={crud.setQuery}
+        onAdd={openCreate}
+        onRefresh={() => void crud.reload()}
+        loading={crud.loading}
+      />
 
-      {error && (
-        <p style={{ color: '#ff9580', margin: '0 0 0.75rem' }} role="alert">
-          {error}
-        </p>
-      )}
+      {crud.error && <AdminAlert message={crud.error} />}
 
-      {loading ? (
-        <p style={{ color: 'var(--muted)', margin: 0 }}>Loading…</p>
-      ) : (
-        <div className="crm-table-wrap">
-          <table className="crm-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row) => (
-                <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{row.name}</td>
-                  <td className="crm-table__actions">
-                    <AdminIconButton
-                      label="Edit allergen"
-                      onClick={() => {
-                        setEditingId(row.id)
-                        setForm({ name: row.name })
-                        setModalOpen(true)
-                      }}
-                    >
-                      ✎
-                    </AdminIconButton>
-                    <AdminIconButton
-                      label="Delete allergen"
-                      className="is-danger"
-                      onClick={() => void onDelete(row)}
-                    >
-                      🗑
-                    </AdminIconButton>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <AdminDataTable
+        columns={[
+          { key: 'id', header: 'ID', render: (row) => row.id },
+          { key: 'name', header: 'Name', render: (row) => row.name },
+        ]}
+        rows={crud.filteredItems}
+        rowKey={(row) => row.id}
+        loading={crud.loading}
+        emptyMessage="No allergens yet."
+        actions={(row) => (
+          <>
+            <AdminIconButton label="Edit allergen" onClick={() => openEdit(row)}>
+              ✎
+            </AdminIconButton>
+            <AdminIconButton
+              label="Delete allergen"
+              className="is-danger"
+              onClick={() => setDeleteTarget(row)}
+            >
+              🗑
+            </AdminIconButton>
+          </>
+        )}
+      />
 
       <AdminModal
         title={editingId !== null ? 'Edit allergen' : 'Create allergen'}
@@ -179,8 +123,7 @@ export function AdminAllergensPage() {
             void submitAllergen()
           }}
         >
-          <div className="field">
-            <span>Name</span>
+          <FormField label="Name">
             <input
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
@@ -188,17 +131,32 @@ export function AdminAllergensPage() {
               required
               autoFocus
             />
-          </div>
+          </FormField>
           <div className="crm-form__actions">
-            <button className="btn btn--primary" type="submit" disabled={saving}>
-              {saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
+            <button className="btn btn--primary" type="submit" disabled={crud.saving}>
+              {crud.saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
             </button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm} disabled={saving}>
+            <button className="btn btn--ghost" type="button" onClick={resetForm} disabled={crud.saving}>
               Cancel
             </button>
           </div>
         </form>
       </AdminModal>
+
+      <AdminConfirmModal
+        open={deleteTarget !== null}
+        title="Delete allergen"
+        message={
+          deleteTarget
+            ? `Delete allergen “${deleteTarget.name}”? This cannot be undone.`
+            : ''
+        }
+        confirmLabel="Delete"
+        danger
+        loading={crud.saving}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </section>
   )
 }

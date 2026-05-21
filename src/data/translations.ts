@@ -1,13 +1,4 @@
-import type { Lang, MenuCategory } from '../types'
-
-export const CATEGORY_LABELS: Record<MenuCategory, Record<Lang, string>> = {
-  pizza: { ro: 'Pizza', ru: 'Пицца', en: 'Pizza' },
-  pinsa: { ro: 'Pinsa', ru: 'Пинса', en: 'Pinsa' },
-  antipasti: { ro: 'Antipasti', ru: 'Закуски', en: 'Starters' },
-  pasta: { ro: 'Paste / Risotto', ru: 'Паста / Ризотто', en: 'Pasta / Risotto' },
-  dolci: { ro: 'Deserturi', ru: 'Десерты', en: 'Desserts' },
-  drinks: { ro: 'Bar', ru: 'Бар', en: 'Bar' },
-}
+import type { Lang } from '../types'
 
 export type UiKey =
   | 'brand.tagline'
@@ -190,12 +181,23 @@ export type UiKey =
   | 'checkout.promo.apply'
   | 'checkout.promo.applied'
   | 'checkout.promo.invalid'
+  | 'checkout.promo.loginHint'
+  | 'checkout.promo.notFound'
+  | 'checkout.promo.inactive'
+  | 'checkout.promo.expired'
+  | 'checkout.promo.used'
   | 'checkout.submit'
   | 'checkout.terms'
   | 'checkout.deliveryNote'
   | 'order.success.title'
+  | 'order.success.titleWithId'
   | 'order.success.sub'
   | 'order.success.back'
+  | 'order.success.account'
+  | 'order.status.new'
+  | 'order.status.process'
+  | 'order.status.done'
+  | 'order.status.cancel'
   | 'nav.reviews'
   | 'reviews.title'
   | 'reviews.sub'
@@ -515,6 +517,31 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'checkout.promo.apply': { ro: 'Aplică', ru: 'Применить', en: 'Apply' },
   'checkout.promo.applied': { ro: 'Reducere aplicată!', ru: 'Скидка применена!', en: 'Discount applied!' },
   'checkout.promo.invalid': { ro: 'Cod invalid', ru: 'Неверный код', en: 'Invalid code' },
+  'checkout.promo.loginHint': {
+    ro: 'Conectează-te pentru a aplica un cod promoțional.',
+    ru: 'Войдите, чтобы применить промокод.',
+    en: 'Sign in to apply a promo code.',
+  },
+  'checkout.promo.notFound': {
+    ro: 'Codul nu a fost găsit',
+    ru: 'Промокод не найден',
+    en: 'Promo code not found',
+  },
+  'checkout.promo.inactive': {
+    ro: 'Codul nu este activ',
+    ru: 'Промокод неактивен',
+    en: 'Promo code is inactive',
+  },
+  'checkout.promo.expired': {
+    ro: 'Codul a expirat',
+    ru: 'Срок промокода истёк',
+    en: 'Promo code has expired',
+  },
+  'checkout.promo.used': {
+    ro: 'Codul a fost deja folosit',
+    ru: 'Промокод уже использован',
+    en: 'Promo code already used',
+  },
   'checkout.submit': { ro: 'Plasează comanda', ru: 'Оформить заказ', en: 'Place order' },
   'checkout.terms': {
     ro: 'Sunt de acord cu termenii și condițiile',
@@ -527,12 +554,22 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Orders over 500 MDL — free delivery',
   },
   'order.success.title': { ro: 'Comanda plasată!', ru: 'Заказ оформлен!', en: 'Order placed!' },
+  'order.success.titleWithId': {
+    ro: 'Comanda #{id} a fost plasată!',
+    ru: 'Заказ #{id} оформлен!',
+    en: 'Order #{id} placed!',
+  },
   'order.success.sub': {
     ro: 'Mulțumim! Curierii noștri vor livra în 35–50 de minute.',
     ru: 'Спасибо! Курьер доставит ваш заказ за 35–50 минут.',
     en: 'Thank you! Your order will be delivered in 35–50 minutes.',
   },
   'order.success.back': { ro: 'Înapoi la meniu', ru: 'Вернуться в меню', en: 'Back to menu' },
+  'order.success.account': { ro: 'Contul meu', ru: 'Мой аккаунт', en: 'My account' },
+  'order.status.new': { ro: 'Nou', ru: 'Новый', en: 'New' },
+  'order.status.process': { ro: 'În lucru', ru: 'В обработке', en: 'Processing' },
+  'order.status.done': { ro: 'Finalizat', ru: 'Выполнен', en: 'Completed' },
+  'order.status.cancel': { ro: 'Anulat', ru: 'Отменён', en: 'Cancelled' },
 
   'nav.reviews': { ro: 'Recenzii', ru: 'Отзывы', en: 'Reviews' },
   'reviews.title': { ro: 'Recenzii', ru: 'Отзывы', en: 'Reviews' },

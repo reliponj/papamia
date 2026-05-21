@@ -1,4 +1,11 @@
-const BASE_URL = 'https://dev.api.papamia.reliponj.online'
+const DEFAULT_API_BASE = 'https://dev.api.papamia.reliponj.online'
+
+export function getApiBaseUrl(): string {
+  const raw = import.meta.env.VITE_API_BASE_URL?.trim()
+  return (raw && raw.length > 0 ? raw : DEFAULT_API_BASE).replace(/\/$/, '')
+}
+
+const BASE_URL = getApiBaseUrl()
 
 const ACCESS_TOKEN_KEY = 'papamia-access-token'
 const REFRESH_TOKEN_KEY = 'papamia-refresh-token'
@@ -122,13 +129,28 @@ export async function apiGetMe(): Promise<UserMe> {
   return res.json()
 }
 
+export async function apiUpdateMe(payload: {
+  username: string
+  email: string
+}): Promise<UserMe> {
+  const res = await apiFetch('/api/user/me', {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err?.message ?? `Failed to update profile (${res.status})`)
+  }
+  return res.json()
+}
+
 export async function apiChangePassword(
-  CurrentPassword: string,
+  currentPassword: string,
   newPassword: string,
 ): Promise<void> {
   const res = await apiFetch('/api/user/me/password', {
     method: 'PUT',
-    body: JSON.stringify({ CurrentPassword, newPassword }),
+    body: JSON.stringify({ currentPassword, newPassword }),
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
