@@ -27,6 +27,11 @@ const PROMO_ERROR_KEYS: Record<string, UiKey> = {
   promocode_already_used: 'checkout.promo.used',
 }
 
+const ORDER_ERROR_KEYS: Record<string, UiKey> = {
+  invalid_order_items: 'checkout.error.invalidItems',
+  invalid_order_data: 'checkout.error.invalidItems',
+}
+
 function cardProviderValue(cardType: CardType): number {
   if (cardType === 'Mastercard') return 1
   if (cardType === 'PayPal') return 2
@@ -117,7 +122,15 @@ export function CheckoutPage() {
       clear()
       navigate('/order-success', { state: { orderId: order.id } })
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to place order')
+      const msg =
+        err instanceof PublicApiError
+          ? ORDER_ERROR_KEYS[err.message]
+            ? t(ORDER_ERROR_KEYS[err.message])
+            : err.message
+          : err instanceof Error
+            ? err.message
+            : t('checkout.error.generic')
+      setSubmitError(msg)
     } finally {
       setSubmitting(false)
     }
@@ -329,7 +342,7 @@ export function CheckoutPage() {
 
           {submitError && <p className="checkout-form__error">{submitError}</p>}
 
-          <Button variant="primary" className="checkout-submit" disabled={!agreed || submitting}>
+          <Button type="submit" variant="primary" className="checkout-submit" disabled={!agreed || submitting}>
             {submitting ? '...' : t('checkout.submit')}
           </Button>
         </form>

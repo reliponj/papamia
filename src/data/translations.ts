@@ -197,6 +197,8 @@ export type UiKey =
   | 'checkout.promo.expired'
   | 'checkout.promo.used'
   | 'checkout.submit'
+  | 'checkout.error.generic'
+  | 'checkout.error.invalidItems'
   | 'checkout.terms'
   | 'checkout.deliveryNote'
   | 'order.success.title'
@@ -583,6 +585,16 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Promo code already used',
   },
   'checkout.submit': { ro: 'Plasează comanda', ru: 'Оформить заказ', en: 'Place order' },
+  'checkout.error.generic': {
+    ro: 'Nu s-a putut plasa comanda. Încercați din nou.',
+    ru: 'Не удалось оформить заказ. Попробуйте ещё раз.',
+    en: 'Could not place the order. Please try again.',
+  },
+  'checkout.error.invalidItems': {
+    ro: 'Verificați conținutul coșului — unele produse nu mai sunt disponibile.',
+    ru: 'Проверьте корзину — некоторые позиции недоступны.',
+    en: 'Check your cart — some items are no longer available.',
+  },
   'checkout.terms': {
     ro: 'Sunt de acord cu termenii și condițiile',
     ru: 'Я согласен с условиями и положениями',

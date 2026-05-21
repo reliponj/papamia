@@ -1,24 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useCartActions, useCartTotals } from '../../contexts/CartContext'
-import { useFavoriteIds } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
 import { useAuthState, useAuthApi } from '../../contexts/AuthContext'
-import type { Lang } from '../../types'
+import { LangSelect } from '../ui/LangSelect'
 
-const LANGS: Lang[] = ['ro', 'ru', 'en']
 const SCROLL_THRESHOLD = 56
 
-const LANG_LABELS: Record<Lang, string> = {
-  ro: 'RO — Română',
-  ru: 'RU — Русский',
-  en: 'EN — English',
-}
-
 export function SiteHeader() {
-  const { t, lang, setLang } = useLocale()
+  const { t } = useLocale()
   const { count } = useCartTotals()
-  const favorites = useFavoriteIds()
   const { toggleDrawer } = useCartActions()
   const { isAuthenticated } = useAuthState()
   const { logout } = useAuthApi()
@@ -115,38 +106,11 @@ export function SiteHeader() {
         </nav>
 
         <div className="site-header__tools">
-          <label className="lang-select-wrap">
-            <span className="visually-hidden">{t('aria.lang')}</span>
-            <select
-              className="lang-select"
-              value={lang}
-              onChange={(e) => setLang(e.target.value as Lang)}
-              aria-label={t('aria.lang')}
-            >
-              {LANGS.map((code) => (
-                <option key={code} value={code}>
-                  {LANG_LABELS[code]}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <Link
-            to="/favorites"
-            className="btn btn--icon btn--secondary site-header__fav-btn"
-            aria-label={t('favorites.title')}
-            title={t('favorites.title')}
-            onClick={() => setMenuOpen(false)}
-          >
-            <span aria-hidden>♥</span>
-            {favorites.size > 0 && (
-              <span className="site-header__badge">{favorites.size}</span>
-            )}
-          </Link>
+          <LangSelect />
 
           <button
             type="button"
-            className="btn btn--secondary btn--sm site-header__auth-btn"
+            className="btn btn--secondary site-header__auth-btn"
             onClick={() => {
               if (isAuthenticated) {
                 logout()

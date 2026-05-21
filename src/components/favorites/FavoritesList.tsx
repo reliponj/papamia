@@ -1,59 +1,44 @@
+import type { Product } from '../../api/public/types'
 import { useLocale } from '../../contexts/LocaleContext'
-import { useFavoriteProducts, useFavoritesApi } from '../../contexts/FavoritesContext'
-import { useCartActions } from '../../contexts/CartContext'
-import { formatPriceMdl } from '../../api/money'
-import { Button } from '../ui/Button'
-import { Link } from 'react-router-dom'
+import { useFavoriteProducts } from '../../contexts/FavoritesContext'
+import { ProductCard } from '../menu/ProductCard'
+import { ButtonLink } from '../ui/Button'
+
+function toProduct(productId: number, snapshot: { name: string; price: number; imageUrl: string }): Product {
+  return {
+    id: productId,
+    name: snapshot.name,
+    description: '',
+    price: snapshot.price,
+    imageUrl: snapshot.imageUrl,
+    weight: 0,
+    weightType: 'g',
+    allergens: '',
+    isActive: true,
+    categoryId: 0,
+  }
+}
 
 export function FavoritesList() {
   const { t } = useLocale()
   const favorites = useFavoriteProducts()
-  const { toggle } = useFavoritesApi()
-  const { add, openDrawer } = useCartActions()
 
   if (favorites.length === 0) {
     return (
       <div className="favorites-empty">
         <p>{t('favorites.empty')}</p>
-        <Link to="/menu" className="btn btn--primary">
+        <ButtonLink to="/menu" variant="primary">
           {t('favorites.browseMenu')}
-        </Link>
+        </ButtonLink>
       </div>
     )
   }
 
   return (
-    <ul className="favorites-grid">
+    <div className="menu-page__grid favorites-page__grid">
       {favorites.map(({ productId, snapshot }) => (
-        <li key={productId} className="favorites-card">
-          <img src={snapshot.imageUrl} alt={snapshot.name} className="favorites-card__img" />
-          <div className="favorites-card__body">
-            <p className="favorites-card__name">{snapshot.name}</p>
-            <p className="favorites-card__price">{formatPriceMdl(snapshot.price)}</p>
-          </div>
-          <div className="favorites-card__actions">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                add(productId, snapshot)
-                openDrawer()
-              }}
-            >
-              {t('menu.add')}
-            </Button>
-            <Button
-              variant="icon"
-              size="sm"
-              aria-label={t('favorites.remove')}
-              className="favorites-card__remove-btn"
-              onClick={() => toggle(productId, snapshot)}
-            >
-              ♥
-            </Button>
-          </div>
-        </li>
+        <ProductCard key={productId} product={toProduct(productId, snapshot)} />
       ))}
-    </ul>
+    </div>
   )
 }
