@@ -7,6 +7,7 @@ import {
   LayoutGrid, Pizza, Users, Image, Ticket, LayoutDashboard,
 } from 'lucide-react'
 import { getAdminBreadcrumbs } from '../../pages/admin/adminNavMeta'
+import { AdminPageTransition } from '../admin/AdminPageTransition'
 
 type NavChild = { to: string; label: string }
 type NavGroup = {
@@ -238,7 +239,9 @@ function AdminShell() {
           </header>
           <main className="admin-content">
             <div className="admin-content__surface">
-              <Outlet />
+              <AdminPageTransition>
+                <Outlet />
+              </AdminPageTransition>
             </div>
           </main>
         </div>
