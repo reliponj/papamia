@@ -101,6 +101,10 @@ export type UiKey =
   | 'builder.custom'
   | 'builder.toppings.hint'
   | 'builder.preview.empty'
+  | 'builder.reset'
+  | 'builder.added'
+  | 'builder.adding'
+  | 'builder.loading'
   | 'auth.login'
   | 'auth.logout'
   | 'auth.username'
@@ -491,6 +495,14 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     ru: 'Выберите тесто, чтобы начать',
     en: 'Choose dough to start',
   },
+  'builder.reset': { ro: 'Resetează', ru: 'Сбросить', en: 'Start over' },
+  'builder.added': {
+    ro: 'Adăugat în coș',
+    ru: 'Добавлено в корзину',
+    en: 'Added to cart',
+  },
+  'builder.adding': { ro: 'Se adaugă…', ru: 'Добавляем…', en: 'Adding…' },
+  'builder.loading': { ro: 'Se încarcă…', ru: 'Загрузка…', en: 'Loading…' },
   'auth.login': { ro: 'Conectare', ru: 'Войти', en: 'Sign in' },
   'auth.logout': { ro: 'Ieșire', ru: 'Выйти', en: 'Sign out' },
   'auth.username': { ro: 'Nume de utilizator', ru: 'Имя пользователя', en: 'Username' },

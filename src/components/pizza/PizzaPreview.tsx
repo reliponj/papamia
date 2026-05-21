@@ -19,14 +19,15 @@ type Props = {
   dough: PreviewIngredient | null
   sauce: PreviewIngredient | null
   toppings: PreviewIngredient[]
+  compact?: boolean
 }
 
-export function PizzaPreview({ dough, sauce, toppings }: Props) {
+export function PizzaPreview({ dough, sauce, toppings, compact = false }: Props) {
   const { t } = useLocale()
 
   if (!dough) {
     return (
-      <div className="pizza-preview pizza-preview--empty">
+      <div className={`pizza-preview pizza-preview--empty${compact ? ' pizza-preview--compact' : ''}`}>
         <svg viewBox="0 0 300 300" className="pizza-preview__svg">
           <defs>
             <radialGradient id="emptyGrad" cx="40%" cy="38%">
@@ -75,7 +76,7 @@ export function PizzaPreview({ dough, sauce, toppings }: Props) {
   const sauceColor = sauce ? sauceColorForName(sauce.name) : null
 
   return (
-    <div className="pizza-preview">
+    <div className={`pizza-preview${compact ? ' pizza-preview--compact' : ''}`}>
       <svg viewBox="0 0 300 300" className="pizza-preview__svg">
         <defs>
           <radialGradient id="crustGrad" cx="38%" cy="35%" r="65%">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { formatPriceMdl } from '../../api/money'
 import { useCartActions, useCartState, useCartTotals } from '../../contexts/CartContext'
 import { useLocale } from '../../contexts/LocaleContext'
+import { CustomPizzaCartItem } from '../pizza/CustomPizzaCartItem'
 import { Button } from '../ui/Button'
 
 export function CartDrawer() {
@@ -100,24 +101,14 @@ export function CartDrawer() {
             ))}
 
             {customLines.map((cl) => (
-              <li key={cl.id} className="cart-line cart-line--custom">
-                <div className="cart-line__info">
-                  <div className="cart-line__name">{cl.label}</div>
-                  <div className="cart-line__meta cart-line__meta--custom">{t('builder.custom')}</div>
-                  <div className="cart-line__meta">
-                    {formatPriceMdl(cl.price)} × {cl.qty}
-                  </div>
-                </div>
-                <div className="cart-line__controls">
-                  <button
-                    type="button"
-                    className="cart-line__remove"
-                    onClick={() => removeCustomLine(cl.id)}
-                  >
-                    {t('cart.remove')}
-                  </button>
-                </div>
-              </li>
+              <CustomPizzaCartItem
+                key={cl.id}
+                preview={cl.preview}
+                price={cl.price}
+                qty={cl.qty}
+                onRemove={() => removeCustomLine(cl.id)}
+                variant="drawer"
+              />
             ))}
           </ul>
         )}

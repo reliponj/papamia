@@ -8,6 +8,7 @@ import { useCartActions, useCartTotals } from '../contexts/CartContext'
 import { useAuthState } from '../contexts/AuthContext'
 import { useLocale } from '../contexts/LocaleContext'
 import type { UiKey } from '../data/translations'
+import { CustomPizzaCartItem } from '../components/pizza/CustomPizzaCartItem'
 import { Button } from '../components/ui/Button'
 
 /** Delivery fee in minor units (35 MDL). */
@@ -394,12 +395,13 @@ export function CheckoutPage() {
               </li>
             ))}
             {customLines.map((cl) => (
-              <li key={cl.id} className="checkout-summary__item">
-                <div className="checkout-summary__info">
-                  <div className="checkout-summary__name">{cl.label}</div>
-                  <div className="checkout-summary__qty">× {cl.qty}</div>
-                </div>
-                <div className="checkout-summary__price">{formatPriceMdl(cl.price * cl.qty)}</div>
+              <li key={cl.id} className="checkout-summary__item checkout-summary__item--custom">
+                <CustomPizzaCartItem
+                  preview={cl.preview}
+                  price={cl.price}
+                  qty={cl.qty}
+                  variant="checkout"
+                />
               </li>
             ))}
           </ul>
