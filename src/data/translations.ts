@@ -153,6 +153,33 @@ export type UiKey =
   | 'menu.filter.allergens'
   | 'menu.filter.noResults'
   | 'menu.filter.clearAll'
+  | 'menu.loading'
+  | 'legal.privacy.title'
+  | 'legal.privacy.updated'
+  | 'legal.privacy.intro'
+  | 'legal.privacy.s1.title'
+  | 'legal.privacy.s1.text'
+  | 'legal.privacy.s2.title'
+  | 'legal.privacy.s2.text'
+  | 'legal.privacy.s3.title'
+  | 'legal.privacy.s3.text'
+  | 'legal.privacy.s4.title'
+  | 'legal.privacy.s4.text'
+  | 'legal.privacy.s5.title'
+  | 'legal.privacy.s5.text'
+  | 'legal.terms.title'
+  | 'legal.terms.updated'
+  | 'legal.terms.intro'
+  | 'legal.terms.s1.title'
+  | 'legal.terms.s1.text'
+  | 'legal.terms.s2.title'
+  | 'legal.terms.s2.text'
+  | 'legal.terms.s3.title'
+  | 'legal.terms.s3.text'
+  | 'legal.terms.s4.title'
+  | 'legal.terms.s4.text'
+  | 'legal.terms.s5.title'
+  | 'legal.terms.s5.text'
   | 'allergen.gluten'
   | 'allergen.dairy'
   | 'allergen.eggs'
@@ -516,6 +543,81 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'menu.filter.allergens': { ro: 'Exclude alergeni', ru: 'Исключить аллергены', en: 'Exclude allergens' },
   'menu.filter.noResults': { ro: 'Niciun produs găsit.', ru: 'Ничего не найдено.', en: 'No items found.' },
   'menu.filter.clearAll': { ro: 'Resetează', ru: 'Сбросить', en: 'Clear all' },
+  'menu.loading': { ro: 'Se actualizează meniul…', ru: 'Обновляем меню…', en: 'Updating menu…' },
+  'legal.privacy.title': { ro: 'Politica de confidențialitate', ru: 'Политика конфиденциальности', en: 'Privacy Policy' },
+  'legal.privacy.updated': { ro: 'Ultima actualizare: mai 2026', ru: 'Последнее обновление: май 2026', en: 'Last updated: May 2026' },
+  'legal.privacy.intro': {
+    ro: 'Papa Mia respectă confidențialitatea vizitatorilor site-ului și a clienților. Această pagină explică ce date colectăm, de ce le folosim și cum le protejăm.',
+    ru: 'Papa Mia уважает конфиденциальность посетителей сайта и клиентов. На этой странице описано, какие данные мы собираем, зачем они нужны и как мы их защищаем.',
+    en: 'Papa Mia respects the privacy of website visitors and customers. This page explains what data we collect, why we use it, and how we protect it.',
+  },
+  'legal.privacy.s1.title': { ro: 'Ce date colectăm', ru: 'Какие данные мы собираем', en: 'What data we collect' },
+  'legal.privacy.s1.text': {
+    ro: 'Putem prelucra numele, adresa de e-mail, numărul de telefon, adresa de livrare, istoricul comenzilor și preferințele indicate la plasarea comenzii sau crearea contului.',
+    ru: 'Мы можем обрабатывать имя, адрес электронной почты, номер телефона, адрес доставки, историю заказов и предпочтения, указанные при оформлении заказа или регистрации.',
+    en: 'We may process your name, email address, phone number, delivery address, order history, and preferences provided when placing an order or creating an account.',
+  },
+  'legal.privacy.s2.title': { ro: 'Cum folosim datele', ru: 'Как мы используем данные', en: 'How we use data' },
+  'legal.privacy.s2.text': {
+    ro: 'Datele sunt folosite pentru procesarea comenzilor, livrare, comunicarea cu clientul, îmbunătățirea serviciului și, cu acordul dvs., pentru informări despre promoții.',
+    ru: 'Данные используются для обработки заказов, доставки, связи с клиентом, улучшения сервиса и — с вашего согласия — для информации об акциях.',
+    en: 'Data is used to process orders, arrange delivery, communicate with you, improve our service, and—with your consent—for promotional updates.',
+  },
+  'legal.privacy.s3.title': { ro: 'Stocare și securitate', ru: 'Хранение и безопасность', en: 'Storage and security' },
+  'legal.privacy.s3.text': {
+    ro: 'Aplicăm măsuri tehnice și organizatorice rezonabile pentru a proteja datele împotriva accesului neautorizat, pierderii sau divulgării.',
+    ru: 'Мы применяем разумные технические и организационные меры для защиты данных от несанкционированного доступа, утраты или разглашения.',
+    en: 'We apply reasonable technical and organizational measures to protect data against unauthorized access, loss, or disclosure.',
+  },
+  'legal.privacy.s4.title': { ro: 'Partajarea datelor', ru: 'Передача данных', en: 'Sharing data' },
+  'legal.privacy.s4.text': {
+    ro: 'Nu vindem datele personale. Le putem transmite doar partenerilor implicați în livrare sau procesarea plăților, în măsura necesară executării comenzii.',
+    ru: 'Мы не продаём персональные данные. Мы можем передавать их только партнёрам, участвующим в доставке или обработке платежей, в объёме, необходимом для выполнения заказа.',
+    en: 'We do not sell personal data. We may share it only with partners involved in delivery or payment processing, to the extent required to fulfill your order.',
+  },
+  'legal.privacy.s5.title': { ro: 'Contact', ru: 'Контакты', en: 'Contact' },
+  'legal.privacy.s5.text': {
+    ro: 'Pentru întrebări privind confidențialitatea, ne puteți contacta prin formularul de pe pagina Contacte sau la adresa indicată acolo.',
+    ru: 'По вопросам конфиденциальности вы можете связаться с нами через форму на странице «Контакты» или по указанным там реквизитам.',
+    en: 'For privacy-related questions, contact us via the form on the Contacts page or using the details listed there.',
+  },
+  'legal.terms.title': { ro: 'Termeni și condiții', ru: 'Условия использования', en: 'Terms & Conditions' },
+  'legal.terms.updated': { ro: 'Ultima actualizare: mai 2026', ru: 'Последнее обновление: май 2026', en: 'Last updated: May 2026' },
+  'legal.terms.intro': {
+    ro: 'Prin utilizarea site-ului Papa Mia și plasarea comenzilor online, sunteți de acord cu termenii de mai jos. Vă rugăm să îi citiți înainte de a comanda.',
+    ru: 'Используя сайт Papa Mia и оформляя заказы онлайн, вы соглашаетесь с условиями ниже. Пожалуйста, прочитайте их перед заказом.',
+    en: 'By using the Papa Mia website and placing orders online, you agree to the terms below. Please read them before ordering.',
+  },
+  'legal.terms.s1.title': { ro: 'Comenzi și livrare', ru: 'Заказы и доставка', en: 'Orders and delivery' },
+  'legal.terms.s1.text': {
+    ro: 'Comanda este confirmată după procesarea acesteia de către restaurant. Timpul de livrare este estimativ și poate varia în funcție de încărcare și condițiile externe.',
+    ru: 'Заказ считается подтверждённым после его обработки рестораном. Срок доставки является ориентировочным и может меняться в зависимости от загрузки и внешних условий.',
+    en: 'An order is confirmed once processed by the restaurant. Delivery times are estimates and may vary depending on demand and external conditions.',
+  },
+  'legal.terms.s2.title': { ro: 'Prețuri și plată', ru: 'Цены и оплата', en: 'Prices and payment' },
+  'legal.terms.s2.text': {
+    ro: 'Prețurile afișate pe site sunt exprimate în MDL. Plata se poate efectua numerar la livrare sau cu cardul, conform opțiunilor disponibile la checkout.',
+    ru: 'Цены на сайте указаны в MDL. Оплата возможна наличными при доставке или картой — в соответствии с доступными вариантами при оформлении заказа.',
+    en: 'Prices shown on the site are in MDL. Payment may be made in cash on delivery or by card, according to the options available at checkout.',
+  },
+  'legal.terms.s3.title': { ro: 'Anulare și modificări', ru: 'Отмена и изменения', en: 'Cancellation and changes' },
+  'legal.terms.s3.text': {
+    ro: 'Pentru anularea sau modificarea comenzii, contactați-ne cât mai repede posibil. După ce prepararea a început, modificările pot fi limitate.',
+    ru: 'Для отмены или изменения заказа свяжитесь с нами как можно скорее. После начала приготовления изменения могут быть ограничены.',
+    en: 'To cancel or change an order, contact us as soon as possible. Once preparation has started, changes may be limited.',
+  },
+  'legal.terms.s4.title': { ro: 'Răspundere', ru: 'Ответственность', en: 'Liability' },
+  'legal.terms.s4.text': {
+    ro: 'Facem eforturi rezonabile pentru acuratețea informațiilor de pe site. Nu răspundem pentru întreruperi tehnice temporare sau informații furnizate incorect de utilizator.',
+    ru: 'Мы стремимся поддерживать актуальность информации на сайте. Мы не несём ответственности за временные технические сбои или неверные данные, указанные пользователем.',
+    en: 'We make reasonable efforts to keep site information accurate. We are not liable for temporary technical interruptions or incorrect information provided by the user.',
+  },
+  'legal.terms.s5.title': { ro: 'Modificări ale termenilor', ru: 'Изменение условий', en: 'Changes to terms' },
+  'legal.terms.s5.text': {
+    ro: 'Putem actualiza acești termeni periodic. Versiunea actuală este publicată pe această pagină; continuarea utilizării site-ului implică acceptarea modificărilor.',
+    ru: 'Мы можем периодически обновлять эти условия. Актуальная версия публикуется на этой странице; продолжение использования сайта означает согласие с изменениями.',
+    en: 'We may update these terms from time to time. The current version is published on this page; continued use of the site means you accept the changes.',
+  },
   'allergen.gluten': { ro: 'Gluten', ru: 'Глютен', en: 'Gluten' },
   'allergen.dairy': { ro: 'Lactate', ru: 'Молочное', en: 'Dairy' },
   'allergen.eggs': { ro: 'Ouă', ru: 'Яйца', en: 'Eggs' },

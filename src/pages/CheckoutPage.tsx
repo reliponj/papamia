@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { formatPriceMdl, majorToMinor } from '../api/money'
 import { createOrder } from '../api/public/order'
@@ -40,7 +40,7 @@ function cardProviderValue(cardType: CardType): number {
 
 export function CheckoutPage() {
   const { t } = useLocale()
-  const { isAuthenticated } = useAuthState()
+  const { isAuthenticated, user, isLoading: authLoading } = useAuthState()
   const { lines, customLines, total } = useCartTotals()
   const { clear } = useCartActions()
   const navigate = useNavigate()
@@ -63,8 +63,27 @@ export function CheckoutPage() {
   const [promoError, setPromoError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const prefilledRef = useRef(false)
 
   const isEmpty = lines.length === 0 && customLines.length === 0
+
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || !user || prefilledRef.current) return
+    prefilledRef.current = true
+
+    if (user.email) setEmail(user.email)
+
+    const username = user.username?.trim() ?? ''
+    if (username) {
+      const parts = username.split(/\s+/).filter(Boolean)
+      if (parts.length >= 2) {
+        setFirstName(parts[0])
+        setLastName(parts.slice(1).join(' '))
+      } else {
+        setFirstName(username)
+      }
+    }
+  }, [authLoading, isAuthenticated, user])
 
   useEffect(() => {
     if (isEmpty) navigate('/menu', { replace: true })
@@ -337,7 +356,12 @@ export function CheckoutPage() {
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
             />
-            <span className="checkout-terms__text">{t('checkout.terms')}</span>
+            <span className="checkout-terms__text">
+              {t('checkout.terms')}{' '}
+              <Link to="/terms" className="checkout-terms__link">
+                {t('footer.terms')}
+              </Link>
+            </span>
           </label>
 
           {submitError && <p className="checkout-form__error">{submitError}</p>}
