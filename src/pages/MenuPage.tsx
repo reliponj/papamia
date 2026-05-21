@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as Select from '@radix-ui/react-select'
+import { ChevronDown, Check } from 'lucide-react'
 import { listAllergens } from '../api/public/allergen'
 import { listCategories } from '../api/public/category'
 import { listProductsByCategory, type ProductListQuery } from '../api/public/product'
@@ -185,25 +186,21 @@ export function MenuPage() {
           </div>
 
           <Select.Root value={sort} onValueChange={(v) => setSort(v as SortOption)}>
-            <Select.Trigger className="sort-trigger" aria-label={t('menu.filter.price')}>
+            <Select.Trigger className="app-select-trigger app-select-trigger--pill" aria-label={t('menu.filter.price')}>
               <Select.Value>{currentSortLabel}</Select.Value>
-              <Select.Icon className="sort-trigger__icon">
-                <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <Select.Icon className="app-select-trigger__icon">
+                <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
               </Select.Icon>
             </Select.Trigger>
 
             <Select.Portal>
-              <Select.Content className="sort-content" position="popper" sideOffset={6}>
-                <Select.Viewport className="sort-viewport">
+              <Select.Content className="app-select-content" position="popper" sideOffset={6}>
+                <Select.Viewport className="app-select-viewport">
                   {SORT_OPTIONS.map((opt) => (
-                    <Select.Item key={opt.value} value={opt.value} className="sort-item">
+                    <Select.Item key={opt.value} value={opt.value} className="app-select-item">
                       <Select.ItemText>{opt.label}</Select.ItemText>
-                      <Select.ItemIndicator className="sort-item__check">
-                        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                      <Select.ItemIndicator className="app-select-item__check">
+                        <Check size={14} strokeWidth={2.5} aria-hidden />
                       </Select.ItemIndicator>
                     </Select.Item>
                   ))}
