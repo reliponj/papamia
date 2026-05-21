@@ -1,51 +1,104 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as Select from '@radix-ui/react-select'
-import { MENU_PRODUCTS } from '../data/menu'
-import { useLocale } from '../contexts/LocaleContext'
-import type { Allergen, MenuCategory } from '../types'
+import { listAllergens } from '../api/public/allergen'
+import { listCategories } from '../api/public/category'
+import { listProductsByCategory, type ProductListQuery } from '../api/public/product'
+import type { Allergen } from '../api/public/types'
+import type { Category, Product } from '../api/public/types'
 import { CategoryTabs, type CategoryFilter } from '../components/menu/CategoryTabs'
 import { ProductCard } from '../components/menu/ProductCard'
-
-const ALL_ALLERGENS: Allergen[] = ['gluten', 'dairy', 'eggs', 'fish', 'nuts', 'soy', 'alcohol']
+import { useLocale } from '../contexts/LocaleContext'
 
 type SortOption = 'default' | 'priceAsc' | 'priceDesc' | 'nameAsc' | 'nameDesc'
 
-const ALLERGEN_EMOJI: Record<Allergen, string> = {
-  gluten: '🌾',
-  dairy: '🥛',
-  eggs: '🥚',
-  fish: '🐟',
-  nuts: '🥜',
-  soy: '🫘',
-  alcohol: '🍷',
+function sortToQuery(sort: SortOption): Pick<ProductListQuery, 'sortBy' | 'sortDir'> {
+  switch (sort) {
+    case 'priceAsc':
+      return { sortBy: 'price', sortDir: 'asc' }
+    case 'priceDesc':
+      return { sortBy: 'price', sortDir: 'desc' }
+    case 'nameAsc':
+      return { sortBy: 'name', sortDir: 'asc' }
+    case 'nameDesc':
+      return { sortBy: 'name', sortDir: 'desc' }
+    default:
+      return {}
+  }
 }
-
-const ALLERGEN_KEY = {
-  gluten: 'allergen.gluten',
-  dairy: 'allergen.dairy',
-  eggs: 'allergen.eggs',
-  fish: 'allergen.fish',
-  nuts: 'allergen.nuts',
-  soy: 'allergen.soy',
-  alcohol: 'allergen.alcohol',
-} as const
 
 export function MenuPage() {
   const { t, lang } = useLocale()
+  const [categories, setCategories] = useState<Category[]>([])
+  const [allergens, setAllergens] = useState<Allergen[]>([])
   const [cat, setCat] = useState<CategoryFilter>('all')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOption>('default')
-  const [excludedAllergens, setExcludedAllergens] = useState<Set<Allergen>>(new Set())
+  const [excludedAllergenIds, setExcludedAllergenIds] = useState<Set<number>>(new Set())
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([listCategories(), listAllergens()])
+      .then(([cats, allergenList]) => {
+        if (cancelled) return
+        setCategories(cats)
+        setAllergens(allergenList)
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load menu')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const loadProducts = useCallback(async () => {
+    if (categories.length === 0) {
+      setProducts([])
+      setLoading(false)
+      return
+    }
+    setLoading(true)
+    setError('')
+    const query: ProductListQuery = {
+      ...sortToQuery(sort),
+      allergenExclude:
+        excludedAllergenIds.size > 0 ? [...excludedAllergenIds] : undefined,
+    }
+    try {
+      const categoryIds =
+        cat === 'all' ? categories.map((c) => c.id) : [cat as number]
+      const lists = await Promise.all(
+        categoryIds.map((id) => listProductsByCategory(id, query)),
+      )
+      const merged = lists.flat()
+      const byId = new Map<number, Product>()
+      for (const p of merged) byId.set(p.id, p)
+      setProducts([...byId.values()])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load products')
+      setProducts([])
+    } finally {
+      setLoading(false)
+    }
+  }, [cat, categories, excludedAllergenIds, sort])
+
+  useEffect(() => {
+    if (categories.length === 0) return
+    void loadProducts()
+  }, [loadProducts, categories.length])
 
   function handleCatChange(c: CategoryFilter) {
     setCat(c)
     setSearch('')
   }
 
-  function toggleAllergen(a: Allergen) {
-    setExcludedAllergens((prev) => {
+  function toggleAllergen(id: number) {
+    setExcludedAllergenIds((prev) => {
       const next = new Set(prev)
-      next.has(a) ? next.delete(a) : next.add(a)
+      next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
   }
@@ -53,38 +106,23 @@ export function MenuPage() {
   function clearFilters() {
     setSearch('')
     setSort('default')
-    setExcludedAllergens(new Set())
+    setExcludedAllergenIds(new Set())
   }
 
-  const hasActiveFilters = search.trim() !== '' || sort !== 'default' || excludedAllergens.size > 0
+  const hasActiveFilters =
+    search.trim() !== '' || sort !== 'default' || excludedAllergenIds.size > 0
 
   const list = useMemo(() => {
-    let result = cat === 'all'
-      ? [...MENU_PRODUCTS]
-      : MENU_PRODUCTS.filter((p) => p.category === (cat as MenuCategory))
-
+    let result = [...products]
     if (search.trim()) {
       const q = search.trim().toLowerCase()
       result = result.filter(
         (p) =>
-          p.name[lang].toLowerCase().includes(q) ||
-          p.description[lang].toLowerCase().includes(q),
+          p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q),
       )
     }
-
-    if (excludedAllergens.size > 0) {
-      result = result.filter(
-        (p) => !p.allergens?.some((a) => excludedAllergens.has(a)),
-      )
-    }
-
-    if (sort === 'priceAsc') result = [...result].sort((a, b) => a.price - b.price)
-    else if (sort === 'priceDesc') result = [...result].sort((a, b) => b.price - a.price)
-    else if (sort === 'nameAsc') result = [...result].sort((a, b) => a.name[lang].localeCompare(b.name[lang]))
-    else if (sort === 'nameDesc') result = [...result].sort((a, b) => b.name[lang].localeCompare(a.name[lang]))
-
     return result
-  }, [cat, search, sort, excludedAllergens, lang])
+  }, [products, search])
 
   const FOUND_LABEL: Record<string, (n: number) => string> = {
     ro: (n) => `${n} ${n === 1 ? 'preparat găsit' : 'preparate găsite'}`,
@@ -106,7 +144,8 @@ export function MenuPage() {
     { value: 'nameDesc', label: t('menu.filter.nameDesc') },
   ]
 
-  const currentSortLabel = SORT_OPTIONS.find((o) => o.value === sort)?.label ?? t('menu.filter.price')
+  const currentSortLabel =
+    SORT_OPTIONS.find((o) => o.value === sort)?.label ?? t('menu.filter.price')
 
   return (
     <div className="menu-page section">
@@ -115,7 +154,7 @@ export function MenuPage() {
         <p className="section-sub">{t('menu.sub')}</p>
       </header>
 
-      <CategoryTabs active={cat} onChange={handleCatChange} />
+      <CategoryTabs categories={categories} active={cat} onChange={handleCatChange} />
 
       <div className="menu-filters">
         <div className="menu-filters__search-row">
@@ -169,36 +208,42 @@ export function MenuPage() {
           )}
         </div>
 
-        <div className="menu-filters__allergens">
-          <span className="menu-filters__allergens-label">{t('menu.filter.allergens')}:</span>
-          <div className="menu-filters__allergens-list">
-            {ALL_ALLERGENS.map((a) => (
-              <button
-                key={a}
-                type="button"
-                className={`menu-filters__allergen-btn${excludedAllergens.has(a) ? ' is-excluded' : ''}`}
-                onClick={() => toggleAllergen(a)}
-                title={t(ALLERGEN_KEY[a])}
-                aria-pressed={excludedAllergens.has(a)}
-              >
-                <span>{ALLERGEN_EMOJI[a]}</span>
-                <span>{t(ALLERGEN_KEY[a])}</span>
-              </button>
-            ))}
+        {allergens.length > 0 && (
+          <div className="menu-filters__allergens">
+            <span className="menu-filters__allergens-label">{t('menu.filter.allergens')}:</span>
+            <div className="menu-filters__allergens-list">
+              {allergens.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  className={`menu-filters__allergen-btn crm-pill${excludedAllergenIds.has(a.id) ? ' is-excluded' : ''}`}
+                  onClick={() => toggleAllergen(a.id)}
+                  aria-pressed={excludedAllergenIds.has(a.id)}
+                >
+                  {a.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      <p className="menu-page__count">{FOUND_LABEL[lang](list.length)}</p>
-
-      {list.length === 0 ? (
-        <p className="menu-page__empty">{t('menu.filter.noResults')}</p>
+      {error && <p className="menu-page__error">{error}</p>}
+      {loading ? (
+        <p className="menu-page__loading">...</p>
       ) : (
-        <div className="menu-page__grid">
-          {list.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
+        <>
+          <p className="menu-page__count">{FOUND_LABEL[lang](list.length)}</p>
+          {list.length === 0 ? (
+            <p className="menu-page__empty">{t('menu.filter.noResults')}</p>
+          ) : (
+            <div className="menu-page__grid">
+              {list.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   )

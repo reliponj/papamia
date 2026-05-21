@@ -20,7 +20,7 @@ export function AdminModal({ title, open, onClose, children }: Props) {
             ✕
           </button>
         </header>
-        <div className="crm-modal__body">{children}</div>
+        <div className="crm-modal__body crm-scroll">{children}</div>
       </div>
     </div>
   )

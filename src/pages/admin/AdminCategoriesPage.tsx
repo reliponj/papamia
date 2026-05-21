@@ -1,135 +1,229 @@
-import { useMemo, useState, type FormEvent } from 'react'
-import { useAdminData } from '../../contexts/AdminDataContext'
+import { useState } from 'react'
+import {
+  createCategory,
+  deleteCategory,
+  listCategories,
+  reorderCategories,
+  updateCategory,
+  type CategoryDto,
+} from '../../api/admin/category'
+import type { CategoryPayload } from '../../api/admin/types'
 import { AdminModal } from './AdminModal'
 import { AdminIconButton } from './AdminIconButton'
+import { AdminPageHeader } from './_shared/AdminPageHeader'
+import { AdminDataTable } from './_shared/AdminDataTable'
+import { AdminAlert } from './_shared/AdminAlert'
+import { FormField } from './_shared/FormField'
+import { AdminConfirmModal } from './_shared/AdminConfirmModal'
+import { useCrudResource } from './_shared/useCrudResource'
+
+const emptyForm: CategoryPayload = {
+  name: '',
+  icon: '',
+  description: '',
+  sort: 0,
+}
 
 export function AdminCategoriesPage() {
-  const { categories, products, addCategory, updateCategory, removeCategory } = useAdminData()
-  const [query, setQuery] = useState('')
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [isModalOpen, setModalOpen] = useState(false)
-  const [form, setForm] = useState({ name: '', slug: '' })
+  const crud = useCrudResource<CategoryDto>({
+    loadItems: listCategories,
+    getId: (row) => row.id,
+    sortItems: (a, b) => a.sort - b.sort || a.name.localeCompare(b.name),
+    filterItem: (row, q) =>
+      `${row.name} ${row.icon} ${row.description}`.toLowerCase().includes(q),
+  })
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return categories
-    return categories.filter((category) => `${category.name} ${category.slug}`.toLowerCase().includes(q))
-  }, [categories, query])
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [isModalOpen, setModalOpen] = useState(false)
+  const [form, setForm] = useState(emptyForm)
+  const [deleteTarget, setDeleteTarget] = useState<CategoryDto | null>(null)
 
   function resetForm() {
-    setForm({ name: '', slug: '' })
+    setForm(emptyForm)
     setEditingId(null)
     setModalOpen(false)
   }
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const payload = { name: form.name.trim(), slug: form.slug.trim().toLowerCase() }
-    if (!payload.name || !payload.slug) return
-    if (editingId) updateCategory(editingId, payload)
-    else addCategory(payload)
-    resetForm()
-  }
-
   function openCreate() {
     setEditingId(null)
-    setForm({ name: '', slug: '' })
+    setForm(emptyForm)
     setModalOpen(true)
+  }
+
+  function openEdit(row: CategoryDto) {
+    setEditingId(row.id)
+    setForm({
+      name: row.name,
+      icon: row.icon,
+      description: row.description,
+      sort: row.sort,
+    })
+    setModalOpen(true)
+  }
+
+  async function submitCategory() {
+    const payload: CategoryPayload = {
+      name: form.name.trim(),
+      icon: form.icon.trim(),
+      description: form.description.trim(),
+      sort: Number(form.sort),
+    }
+    if (!payload.name) return
+
+    await crud.runMutation(async () => {
+      if (editingId !== null) {
+        crud.upsertItem(await updateCategory(editingId, payload))
+      } else {
+        crud.upsertItem(await createCategory(payload))
+      }
+      resetForm()
+    }, 'Save failed')
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget) return
+    const target = deleteTarget
+    await crud.runMutation(async () => {
+      await deleteCategory(target.id)
+      crud.removeItemById(target.id)
+      setDeleteTarget(null)
+    }, 'Delete failed')
+  }
+
+  const sortDisabled = crud.query.trim().length > 0
+
+  async function handleReorder(next: CategoryDto[]) {
+    const previous = crud.items
+    const withSort = next.map((cat, index) => ({ ...cat, sort: index }))
+    crud.replaceItems(withSort)
+    try {
+      await crud.runMutation(async () => {
+        const saved = await reorderCategories(withSort)
+        crud.replaceItems(saved)
+      }, 'Reorder failed')
+    } catch {
+      crud.replaceItems(previous)
+    }
   }
 
   return (
     <section className="crm-section">
-      <header className="crm-section__head">
-        <div>
-          <h2>Categories</h2>
-          <p>Organize products by logical menu groups.</p>
-        </div>
-        <div className="crm-toolbar">
-          <input
-            className="crm-search"
-            placeholder="Search categories"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <button className="btn btn--primary" type="button" onClick={openCreate}>
-            + Add
-          </button>
-        </div>
-      </header>
+      <AdminPageHeader
+        title="Categories"
+        searchPlaceholder="Search categories"
+        query={crud.query}
+        onQueryChange={crud.setQuery}
+        onAdd={openCreate}
+        onRefresh={() => void crud.reload()}
+        loading={crud.loading}
+      />
 
-      <div className="crm-table-wrap">
-        <table className="crm-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Linked products</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((category) => {
-              const linked = products.filter((product) => product.categoryId === category.id).length
-              return (
-                <tr key={category.id}>
-                  <td>{category.name}</td>
-                  <td>{category.slug}</td>
-                  <td>{linked}</td>
-                  <td className="crm-table__actions">
-                    <AdminIconButton
-                      label="Edit category"
-                      onClick={() => {
-                        setEditingId(category.id)
-                        setForm({ name: category.name, slug: category.slug })
-                        setModalOpen(true)
-                      }}
-                    >
-                      ✎
-                    </AdminIconButton>
-                    <AdminIconButton
-                      label="Delete category"
-                      className="is-danger"
-                      onClick={() => {
-                        const res = removeCategory(category.id)
-                        if (!res.ok) window.alert(res.reason ?? 'Unable to delete category')
-                      }}
-                    >
-                      🗑
-                    </AdminIconButton>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      {crud.error && <AdminAlert message={crud.error} />}
 
-      <AdminModal title={editingId ? 'Edit category' : 'Create category'} open={isModalOpen} onClose={resetForm}>
-        <form className="crm-form" onSubmit={onSubmit}>
-          <div className="field">
-            <span>Name</span>
+      <AdminDataTable
+        columns={[
+          {
+            key: 'order',
+            header: '#',
+            className: 'crm-table__col-order',
+            render: (_row, index) => index + 1,
+          },
+          { key: 'name', header: 'Name', render: (row) => row.name },
+          { key: 'icon', header: 'Icon', render: (row) => row.icon || '—' },
+          {
+            key: 'description',
+            header: 'Description',
+            render: (row) =>
+              row.description.length > 48 ? `${row.description.slice(0, 48)}…` : row.description,
+          },
+        ]}
+        rows={crud.filteredItems}
+        rowKey={(row) => row.id}
+        loading={crud.loading}
+        emptyMessage="No categories yet."
+        sortable={{
+          onReorder: handleReorder,
+          disabled: sortDisabled,
+          disabledHint: 'Clear search to reorder categories by drag and drop.',
+        }}
+        actions={(row) => (
+          <>
+            <AdminIconButton label="Edit category" onClick={() => openEdit(row)}>
+              ✎
+            </AdminIconButton>
+            <AdminIconButton
+              label="Delete category"
+              className="is-danger"
+              onClick={() => setDeleteTarget(row)}
+            >
+              🗑
+            </AdminIconButton>
+          </>
+        )}
+      />
+
+      <AdminModal
+        title={editingId !== null ? 'Edit category' : 'Create category'}
+        open={isModalOpen}
+        onClose={resetForm}
+      >
+        <form
+          className="crm-form"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void submitCategory()
+          }}
+        >
+          <FormField label="Name">
             <input
               value={form.name}
-              placeholder="e.g. Pizzas"
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+              placeholder="e.g. Pizza"
               required
             />
-          </div>
-          <div className="field">
-            <span>Slug</span>
+          </FormField>
+          <FormField label="Icon">
             <input
-              value={form.slug}
-              placeholder="e.g. pizzas"
-              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
-              required
+              value={form.icon}
+              onChange={(e) => setForm((p) => ({ ...p, icon: e.target.value }))}
+              placeholder="emoji or icon key"
             />
-          </div>
+          </FormField>
+          <FormField label="Description">
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+              rows={3}
+            />
+          </FormField>
+          <FormField label="Sort order">
+            <input
+              type="number"
+              value={form.sort}
+              onChange={(e) => setForm((p) => ({ ...p, sort: Number(e.target.value) }))}
+            />
+          </FormField>
           <div className="crm-form__actions">
-            <button className="btn btn--primary" type="submit">{editingId ? 'Save' : 'Create'}</button>
-            <button className="btn btn--ghost" type="button" onClick={resetForm}>Cancel</button>
+            <button className="btn btn--primary" type="submit" disabled={crud.saving}>
+              {crud.saving ? 'Saving…' : editingId !== null ? 'Save' : 'Create'}
+            </button>
+            <button className="btn btn--ghost" type="button" onClick={resetForm} disabled={crud.saving}>
+              Cancel
+            </button>
           </div>
         </form>
       </AdminModal>
+
+      <AdminConfirmModal
+        open={deleteTarget !== null}
+        title="Delete category"
+        message={deleteTarget ? `Delete category “${deleteTarget.name}”?` : ''}
+        confirmLabel="Delete"
+        danger
+        loading={crud.saving}
+        onConfirm={() => void confirmDelete()}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </section>
   )
 }

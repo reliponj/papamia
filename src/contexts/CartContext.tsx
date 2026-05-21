@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
-import { getProductById } from '../data/menu'
-import type { CartLine, CustomPizzaLine } from '../types'
+import type { CartLine, CartLineSnapshot, CustomPizzaLine } from '../types'
 
 export type CartState = {
   lines: CartLine[]
@@ -9,9 +8,9 @@ export type CartState = {
 }
 
 type CartAction =
-  | { type: 'ADD'; productId: string }
-  | { type: 'REMOVE_LINE'; productId: string }
-  | { type: 'SET_QTY'; productId: string; qty: number }
+  | { type: 'ADD'; productId: number; snapshot: CartLineSnapshot }
+  | { type: 'REMOVE_LINE'; productId: number }
+  | { type: 'SET_QTY'; productId: number; qty: number }
   | { type: 'ADD_CUSTOM_PIZZA'; pizza: Omit<CustomPizzaLine, 'qty'> }
   | { type: 'REMOVE_CUSTOM_LINE'; id: string }
   | { type: 'CLEAR' }
@@ -30,7 +29,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ? state.lines.map((l) =>
             l.productId === action.productId ? { ...l, qty: l.qty + 1 } : l,
           )
-        : [...state.lines, { productId: action.productId, qty: 1 }]
+        : [
+            ...state.lines,
+            { productId: action.productId, qty: 1, snapshot: action.snapshot },
+          ]
       return { ...state, lines, isDrawerOpen: true }
     }
     case 'REMOVE_LINE':
@@ -46,13 +48,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           lines: state.lines.filter((l) => l.productId !== action.productId),
         }
       }
+      const existing = state.lines.find((l) => l.productId === action.productId)
+      if (!existing) return state
       return {
         ...state,
-        lines: state.lines.some((l) => l.productId === action.productId)
-          ? state.lines.map((l) =>
-              l.productId === action.productId ? { ...l, qty: q } : l,
-            )
-          : [...state.lines, { productId: action.productId, qty: q }],
+        lines: state.lines.map((l) =>
+          l.productId === action.productId ? { ...l, qty: q } : l,
+        ),
       }
     }
     case 'ADD_CUSTOM_PIZZA':
@@ -109,10 +111,8 @@ export function useCartTotals() {
     let count = 0
     let total = 0
     for (const line of lines) {
-      const p = getProductById(line.productId)
-      if (!p) continue
       count += line.qty
-      total += p.price * line.qty
+      total += line.snapshot.price * line.qty
     }
     for (const cl of customLines) {
       count += cl.qty
@@ -126,9 +126,10 @@ export function useCartActions() {
   const dispatch = useCartDispatch()
   return useMemo(
     () => ({
-      add: (productId: string) => dispatch({ type: 'ADD', productId }),
-      removeLine: (productId: string) => dispatch({ type: 'REMOVE_LINE', productId }),
-      setQty: (productId: string, qty: number) =>
+      add: (productId: number, snapshot: CartLineSnapshot) =>
+        dispatch({ type: 'ADD', productId, snapshot }),
+      removeLine: (productId: number) => dispatch({ type: 'REMOVE_LINE', productId }),
+      setQty: (productId: number, qty: number) =>
         dispatch({ type: 'SET_QTY', productId, qty }),
       addCustomPizza: (pizza: Omit<CustomPizzaLine, 'qty'>) =>
         dispatch({ type: 'ADD_CUSTOM_PIZZA', pizza }),
