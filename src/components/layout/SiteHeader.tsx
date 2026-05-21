@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useCartActions, useCartTotals } from '../../contexts/CartContext'
 import { useFavoriteIds } from '../../contexts/FavoritesContext'
 import { useLocale } from '../../contexts/LocaleContext'
@@ -7,6 +7,7 @@ import { useAuthState, useAuthApi } from '../../contexts/AuthContext'
 import type { Lang } from '../../types'
 
 const LANGS: Lang[] = ['ro', 'ru', 'en']
+const SCROLL_THRESHOLD = 56
 
 export function SiteHeader() {
   const { t, lang, setLang } = useLocale()
@@ -16,10 +17,33 @@ export function SiteHeader() {
   const { isAuthenticated } = useAuthState()
   const { logout } = useAuthApi()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+
+  useEffect(() => {
+    if (!isHome) {
+      setScrolled(true)
+      return
+    }
+
+    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [isHome])
+
+  const headerClass = [
+    'site-header',
+    isHome ? 'site-header--home' : '',
+    isHome && !scrolled ? 'site-header--overlay' : 'site-header--solid',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <header className="site-header">
+    <header className={headerClass}>
       <div className="site-header__inner">
         <Link to="/" className="site-header__brand" onClick={() => setMenuOpen(false)}>
           <span className="site-header__logo">Papa Mia</span>
@@ -104,7 +128,10 @@ export function SiteHeader() {
             <button
               type="button"
               className="site-header__login"
-              onClick={() => { logout(); navigate('/') }}
+              onClick={() => {
+                logout()
+                navigate('/')
+              }}
             >
               {t('auth.logout')}
             </button>
@@ -125,7 +152,17 @@ export function SiteHeader() {
               title={t('account.nav')}
               aria-label={t('account.nav')}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
                 <circle cx="12" cy="8" r="4" />
                 <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
               </svg>

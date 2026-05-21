@@ -43,8 +43,8 @@ export function FeaturedSection() {
         ))}
       </div>
       <div className="featured__more">
-        <Link to="/menu" className="text-link">
-          {t('featured.order')} →
+        <Link to="/menu" className="btn btn--outline">
+          {t('featured.menu')} →
         </Link>
       </div>
     </section>

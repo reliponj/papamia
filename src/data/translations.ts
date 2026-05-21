@@ -31,10 +31,16 @@ export type UiKey =
   | 'featured.title'
   | 'featured.sub'
   | 'featured.order'
+  | 'featured.menu'
+  | 'banner.carousel.label'
+  | 'banner.carousel.prev'
+  | 'banner.carousel.next'
   | 'delivery.title'
   | 'delivery.text'
   | 'delivery.hours'
   | 'gallery.title'
+  | 'gallery.eyebrow'
+  | 'gallery.sub'
   | 'footer.onlineMenu'
   | 'footer.info'
   | 'footer.allergens'
@@ -290,6 +296,18 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     ru: 'Заказать сейчас',
     en: 'Order now',
   },
+  'featured.menu': {
+    ro: 'Vezi meniul',
+    ru: 'Смотреть меню',
+    en: 'View menu',
+  },
+  'banner.carousel.label': {
+    ro: 'Promoții',
+    ru: 'Акции',
+    en: 'Promotions',
+  },
+  'banner.carousel.prev': { ro: 'Slide anterior', ru: 'Предыдущий слайд', en: 'Previous slide' },
+  'banner.carousel.next': { ro: 'Slide următor', ru: 'Следующий слайд', en: 'Next slide' },
   'delivery.title': {
     ro: 'Livrare în Chișinău și împrejurimi',
     ru: 'Доставка по Кишинёву и пригородам',
@@ -306,6 +324,16 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     en: 'Daily 10:00–22:00',
   },
   'gallery.title': { ro: 'Interior', ru: 'Интерьер', en: 'Interior' },
+  'gallery.eyebrow': {
+    ro: 'Atmosferă',
+    ru: 'Атмосфера',
+    en: 'Atmosphere',
+  },
+  'gallery.sub': {
+    ro: 'Lemn, lumânări și aroma Italiei — exact ca într-o trattorie din Napoli.',
+    ru: 'Дерево, свечи и аромат Италии — как в настоящей траттории Неаполя.',
+    en: 'Wood, candlelight, and the scent of Italy — like a trattoria in Naples.',
+  },
   'footer.onlineMenu': { ro: 'Meniu online', ru: 'Онлайн-меню', en: 'Online menu' },
   'footer.info': { ro: 'Informații', ru: 'Информация', en: 'Information' },
   'footer.allergens': { ro: 'Alergeni', ru: 'Аллергены', en: 'Allergens' },
