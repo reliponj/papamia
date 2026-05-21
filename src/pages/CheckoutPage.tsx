@@ -232,7 +232,7 @@ export function CheckoutPage() {
                 />
                 <button
                   type="button"
-                  className="btn btn--outline checkout-promo__btn"
+                  className="btn btn--secondary checkout-promo__btn"
                   onClick={() => void applyPromo()}
                   disabled={!promoCode.trim() || promoStatus === 'valid'}
                 >

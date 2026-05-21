@@ -60,6 +60,10 @@ export type UiKey =
   | 'cart.remove'
   | 'favorites.title'
   | 'favorites.empty'
+  | 'favorites.browseMenu'
+  | 'favorites.remove'
+  | 'favorites.itemOne'
+  | 'favorites.itemMany'
   | 'contacts.title'
   | 'contacts.sub'
   | 'contacts.section.locations'
@@ -361,10 +365,18 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'cart.remove': { ro: 'Elimină', ru: 'Удалить', en: 'Remove' },
   'favorites.title': { ro: 'Favorite', ru: 'Избранное', en: 'Wishlist' },
   'favorites.empty': {
-    ro: 'Niciun produs salvat.',
-    ru: 'Нет сохранённых блюд.',
-    en: 'No saved dishes yet.',
+    ro: 'Nu ai încă preparate favorite. Explorează meniul și apasă ♥ pe produsele preferate.',
+    ru: 'Пока нет избранных блюд. Откройте меню и нажмите ♥ на понравившихся позициях.',
+    en: 'No favourites yet. Browse the menu and tap ♥ on dishes you love.',
   },
+  'favorites.browseMenu': {
+    ro: 'Vezi meniul',
+    ru: 'Смотреть меню',
+    en: 'View menu',
+  },
+  'favorites.remove': { ro: 'Elimină din favorite', ru: 'Убрать из избранного', en: 'Remove from wishlist' },
+  'favorites.itemOne': { ro: 'preparat', ru: 'блюдо', en: 'dish' },
+  'favorites.itemMany': { ro: 'preparate', ru: 'блюда', en: 'dishes' },
   'contacts.title': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },
   'contacts.section.locations': { ro: 'Locații', ru: 'Локации', en: 'Locations' },
   'contacts.section.contacts': { ro: 'Contacte', ru: 'Контакты', en: 'Contacts' },

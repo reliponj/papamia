@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { ButtonLink } from '../ui/Button'
 import { useLocale } from '../../contexts/LocaleContext'
 
 export function Hero() {
@@ -11,9 +11,9 @@ export function Hero() {
         <h1 className="hero__title">{t('hero.title')}</h1>
         <p className="hero__sub">{t('hero.sub')}</p>
         <div className="hero__actions">
-          <Link to="/menu" className="btn btn--primary">
+          <ButtonLink to="/menu" variant="primary">
             {t('hero.menuCta')}
-          </Link>
+          </ButtonLink>
         </div>
       </div>
     </section>

@@ -9,6 +9,12 @@ import type { Lang } from '../../types'
 const LANGS: Lang[] = ['ro', 'ru', 'en']
 const SCROLL_THRESHOLD = 56
 
+const LANG_LABELS: Record<Lang, string> = {
+  ro: 'RO — Română',
+  ru: 'RU — Русский',
+  en: 'EN — English',
+}
+
 export function SiteHeader() {
   const { t, lang, setLang } = useLocale()
   const { count } = useCartTotals()
@@ -52,7 +58,7 @@ export function SiteHeader() {
 
         <button
           type="button"
-          className={`site-header__burger${menuOpen ? ' is-open' : ''}`}
+          className={`site-header__burger btn btn--icon btn--secondary${menuOpen ? ' is-open' : ''}`}
           aria-expanded={menuOpen}
           aria-controls="site-nav"
           aria-label={t('aria.openMenu')}
@@ -109,45 +115,54 @@ export function SiteHeader() {
         </nav>
 
         <div className="site-header__tools">
-          <div className="lang-switch" role="group" aria-label={t('aria.lang')}>
-            {LANGS.map((code) => (
-              <button
-                key={code}
-                type="button"
-                className={`lang-switch__btn${lang === code ? ' is-active' : ''}`}
-                onClick={() => setLang(code)}
-              >
-                {code.toUpperCase()}
-              </button>
-            ))}
-          </div>
-          <span className="site-header__fav" title={t('favorites.title')}>
-            ♥ {favorites.size}
-          </span>
-          {isAuthenticated ? (
-            <button
-              type="button"
-              className="site-header__login"
-              onClick={() => {
+          <label className="lang-select-wrap">
+            <span className="visually-hidden">{t('aria.lang')}</span>
+            <select
+              className="lang-select"
+              value={lang}
+              onChange={(e) => setLang(e.target.value as Lang)}
+              aria-label={t('aria.lang')}
+            >
+              {LANGS.map((code) => (
+                <option key={code} value={code}>
+                  {LANG_LABELS[code]}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <Link
+            to="/favorites"
+            className="btn btn--icon btn--secondary site-header__fav-btn"
+            aria-label={t('favorites.title')}
+            title={t('favorites.title')}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span aria-hidden>♥</span>
+            {favorites.size > 0 && (
+              <span className="site-header__badge">{favorites.size}</span>
+            )}
+          </Link>
+
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm site-header__auth-btn"
+            onClick={() => {
+              if (isAuthenticated) {
                 logout()
                 navigate('/')
-              }}
-            >
-              {t('auth.logout')}
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="site-header__login"
-              onClick={() => navigate('/login')}
-            >
-              {t('auth.login')}
-            </button>
-          )}
+              } else {
+                navigate('/login')
+              }
+            }}
+          >
+            {isAuthenticated ? t('auth.logout') : t('auth.login')}
+          </button>
+
           {isAuthenticated && (
             <button
               type="button"
-              className="site-header__account"
+              className="btn btn--icon btn--secondary"
               onClick={() => navigate('/account')}
               title={t('account.nav')}
               aria-label={t('account.nav')}
@@ -168,16 +183,17 @@ export function SiteHeader() {
               </svg>
             </button>
           )}
+
           <button
             type="button"
-            className="site-header__cart"
+            className="btn btn--icon btn--secondary site-header__cart"
             onClick={() => toggleDrawer()}
             aria-label={t('cart.title')}
           >
             <span className="site-header__cart-icon" aria-hidden>
               🛒
             </span>
-            <span className="site-header__cart-count">{count}</span>
+            {count > 0 && <span className="site-header__badge">{count}</span>}
           </button>
         </div>
       </div>

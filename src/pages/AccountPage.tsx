@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { formatPriceMdl } from '../api/money'
 import { listMyOrders } from '../api/public/order'
 import type { Order, OrderStatus } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
-import { useFavoriteProducts, useFavoritesApi } from '../contexts/FavoritesContext'
+import { FavoritesList } from '../components/favorites/FavoritesList'
 import { Button } from '../components/ui/Button'
 import { PasswordInput } from '../components/ui/PasswordInput'
-import { useCartActions } from '../contexts/CartContext'
 import { useAuthState, useAuthApi } from '../contexts/AuthContext'
 import { apiChangePassword, apiUpdateMe } from '../services/api'
 import type { UiKey } from '../data/translations'
@@ -208,47 +206,7 @@ function SecurityTab() {
 }
 
 function FavoritesTab() {
-  const { t } = useLocale()
-  const favorites = useFavoriteProducts()
-  const { toggle } = useFavoritesApi()
-  const { add, openDrawer } = useCartActions()
-
-  if (favorites.length === 0) {
-    return <p className="account-empty">{t('favorites.empty')}</p>
-  }
-
-  return (
-    <ul className="favorites-grid">
-      {favorites.map(({ productId, snapshot }) => (
-        <li key={productId} className="favorites-card">
-          <img src={snapshot.imageUrl} alt={snapshot.name} className="favorites-card__img" />
-          <div className="favorites-card__body">
-            <p className="favorites-card__name">{snapshot.name}</p>
-            <p className="favorites-card__price">{formatPriceMdl(snapshot.price)}</p>
-          </div>
-          <div className="favorites-card__actions">
-            <Button
-              variant="primary"
-              onClick={() => {
-                add(productId, snapshot)
-                openDrawer()
-              }}
-            >
-              {t('menu.add')}
-            </Button>
-            <button
-              type="button"
-              className="favorites-card__remove"
-              onClick={() => toggle(productId, snapshot)}
-              title={t('cart.remove')}
-            >
-              ♥
-            </button>
-          </div>
-        </li>
-      ))}
-    </ul>
-  )
+  return <FavoritesList />
 }
 
 function OrdersTab() {

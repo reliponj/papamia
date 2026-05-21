@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { ButtonLink } from '../ui/Button'
 import { listCategories } from '../../api/public/category'
 import { listProductsByCategory } from '../../api/public/product'
 import type { Product } from '../../api/public/types'
@@ -43,9 +43,9 @@ export function FeaturedSection() {
         ))}
       </div>
       <div className="featured__more">
-        <Link to="/menu" className="btn btn--outline">
+        <ButtonLink to="/menu" variant="secondary">
           {t('featured.menu')} →
-        </Link>
+        </ButtonLink>
       </div>
     </section>
   )

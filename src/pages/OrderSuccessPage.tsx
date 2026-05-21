@@ -27,7 +27,7 @@ export function OrderSuccessPage() {
         <p className="order-success__sub">{t('order.success.sub')}</p>
         <div className="order-success__actions">
           {isAuthenticated ? (
-            <Link to="/account" className="btn btn--outline order-success__btn">
+            <Link to="/account" className="btn btn--secondary order-success__btn">
               {t('order.success.account')}
             </Link>
           ) : null}

@@ -15,6 +15,7 @@ import { BlogPage } from './pages/BlogPage'
 import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { FavoritesPage } from './pages/FavoritesPage'
 import { ReviewsPage } from './pages/ReviewsPage'
 import { AdminUsersPage } from './pages/admin/AdminUsersPage'
 import { AdminRolesPage } from './pages/admin/AdminRolesPage'
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
       { path: 'checkout', element: <CheckoutPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'reviews', element: <ReviewsPage /> },
+      { path: 'favorites', element: <FavoritesPage /> },
     ],
   },
   {
