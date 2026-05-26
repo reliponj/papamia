@@ -1,6 +1,8 @@
-import { Navigate, createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from './components/layout/RootLayout'
 import { AdminLayout } from './components/layout/AdminLayout'
+import { RequireAdmin } from './components/admin/RequireAdmin'
+import { RequireAuth } from './components/auth/RequireAuth'
 import { HomePage } from './pages/HomePage'
 import { MenuPage } from './pages/MenuPage'
 import { AboutPage } from './pages/AboutPage'
@@ -12,7 +14,12 @@ import { AccountPage } from './pages/AccountPage'
 import { BlogPage } from './pages/BlogPage'
 import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderDetailPage } from './pages/OrderDetailPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { NotFoundPage } from './pages/NotFoundPage'
+import { PrivacyPage } from './pages/PrivacyPage'
+import { TermsPage } from './pages/TermsPage'
+import { FavoritesPage } from './pages/FavoritesPage'
 import { ReviewsPage } from './pages/ReviewsPage'
 import { AdminUsersPage } from './pages/admin/AdminUsersPage'
 import { AdminRolesPage } from './pages/admin/AdminRolesPage'
@@ -20,6 +27,15 @@ import { AdminGroupsPage } from './pages/admin/AdminGroupsPage'
 import { AdminCategoriesPage } from './pages/admin/AdminCategoriesPage'
 import { AdminProductsPage } from './pages/admin/AdminProductsPage'
 import { AdminAllergensPage } from './pages/admin/AdminAllergensPage'
+import { AdminBannersPage } from './pages/admin/AdminBannersPage'
+import { AdminArticlesPage } from './pages/admin/AdminArticlesPage'
+import { AdminLocationsPage } from './pages/admin/AdminLocationsPage'
+import { AdminPromocodesPage } from './pages/admin/AdminPromocodesPage'
+import { AdminIngridientsPage } from './pages/admin/AdminIngridientsPage'
+import { AdminReviewsPage } from './pages/admin/AdminReviewsPage'
+import { AdminOrdersPage } from './pages/admin/AdminOrdersPage'
+import { AdminOrderDetailPage } from './pages/admin/AdminOrderDetailPage'
+import { AdminDashboardPage } from './pages/admin/AdminDashboardPage'
 
 export const router = createBrowserRouter([
   {
@@ -32,26 +48,51 @@ export const router = createBrowserRouter([
       { path: 'about', element: <AboutPage /> },
       { path: 'contacts', element: <ContactsPage /> },
       { path: 'blog', element: <BlogPage /> },
-      { path: 'blog/:slug', element: <BlogPostPage /> },
+      { path: 'blog/:id', element: <BlogPostPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
-      { path: 'account', element: <AccountPage /> },
+      {
+        path: 'account',
+        element: (
+          <RequireAuth>
+            <AccountPage />
+          </RequireAuth>
+        ),
+      },
       { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'orders/:id', element: <OrderDetailPage /> },
       { path: 'order-success', element: <OrderSuccessPage /> },
       { path: 'reviews', element: <ReviewsPage /> },
+      { path: 'favorites', element: <FavoritesPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
     children: [
-      { index: true, element: <Navigate to="/admin/users" replace /> },
+      { index: true, element: <AdminDashboardPage /> },
       { path: 'categories', element: <AdminCategoriesPage /> },
       { path: 'products', element: <AdminProductsPage /> },
       { path: 'allergens', element: <AdminAllergensPage /> },
+      { path: 'banners', element: <AdminBannersPage /> },
+      { path: 'articles', element: <AdminArticlesPage /> },
+      { path: 'locations', element: <AdminLocationsPage /> },
+      { path: 'promocodes', element: <AdminPromocodesPage /> },
+      { path: 'ingredients', element: <AdminIngridientsPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'roles', element: <AdminRolesPage /> },
       { path: 'groups', element: <AdminGroupsPage /> },
+      { path: 'reviews', element: <AdminReviewsPage /> },
+      { path: 'orders', element: <AdminOrdersPage /> },
+      { path: 'orders/new', element: <AdminOrderDetailPage /> },
+      { path: 'orders/:id', element: <AdminOrderDetailPage /> },
     ],
   },
 ])

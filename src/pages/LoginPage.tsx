@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useLocale } from '../contexts/LocaleContext'
 import { useAuthApi } from '../contexts/AuthContext'
 import { Button } from '../components/ui/Button'
@@ -9,6 +9,8 @@ export function LoginPage() {
   const { t } = useLocale()
   const { login } = useAuthApi()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const nextPath = searchParams.get('next')
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +23,9 @@ export function LoginPage() {
     setLoading(true)
     try {
       await login(email, password)
-      navigate('/account')
+      const target =
+        nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//') ? nextPath : '/account'
+      navigate(target)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {

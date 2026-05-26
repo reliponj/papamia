@@ -1,11 +1,36 @@
-import { Link } from 'react-router-dom'
-import { getFeaturedProducts } from '../../data/menu'
-import { useLocale } from '../../contexts/LocaleContext'
+import { useEffect, useState } from 'react'
+import { ButtonLink } from '../ui/Button'
+import { listCategories } from '../../api/public/category'
+import { listProductsByCategory } from '../../api/public/product'
+import type { Product } from '../../api/public/types'
 import { ProductCard } from '../menu/ProductCard'
+import { useLocale } from '../../contexts/LocaleContext'
 
 export function FeaturedSection() {
   const { t } = useLocale()
-  const items = getFeaturedProducts()
+  const [items, setItems] = useState<Product[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    listCategories()
+      .then((cats) => {
+        const first = cats[0]
+        if (!first) return []
+        return listProductsByCategory(first.id)
+      })
+      .then((products) => {
+        if (!cancelled) setItems(products.slice(0, 6))
+      })
+      .catch(() => {
+        if (!cancelled) setItems([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  if (items.length === 0) return null
+
   return (
     <section className="featured section">
       <header className="section-head">
@@ -18,9 +43,9 @@ export function FeaturedSection() {
         ))}
       </div>
       <div className="featured__more">
-        <Link to="/menu" className="text-link">
-          {t('featured.order')} →
-        </Link>
+        <ButtonLink to="/menu" variant="secondary">
+          {t('featured.menu')} →
+        </ButtonLink>
       </div>
     </section>
   )

@@ -11,7 +11,7 @@ export function AdminModal({ title, open, onClose, children }: Props) {
   if (!open) return null
 
   return (
-    <div className="crm-modal" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="crm-modal crm-modal--open" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" className="crm-modal__backdrop" onClick={onClose} aria-label="Close modal" />
       <div className="crm-modal__panel">
         <header className="crm-modal__head">
@@ -20,7 +20,7 @@ export function AdminModal({ title, open, onClose, children }: Props) {
             ✕
           </button>
         </header>
-        <div className="crm-modal__body">{children}</div>
+        <div className="crm-modal__body crm-scroll">{children}</div>
       </div>
     </div>
   )

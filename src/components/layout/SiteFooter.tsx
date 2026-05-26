@@ -26,10 +26,10 @@ export function SiteFooter() {
           <h3 className="site-footer__title">{t('footer.info')}</h3>
           <ul className="site-footer__links">
             <li>
-              <a href="#">{t('footer.privacy')}</a>
+              <Link to="/privacy">{t('footer.privacy')}</Link>
             </li>
             <li>
-              <a href="#">{t('footer.terms')}</a>
+              <Link to="/terms">{t('footer.terms')}</Link>
             </li>
           </ul>
         </div>

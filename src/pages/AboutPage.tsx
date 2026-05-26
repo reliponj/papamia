@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
 import { useLocale } from '../contexts/LocaleContext'
 import type { Lang } from '../types'
+import { ImageSlider } from '../components/ui/ImageSlider'
 
 const TEAM = [
   {
@@ -39,11 +39,11 @@ const TEAM = [
 ]
 
 const FOOD_SHOTS = [
-  { src: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=1400&q=90', alt: 'Cheese pull pizza' },
-  { src: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1400&q=90', alt: 'Fresh basil Margherita' },
-  { src: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&q=90', alt: 'Pasta al pomodoro' },
-  { src: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=1400&q=90', alt: 'Wood-fired oven' },
-  { src: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=1400&q=90', alt: 'Italian ingredients' },
+  { id: 1, src: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=1400&q=90', alt: 'Cheese pull pizza' },
+  { id: 2, src: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1400&q=90', alt: 'Fresh basil Margherita' },
+  { id: 3, src: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1400&q=90', alt: 'Pasta al pomodoro' },
+  { id: 4, src: 'https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?w=1400&q=90', alt: 'Wood-fired oven' },
+  { id: 5, src: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=1400&q=90', alt: 'Italian ingredients' },
 ]
 
 const QUOTE: Record<Lang, string> = {
@@ -52,84 +52,11 @@ const QUOTE: Record<Lang, string> = {
   en: 'Good food needs no tricks — it needs respect for the ingredient.',
 }
 
-const n = FOOD_SHOTS.length
-
-function FoodSlider() {
-  const [active, setActive] = useState(0)
-  const [dir, setDir] = useState<'next' | 'prev'>('next')
-  const [transitioning, setTransitioning] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const goTo = (idx: number, direction: 'next' | 'prev' = 'next') => {
-    if (transitioning) return
-    setDir(direction)
-    setTransitioning(true)
-    setTimeout(() => {
-      setActive(idx)
-      setTransitioning(false)
-    }, 500)
-  }
-
-  useEffect(() => {
-    timerRef.current = setTimeout(() => {
-      goTo((active + 1) % n, 'next')
-    }, 5000)
-    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
-  }, [active, transitioning])
-
-  const prev = (active - 1 + n) % n
-  const next = (active + 1) % n
-
-  return (
-    <div className="food-carousel">
-      <div className="food-carousel__track">
-        {/* prev peek */}
-        <div
-          className="food-carousel__slide food-carousel__slide--peek food-carousel__slide--prev"
-          onClick={() => goTo(prev, 'prev')}
-          aria-label="Previous"
-        >
-          <img src={FOOD_SHOTS[prev].src} alt={FOOD_SHOTS[prev].alt} />
-          <div className="food-carousel__overlay" />
-        </div>
-
-        {/* active */}
-        <div className={`food-carousel__slide food-carousel__slide--active${transitioning ? ` food-carousel__slide--${dir}` : ''}`}>
-          <img src={FOOD_SHOTS[active].src} alt={FOOD_SHOTS[active].alt} />
-        </div>
-
-        {/* next peek */}
-        <div
-          className="food-carousel__slide food-carousel__slide--peek food-carousel__slide--next"
-          onClick={() => goTo(next, 'next')}
-          aria-label="Next"
-        >
-          <img src={FOOD_SHOTS[next].src} alt={FOOD_SHOTS[next].alt} />
-          <div className="food-carousel__overlay" />
-        </div>
-      </div>
-
-      <div className="food-carousel__dots">
-        {FOOD_SHOTS.map((_, i) => (
-          <button
-            key={i}
-            className={`food-carousel__dot${i === active ? ' food-carousel__dot--active' : ''}`}
-            onClick={() => goTo(i, i > active ? 'next' : 'prev')}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
 export function AboutPage() {
   const { t, lang } = useLocale()
 
   return (
     <article className="about-page">
-
-      {/* Hero: image + mission text side by side */}
       <div className="about-hero">
         <div className="about-hero__img">
           <img
@@ -148,13 +75,17 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* Food carousel */}
-      <div className="about-food">
+      <div className="about-food section">
         <p className="about-food__label">{t('about.page.food.title')}</p>
-        <FoodSlider />
+        <ImageSlider
+          slides={FOOD_SHOTS}
+          className="about-food-slider"
+          ariaLabel={t('about.page.food.title')}
+          prevLabel={t('banner.carousel.prev')}
+          nextLabel={t('banner.carousel.next')}
+        />
       </div>
 
-      {/* Team */}
       <div className="about-team">
         <div className="section-head">
           <h2 className="section-title">{t('about.page.team.title')}</h2>
@@ -176,7 +107,6 @@ export function AboutPage() {
           ))}
         </div>
       </div>
-
     </article>
   )
 }

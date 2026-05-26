@@ -1,46 +1,29 @@
 export type Lang = 'ro' | 'ru' | 'en'
 
-export type Localized = Record<Lang, string>
-
-export type MenuCategory =
-  | 'pizza'
-  | 'pinsa'
-  | 'antipasti'
-  | 'pasta'
-  | 'dolci'
-  | 'drinks'
-
-export type Allergen =
-  | 'gluten'
-  | 'dairy'
-  | 'eggs'
-  | 'fish'
-  | 'nuts'
-  | 'soy'
-  | 'alcohol'
-
-export type MenuProduct = {
-  id: string
-  category: MenuCategory
-  name: Localized
-  description: Localized
+export type CartLineSnapshot = {
+  name: string
   price: number
-  image: string
-  featured?: boolean
-  allergens?: Allergen[]
+  imageUrl: string
 }
 
 export type CartLine = {
-  productId: string
+  productId: number
   qty: number
+  snapshot: CartLineSnapshot
+}
+
+export type CustomPizzaPreview = {
+  doughName: string
+  sauceName: string
+  toppingNames: string[]
 }
 
 export type CustomPizzaLine = {
   id: string
-  label: string
-  price: number
+  customPizzaId: number
   qty: number
-  doughId: string
-  sauceId: string
-  toppingIds: string[]
+  /** Price in minor units (bani) — display estimate; backend calculates order total. */
+  price: number
+  ingredientIds: number[]
+  preview: CustomPizzaPreview
 }

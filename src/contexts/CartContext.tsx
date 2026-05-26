@@ -1,6 +1,6 @@
-import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react'
-import { getProductById } from '../data/menu'
-import type { CartLine, CustomPizzaLine } from '../types'
+import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
+import type { CartLine, CartLineSnapshot, CustomPizzaLine } from '../types'
+import { loadCartFromCookie, saveCartToCookie } from '../utils/cartStorage'
 
 export type CartState = {
   lines: CartLine[]
@@ -9,10 +9,11 @@ export type CartState = {
 }
 
 type CartAction =
-  | { type: 'ADD'; productId: string }
-  | { type: 'REMOVE_LINE'; productId: string }
-  | { type: 'SET_QTY'; productId: string; qty: number }
+  | { type: 'ADD'; productId: number; snapshot: CartLineSnapshot }
+  | { type: 'REMOVE_LINE'; productId: number }
+  | { type: 'SET_QTY'; productId: number; qty: number }
   | { type: 'ADD_CUSTOM_PIZZA'; pizza: Omit<CustomPizzaLine, 'qty'> }
+  | { type: 'SET_CUSTOM_QTY'; id: string; qty: number }
   | { type: 'REMOVE_CUSTOM_LINE'; id: string }
   | { type: 'CLEAR' }
   | { type: 'OPEN_DRAWER' }
@@ -30,7 +31,10 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         ? state.lines.map((l) =>
             l.productId === action.productId ? { ...l, qty: l.qty + 1 } : l,
           )
-        : [...state.lines, { productId: action.productId, qty: 1 }]
+        : [
+            ...state.lines,
+            { productId: action.productId, qty: 1, snapshot: action.snapshot },
+          ]
       return { ...state, lines, isDrawerOpen: true }
     }
     case 'REMOVE_LINE':
@@ -46,21 +50,52 @@ function cartReducer(state: CartState, action: CartAction): CartState {
           lines: state.lines.filter((l) => l.productId !== action.productId),
         }
       }
+      const existing = state.lines.find((l) => l.productId === action.productId)
+      if (!existing) return state
       return {
         ...state,
-        lines: state.lines.some((l) => l.productId === action.productId)
-          ? state.lines.map((l) =>
-              l.productId === action.productId ? { ...l, qty: q } : l,
-            )
-          : [...state.lines, { productId: action.productId, qty: q }],
+        lines: state.lines.map((l) =>
+          l.productId === action.productId ? { ...l, qty: q } : l,
+        ),
       }
     }
-    case 'ADD_CUSTOM_PIZZA':
+    case 'ADD_CUSTOM_PIZZA': {
+      const sameIngredients = state.customLines.find((l) =>
+        l.ingredientIds.length === action.pizza.ingredientIds.length &&
+        l.ingredientIds.every((id, i) => id === action.pizza.ingredientIds[i]),
+      )
+      if (sameIngredients) {
+        return {
+          ...state,
+          customLines: state.customLines.map((l) =>
+            l.id === sameIngredients.id ? { ...l, qty: l.qty + 1 } : l,
+          ),
+          isDrawerOpen: true,
+        }
+      }
       return {
         ...state,
         customLines: [...state.customLines, { ...action.pizza, qty: 1 }],
         isDrawerOpen: true,
       }
+    }
+    case 'SET_CUSTOM_QTY': {
+      const q = Math.max(0, Math.floor(action.qty))
+      if (q === 0) {
+        return {
+          ...state,
+          customLines: state.customLines.filter((l) => l.id !== action.id),
+        }
+      }
+      const existing = state.customLines.find((l) => l.id === action.id)
+      if (!existing) return state
+      return {
+        ...state,
+        customLines: state.customLines.map((l) =>
+          l.id === action.id ? { ...l, qty: q } : l,
+        ),
+      }
+    }
     case 'REMOVE_CUSTOM_LINE':
       return {
         ...state,
@@ -81,8 +116,21 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
 const initialCart: CartState = { lines: [], customLines: [], isDrawerOpen: false }
 
+function initCartState(): CartState {
+  const persisted = loadCartFromCookie()
+  return {
+    ...initialCart,
+    lines: persisted.lines,
+    customLines: persisted.customLines,
+  }
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, initialCart)
+  const [state, dispatch] = useReducer(cartReducer, initialCart, initCartState)
+
+  useEffect(() => {
+    saveCartToCookie({ lines: state.lines, customLines: state.customLines })
+  }, [state.lines, state.customLines])
 
   return (
     <CartStateContext.Provider value={state}>
@@ -109,10 +157,8 @@ export function useCartTotals() {
     let count = 0
     let total = 0
     for (const line of lines) {
-      const p = getProductById(line.productId)
-      if (!p) continue
       count += line.qty
-      total += p.price * line.qty
+      total += line.snapshot.price * line.qty
     }
     for (const cl of customLines) {
       count += cl.qty
@@ -126,12 +172,15 @@ export function useCartActions() {
   const dispatch = useCartDispatch()
   return useMemo(
     () => ({
-      add: (productId: string) => dispatch({ type: 'ADD', productId }),
-      removeLine: (productId: string) => dispatch({ type: 'REMOVE_LINE', productId }),
-      setQty: (productId: string, qty: number) =>
+      add: (productId: number, snapshot: CartLineSnapshot) =>
+        dispatch({ type: 'ADD', productId, snapshot }),
+      removeLine: (productId: number) => dispatch({ type: 'REMOVE_LINE', productId }),
+      setQty: (productId: number, qty: number) =>
         dispatch({ type: 'SET_QTY', productId, qty }),
       addCustomPizza: (pizza: Omit<CustomPizzaLine, 'qty'>) =>
         dispatch({ type: 'ADD_CUSTOM_PIZZA', pizza }),
+      setCustomQty: (id: string, qty: number) =>
+        dispatch({ type: 'SET_CUSTOM_QTY', id, qty }),
       removeCustomLine: (id: string) => dispatch({ type: 'REMOVE_CUSTOM_LINE', id }),
       clear: () => dispatch({ type: 'CLEAR' }),
       openDrawer: () => dispatch({ type: 'OPEN_DRAWER' }),

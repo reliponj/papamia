@@ -1,39 +1,65 @@
-import { useEffect } from 'react'
+import { Trash2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getProductById } from '../../data/menu'
+import { formatPriceMdl } from '../../api/money'
 import { useCartActions, useCartState, useCartTotals } from '../../contexts/CartContext'
 import { useLocale } from '../../contexts/LocaleContext'
+import { CustomPizzaCartItem } from '../pizza/CustomPizzaCartItem'
 import { Button } from '../ui/Button'
+
+const DRAWER_MS = 320
 
 export function CartDrawer() {
   const { isDrawerOpen: open } = useCartState()
   const { lines, customLines, total } = useCartTotals()
-  const { setQty, closeDrawer, removeLine, removeCustomLine } = useCartActions()
+  const { setQty, closeDrawer, removeLine, removeCustomLine, setCustomQty } = useCartActions()
   const navigate = useNavigate()
-  const { lang, t } = useLocale()
+  const { t } = useLocale()
+  const [mounted, setMounted] = useState(open)
+  const [closing, setClosing] = useState(false)
 
   useEffect(() => {
-    if (!open) return
+    if (open) {
+      setMounted(true)
+      setClosing(false)
+      return
+    }
+    if (!mounted) return
+    setClosing(true)
+    const timer = window.setTimeout(() => {
+      setMounted(false)
+      setClosing(false)
+    }, DRAWER_MS)
+    return () => window.clearTimeout(timer)
+  }, [open, mounted])
+
+  useEffect(() => {
+    if (!mounted || closing) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') closeDrawer()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, closeDrawer])
+  }, [mounted, closing, closeDrawer])
 
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
+    document.body.style.overflow = mounted && !closing ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [open])
+  }, [mounted, closing])
 
-  if (!open) return null
+  if (!mounted) return null
 
   const isEmpty = lines.length === 0 && customLines.length === 0
 
   return (
-    <div className="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+    <div
+      className={`cart-drawer${closing ? ' is-closing' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cart-title"
+    >
       <button
         type="button"
         className="cart-drawer__backdrop"
@@ -57,71 +83,59 @@ export function CartDrawer() {
           <p className="cart-drawer__empty">{t('cart.empty')}</p>
         ) : (
           <ul className="cart-drawer__list">
-            {lines.map((line) => {
-              const p = getProductById(line.productId)
-              if (!p) return null
-              return (
-                <li key={line.productId} className="cart-line">
-                  {p.image && (
-                    <img className="cart-line__img" src={p.image} alt={p.name[lang]} />
-                  )}
-                  <div className="cart-line__info">
-                    <div className="cart-line__name">{p.name[lang]}</div>
-                    <div className="cart-line__meta">
-                      {p.price} {t('menu.currency')}
-                    </div>
-                  </div>
-                  <div className="cart-line__controls">
-                    <button
-                      type="button"
-                      className="cart-line__step"
-                      aria-label="Decrease"
-                      onClick={() => setQty(line.productId, line.qty - 1)}
-                    >
-                      −
-                    </button>
-                    <span className="cart-line__count">{line.qty}</span>
-                    <button
-                      type="button"
-                      className="cart-line__step"
-                      aria-label="Increase"
-                      onClick={() => setQty(line.productId, line.qty + 1)}
-                    >
-                      +
-                    </button>
-                    <button
-                      type="button"
-                      className="cart-line__remove"
-                      onClick={() => removeLine(line.productId)}
-                    >
-                      {t('cart.remove')}
-                    </button>
-                  </div>
-                </li>
-              )
-            })}
-
-            {customLines.map((cl) => (
-              <li key={cl.id} className="cart-line cart-line--custom">
+            {lines.map((line) => (
+              <li key={line.productId} className="cart-line">
+                {line.snapshot.imageUrl && (
+                  <img
+                    className="cart-line__img"
+                    src={line.snapshot.imageUrl}
+                    alt={line.snapshot.name}
+                  />
+                )}
                 <div className="cart-line__info">
-                  <div className="cart-line__name">{cl.label}</div>
-                  <div className="cart-line__meta cart-line__meta--custom">
-                    {t('builder.custom')}
-                  </div>
-                  <div className="cart-line__meta">
-                    {cl.price} {t('menu.currency')} × {cl.qty}
-                  </div>
+                  <div className="cart-line__name">{line.snapshot.name}</div>
+                  <div className="cart-line__meta">{formatPriceMdl(line.snapshot.price)}</div>
                 </div>
                 <div className="cart-line__controls">
                   <button
                     type="button"
-                    className="cart-line__remove"
-                    onClick={() => removeCustomLine(cl.id)}
+                    className="cart-line__step"
+                    aria-label="Decrease"
+                    onClick={() => setQty(line.productId, line.qty - 1)}
                   >
-                    {t('cart.remove')}
+                    −
+                  </button>
+                  <span className="cart-line__count">{line.qty}</span>
+                  <button
+                    type="button"
+                    className="cart-line__step"
+                    aria-label="Increase"
+                    onClick={() => setQty(line.productId, line.qty + 1)}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    className="cart-line__remove"
+                    aria-label={t('cart.remove')}
+                    onClick={() => removeLine(line.productId)}
+                  >
+                    <Trash2 size={16} strokeWidth={2} aria-hidden />
                   </button>
                 </div>
               </li>
+            ))}
+
+            {customLines.map((cl) => (
+              <CustomPizzaCartItem
+                key={cl.id}
+                preview={cl.preview}
+                price={cl.price}
+                qty={cl.qty}
+                onSetQty={(qty) => setCustomQty(cl.id, qty)}
+                onRemove={() => removeCustomLine(cl.id)}
+                variant="drawer"
+              />
             ))}
           </ul>
         )}
@@ -129,9 +143,7 @@ export function CartDrawer() {
         <footer className="cart-drawer__foot">
           <div className="cart-drawer__total">
             <span>{t('cart.total')}</span>
-            <strong>
-              {total.toFixed(2)} {t('menu.currency')}
-            </strong>
+            <strong>{formatPriceMdl(total)}</strong>
           </div>
           <Button
             variant="primary"

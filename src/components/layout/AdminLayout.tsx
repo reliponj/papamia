@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import * as Tooltip from '@radix-ui/react-tooltip'
 import {
   ChevronLeft, ChevronDown,
-  LayoutGrid, Pizza, Users, Settings,
+  LayoutGrid, Pizza, Users, Image, Ticket, LayoutDashboard,
 } from 'lucide-react'
-import { AdminDataProvider } from '../../contexts/AdminDataContext'
+import { getAdminBreadcrumbs } from '../../pages/admin/adminNavMeta'
+import { AdminPageTransition } from '../admin/AdminPageTransition'
 
 type NavChild = { to: string; label: string }
 type NavGroup = {
@@ -18,18 +19,39 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    id: 'menu',
-    label: 'Menu',
+    id: 'catalog',
+    label: 'Catalog',
     icon: <Pizza size={16} strokeWidth={1.75} />,
     children: [
       { to: '/admin/categories', label: 'Categories' },
       { to: '/admin/products',   label: 'Products'   },
-      { to: '/admin/allergens',  label: 'Allergens'  },
+      { to: '/admin/allergens',   label: 'Allergens'   },
+      { to: '/admin/ingredients', label: 'Ingredients' },
     ],
   },
   {
-    id: 'users',
-    label: 'Users',
+    id: 'content',
+    label: 'Content',
+    icon: <Image size={16} strokeWidth={1.75} />,
+    children: [
+      { to: '/admin/banners', label: 'Banners' },
+      { to: '/admin/articles', label: 'Articles' },
+      { to: '/admin/locations', label: 'Locations' },
+      { to: '/admin/reviews', label: 'Reviews' },
+    ],
+  },
+  {
+    id: 'sales',
+    label: 'Sales',
+    icon: <Ticket size={16} strokeWidth={1.75} />,
+    children: [
+      { to: '/admin/orders', label: 'Orders' },
+      { to: '/admin/promocodes', label: 'Promo codes' },
+    ],
+  },
+  {
+    id: 'access',
+    label: 'Access',
     icon: <Users size={16} strokeWidth={1.75} />,
     children: [
       { to: '/admin/users',  label: 'User list' },
@@ -40,8 +62,11 @@ const NAV_GROUPS: NavGroup[] = [
 ]
 
 function useActiveGroup(groups: NavGroup[], pathname: string): string | null {
+  if (pathname === '/admin' || pathname === '/admin/') return null
   for (const g of groups) {
-    if (g.children.some((c) => pathname.startsWith(c.to))) return g.id
+    if (g.children.some((c) => pathname === c.to || pathname.startsWith(`${c.to}/`))) {
+      return g.id
+    }
   }
   return null
 }
@@ -50,12 +75,32 @@ function AdminShell() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const { pathname } = useLocation()
   const activeGroup = useActiveGroup(NAV_GROUPS, pathname)
+  const breadcrumbs = getAdminBreadcrumbs(pathname)
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(NAV_GROUPS.map((g) => [g.id, g.id === activeGroup]))
   )
 
   function toggleGroup(id: string) {
     setOpenGroups((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const isDashboardActive = pathname === '/admin' || pathname === '/admin/'
+  const dashboardClassName = `admin-nav-group__trigger${isDashboardActive ? ' is-active' : ''}`
+
+  function renderDashboardLink(collapsed: boolean) {
+    return (
+      <NavLink
+        to="/admin"
+        end
+        className={dashboardClassName}
+        aria-label={collapsed ? 'Dashboard' : undefined}
+      >
+        <span className="admin-nav-link__icon">
+          <LayoutDashboard size={16} strokeWidth={1.75} />
+        </span>
+        {!collapsed && <span className="admin-nav-link__label">Dashboard</span>}
+      </NavLink>
+    )
   }
 
   return (
@@ -73,9 +118,7 @@ function AdminShell() {
                 <div className="admin-sidebar__logo">
                   <LayoutGrid size={14} />
                 </div>
-                {sidebarOpen && (
-                  <span className="admin-sidebar__brand">Papa Mia CRM</span>
-                )}
+                <span className="admin-sidebar__brand">Papa Mia CRM</span>
               </div>
               <Collapsible.Trigger asChild>
                 <button
@@ -87,13 +130,24 @@ function AdminShell() {
                 </button>
               </Collapsible.Trigger>
             </div>
-            {sidebarOpen && (
-              <p className="admin-sidebar__hint">Restaurant back-office</p>
-            )}
+            <p className="admin-sidebar__hint">Restaurant back-office</p>
           </div>
 
           {/* ── Nav ─────────────────────────────────── */}
           <nav className="admin-sidebar__nav" aria-label="Main navigation">
+            {sidebarOpen ? (
+              renderDashboardLink(false)
+            ) : (
+              <Tooltip.Root disableHoverableContent>
+                <Tooltip.Trigger asChild>{renderDashboardLink(true)}</Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
+                    Dashboard
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            )}
+
             {NAV_GROUPS.map((group) => {
               const isGroupActive = group.id === activeGroup
               const isExpanded = openGroups[group.id] ?? false
@@ -163,38 +217,31 @@ function AdminShell() {
             })}
           </nav>
 
-          {/* ── Footer (Settings) ────────────────────── */}
-          <div className="admin-sidebar__footer">
-            <Tooltip.Root disableHoverableContent>
-              <Tooltip.Trigger asChild>
-                <button type="button" className="admin-nav-group__trigger" aria-label="Settings">
-                  <span className="admin-nav-link__icon">
-                    <Settings size={16} strokeWidth={1.75} />
-                  </span>
-                  {sidebarOpen && (
-                    <span className="admin-nav-link__label">Settings</span>
-                  )}
-                </button>
-              </Tooltip.Trigger>
-              {!sidebarOpen && (
-                <Tooltip.Portal>
-                  <Tooltip.Content className="admin-tooltip" side="right" sideOffset={10}>
-                    Settings
-                  </Tooltip.Content>
-                </Tooltip.Portal>
-              )}
-            </Tooltip.Root>
-          </div>
         </aside>
 
         <div className="admin-workspace">
           <header className="admin-topbar">
-            <h1>Admin CRM</h1>
-            <p>Manage core entities and relationships.</p>
+            <nav className="admin-breadcrumbs" aria-label="Breadcrumb">
+              {breadcrumbs.map((crumb, i) => {
+                const isLast = i === breadcrumbs.length - 1
+                return (
+                  <span key={`${crumb.label}-${i}`} className="admin-breadcrumbs__item">
+                    {i > 0 && <span className="admin-breadcrumbs__sep">/</span>}
+                    {crumb.to && !isLast ? (
+                      <Link to={crumb.to}>{crumb.label}</Link>
+                    ) : (
+                      <span aria-current={isLast ? 'page' : undefined}>{crumb.label}</span>
+                    )}
+                  </span>
+                )
+              })}
+            </nav>
           </header>
           <main className="admin-content">
             <div className="admin-content__surface">
-              <Outlet />
+              <AdminPageTransition>
+                <Outlet />
+              </AdminPageTransition>
             </div>
           </main>
         </div>
@@ -204,9 +251,5 @@ function AdminShell() {
 }
 
 export function AdminLayout() {
-  return (
-    <AdminDataProvider>
-      <AdminShell />
-    </AdminDataProvider>
-  )
+  return <AdminShell />
 }
