@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import * as Select from '@radix-ui/react-select'
+import { ChevronDown, Check } from 'lucide-react'
 import { listAllergens } from '../api/public/allergen'
 import { listCategories } from '../api/public/category'
 import { listProductsByCategory, type ProductListQuery } from '../api/public/product'
 import type { Allergen } from '../api/public/types'
 import type { Category, Product } from '../api/public/types'
 import { CategoryTabs, type CategoryFilter } from '../components/menu/CategoryTabs'
+import { MenuGridSkeleton } from '../components/menu/MenuGridSkeleton'
 import { ProductCard } from '../components/menu/ProductCard'
 import { useLocale } from '../contexts/LocaleContext'
 
@@ -35,8 +37,10 @@ export function MenuPage() {
   const [sort, setSort] = useState<SortOption>('default')
   const [excludedAllergenIds, setExcludedAllergenIds] = useState<Set<number>>(new Set())
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const hasLoadedOnce = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -57,16 +61,20 @@ export function MenuPage() {
   const loadProducts = useCallback(async () => {
     if (categories.length === 0) {
       setProducts([])
-      setLoading(false)
+      setInitialLoading(false)
       return
     }
-    setLoading(true)
+
+    if (hasLoadedOnce.current) setRefreshing(true)
+    else setInitialLoading(true)
+
     setError('')
     const query: ProductListQuery = {
       ...sortToQuery(sort),
       allergenExclude:
         excludedAllergenIds.size > 0 ? [...excludedAllergenIds] : undefined,
     }
+
     try {
       const categoryIds =
         cat === 'all' ? categories.map((c) => c.id) : [cat as number]
@@ -77,11 +85,13 @@ export function MenuPage() {
       const byId = new Map<number, Product>()
       for (const p of merged) byId.set(p.id, p)
       setProducts([...byId.values()])
+      hasLoadedOnce.current = true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load products')
-      setProducts([])
+      if (!hasLoadedOnce.current) setProducts([])
     } finally {
-      setLoading(false)
+      setInitialLoading(false)
+      setRefreshing(false)
     }
   }, [cat, categories, excludedAllergenIds, sort])
 
@@ -147,6 +157,8 @@ export function MenuPage() {
   const currentSortLabel =
     SORT_OPTIONS.find((o) => o.value === sort)?.label ?? t('menu.filter.price')
 
+  const showSkeleton = initialLoading && products.length === 0
+
   return (
     <div className="menu-page section">
       <header className="section-head menu-page__head">
@@ -174,25 +186,21 @@ export function MenuPage() {
           </div>
 
           <Select.Root value={sort} onValueChange={(v) => setSort(v as SortOption)}>
-            <Select.Trigger className="sort-trigger" aria-label={t('menu.filter.price')}>
+            <Select.Trigger className="app-select-trigger app-select-trigger--pill" aria-label={t('menu.filter.price')}>
               <Select.Value>{currentSortLabel}</Select.Value>
-              <Select.Icon className="sort-trigger__icon">
-                <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                  <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <Select.Icon className="app-select-trigger__icon">
+                <ChevronDown size={14} strokeWidth={2.5} aria-hidden />
               </Select.Icon>
             </Select.Trigger>
 
             <Select.Portal>
-              <Select.Content className="sort-content" position="popper" sideOffset={6}>
-                <Select.Viewport className="sort-viewport">
+              <Select.Content className="app-select-content" position="popper" sideOffset={6}>
+                <Select.Viewport className="app-select-viewport">
                   {SORT_OPTIONS.map((opt) => (
-                    <Select.Item key={opt.value} value={opt.value} className="sort-item">
+                    <Select.Item key={opt.value} value={opt.value} className="app-select-item">
                       <Select.ItemText>{opt.label}</Select.ItemText>
-                      <Select.ItemIndicator className="sort-item__check">
-                        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+                      <Select.ItemIndicator className="app-select-item__check">
+                        <Check size={14} strokeWidth={2.5} aria-hidden />
                       </Select.ItemIndicator>
                     </Select.Item>
                   ))}
@@ -228,23 +236,37 @@ export function MenuPage() {
         )}
       </div>
 
-      {error && <p className="menu-page__error">{error}</p>}
-      {loading ? (
-        <p className="menu-page__loading">...</p>
-      ) : (
-        <>
-          <p className="menu-page__count">{FOUND_LABEL[lang](list.length)}</p>
-          {list.length === 0 ? (
-            <p className="menu-page__empty">{t('menu.filter.noResults')}</p>
-          ) : (
-            <div className="menu-page__grid">
-              {list.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+      <div className="menu-page__results" aria-busy={refreshing}>
+        {error && <p className="menu-page__error">{error}</p>}
+
+        {showSkeleton ? (
+          <MenuGridSkeleton />
+        ) : (
+          <>
+            <p className="menu-page__count">
+              {refreshing ? t('menu.loading') : FOUND_LABEL[lang](list.length)}
+            </p>
+
+            <div className={`menu-page__grid-wrap${refreshing ? ' is-refreshing' : ''}`}>
+              {refreshing && (
+                <div className="menu-page__refresh-overlay" aria-hidden>
+                  <span className="menu-page__spinner" />
+                </div>
+              )}
+
+              {list.length === 0 ? (
+                <p className="menu-page__empty">{t('menu.filter.noResults')}</p>
+              ) : (
+                <div className="menu-page__grid">
+                  {list.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   )
 }

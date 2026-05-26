@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { formatPriceMdl, majorToMinor } from '../api/money'
 import { createOrder } from '../api/public/order'
@@ -8,6 +8,7 @@ import { useCartActions, useCartTotals } from '../contexts/CartContext'
 import { useAuthState } from '../contexts/AuthContext'
 import { useLocale } from '../contexts/LocaleContext'
 import type { UiKey } from '../data/translations'
+import { CustomPizzaCartItem } from '../components/pizza/CustomPizzaCartItem'
 import { Button } from '../components/ui/Button'
 
 /** Delivery fee in minor units (35 MDL). */
@@ -27,6 +28,11 @@ const PROMO_ERROR_KEYS: Record<string, UiKey> = {
   promocode_already_used: 'checkout.promo.used',
 }
 
+const ORDER_ERROR_KEYS: Record<string, UiKey> = {
+  invalid_order_items: 'checkout.error.invalidItems',
+  invalid_order_data: 'checkout.error.invalidItems',
+}
+
 function cardProviderValue(cardType: CardType): number {
   if (cardType === 'Mastercard') return 1
   if (cardType === 'PayPal') return 2
@@ -35,7 +41,7 @@ function cardProviderValue(cardType: CardType): number {
 
 export function CheckoutPage() {
   const { t } = useLocale()
-  const { isAuthenticated } = useAuthState()
+  const { isAuthenticated, user, isLoading: authLoading } = useAuthState()
   const { lines, customLines, total } = useCartTotals()
   const { clear } = useCartActions()
   const navigate = useNavigate()
@@ -58,8 +64,27 @@ export function CheckoutPage() {
   const [promoError, setPromoError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const prefilledRef = useRef(false)
 
   const isEmpty = lines.length === 0 && customLines.length === 0
+
+  useEffect(() => {
+    if (authLoading || !isAuthenticated || !user || prefilledRef.current) return
+    prefilledRef.current = true
+
+    if (user.email) setEmail(user.email)
+
+    const username = user.username?.trim() ?? ''
+    if (username) {
+      const parts = username.split(/\s+/).filter(Boolean)
+      if (parts.length >= 2) {
+        setFirstName(parts[0])
+        setLastName(parts.slice(1).join(' '))
+      } else {
+        setFirstName(username)
+      }
+    }
+  }, [authLoading, isAuthenticated, user])
 
   useEffect(() => {
     if (isEmpty) navigate('/menu', { replace: true })
@@ -115,9 +140,17 @@ export function CheckoutPage() {
         })),
       })
       clear()
-      navigate('/order-success', { state: { orderId: order.id } })
+      navigate('/order-success', { state: { orderId: order.id }, replace: true })
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to place order')
+      const msg =
+        err instanceof PublicApiError
+          ? ORDER_ERROR_KEYS[err.message]
+            ? t(ORDER_ERROR_KEYS[err.message])
+            : err.message
+          : err instanceof Error
+            ? err.message
+            : t('checkout.error.generic')
+      setSubmitError(msg)
     } finally {
       setSubmitting(false)
     }
@@ -232,7 +265,7 @@ export function CheckoutPage() {
                 />
                 <button
                   type="button"
-                  className="btn btn--outline checkout-promo__btn"
+                  className="btn btn--secondary checkout-promo__btn"
                   onClick={() => void applyPromo()}
                   disabled={!promoCode.trim() || promoStatus === 'valid'}
                 >
@@ -324,12 +357,17 @@ export function CheckoutPage() {
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
             />
-            <span className="checkout-terms__text">{t('checkout.terms')}</span>
+            <span className="checkout-terms__text">
+              {t('checkout.terms')}{' '}
+              <Link to="/terms" className="checkout-terms__link">
+                {t('footer.terms')}
+              </Link>
+            </span>
           </label>
 
           {submitError && <p className="checkout-form__error">{submitError}</p>}
 
-          <Button variant="primary" className="checkout-submit" disabled={!agreed || submitting}>
+          <Button type="submit" variant="primary" className="checkout-submit" disabled={!agreed || submitting}>
             {submitting ? '...' : t('checkout.submit')}
           </Button>
         </form>
@@ -358,11 +396,12 @@ export function CheckoutPage() {
             ))}
             {customLines.map((cl) => (
               <li key={cl.id} className="checkout-summary__item">
-                <div className="checkout-summary__info">
-                  <div className="checkout-summary__name">{cl.label}</div>
-                  <div className="checkout-summary__qty">× {cl.qty}</div>
-                </div>
-                <div className="checkout-summary__price">{formatPriceMdl(cl.price * cl.qty)}</div>
+                <CustomPizzaCartItem
+                  preview={cl.preview}
+                  price={cl.price}
+                  qty={cl.qty}
+                  variant="checkout"
+                />
               </li>
             ))}
           </ul>

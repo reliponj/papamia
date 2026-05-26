@@ -1,6 +1,6 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useLocale } from '../contexts/LocaleContext'
-import { useAuthState } from '../contexts/AuthContext'
+import { ButtonLink } from '../components/ui/Button'
 
 type SuccessState = {
   orderId?: number
@@ -8,7 +8,6 @@ type SuccessState = {
 
 export function OrderSuccessPage() {
   const { t } = useLocale()
-  const { isAuthenticated } = useAuthState()
   const location = useLocation()
   const state = (location.state ?? {}) as SuccessState
   const orderId = state.orderId
@@ -25,16 +24,9 @@ export function OrderSuccessPage() {
             : t('order.success.title')}
         </h1>
         <p className="order-success__sub">{t('order.success.sub')}</p>
-        <div className="order-success__actions">
-          {isAuthenticated ? (
-            <Link to="/account" className="btn btn--outline order-success__btn">
-              {t('order.success.account')}
-            </Link>
-          ) : null}
-          <Link to="/menu" className="btn btn--primary order-success__btn">
-            {t('order.success.back')}
-          </Link>
-        </div>
+        <ButtonLink to="/" variant="primary" className="order-success__btn">
+          {t('order.success.home')}
+        </ButtonLink>
       </div>
     </div>
   )

@@ -14,8 +14,18 @@ function parseIngridient(raw: unknown): IngridientDto | null {
   const id = parseId(raw.id)
   const name = raw.name
   const type = parseIngridientType(raw.type)
-  if (id === null || typeof name !== 'string' || type === null) return null
-  return { id, name, type }
+  const price = raw.price
+  const isActive = raw.isActive
+  if (
+    id === null ||
+    typeof name !== 'string' ||
+    type === null ||
+    typeof price !== 'number' ||
+    typeof isActive !== 'boolean'
+  ) {
+    return null
+  }
+  return { id, name, type, price, isActive }
 }
 
 function parseIngridientList(raw: unknown): IngridientDto[] {

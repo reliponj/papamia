@@ -12,12 +12,18 @@ export type CartLine = {
   snapshot: CartLineSnapshot
 }
 
+export type CustomPizzaPreview = {
+  doughName: string
+  sauceName: string
+  toppingNames: string[]
+}
+
 export type CustomPizzaLine = {
   id: string
   customPizzaId: number
   qty: number
-  label: string
   /** Price in minor units (bani) — display estimate; backend calculates order total. */
   price: number
   ingredientIds: number[]
+  preview: CustomPizzaPreview
 }

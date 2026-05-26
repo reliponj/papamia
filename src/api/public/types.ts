@@ -30,11 +30,21 @@ export type Ingredient = {
   id: number
   name: string
   type: IngredientType
+  price: number
+  isActive: boolean
 }
 
 export type CustomPizzaDto = {
   id: number
+  totalPrice: number
   ingridientIds: number[]
+}
+
+export type ArticleComment = {
+  id: number
+  userId: number
+  text: string
+  createdAt: string
 }
 
 export type Banner = {
@@ -46,9 +56,15 @@ export type Banner = {
 
 export type Article = {
   id: number
+  title: string
   createdAt: string
   text: string
   imageUrl: string
+  comments?: ArticleComment[]
+}
+
+export type FavoriteToggleResult = {
+  isFavorite: boolean
 }
 
 export type Location = {

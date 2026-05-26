@@ -1,73 +1,43 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { listBanners } from '../../api/public/banner'
 import type { Banner } from '../../api/public/types'
+import { ImageSlider, type ImageSlide } from '../ui/ImageSlider'
+import { useLocale } from '../../contexts/LocaleContext'
 
 export function BannerCarousel() {
-  const [banners, setBanners] = useState<Banner[]>([])
-  const [index, setIndex] = useState(0)
+  const { t } = useLocale()
+  const [slides, setSlides] = useState<ImageSlide[]>([])
 
   useEffect(() => {
     let cancelled = false
     listBanners()
       .then((items) => {
-        if (!cancelled) setBanners(items)
+        if (cancelled) return
+        setSlides(
+          items.map((b: Banner) => ({
+            id: b.id,
+            src: b.imageUrl,
+            link: b.link || undefined,
+          })),
+        )
       })
       .catch(() => {
-        if (!cancelled) setBanners([])
+        if (!cancelled) setSlides([])
       })
     return () => {
       cancelled = true
     }
   }, [])
 
-  useEffect(() => {
-    if (banners.length <= 1) return
-    const timer = window.setInterval(() => {
-      setIndex((i) => (i + 1) % banners.length)
-    }, 6000)
-    return () => window.clearInterval(timer)
-  }, [banners.length])
-
-  if (banners.length === 0) return null
-
-  const current = banners[index]
+  if (slides.length === 0) return null
 
   return (
-    <section className="banner-carousel section" aria-label="Promotions">
-      <div className="banner-carousel__frame">
-        {current.link ? (
-          <Link to={current.link} className="banner-carousel__link">
-            <img
-              src={current.imageUrl}
-              alt=""
-              className="banner-carousel__img"
-              loading="lazy"
-            />
-          </Link>
-        ) : (
-          <img
-            src={current.imageUrl}
-            alt=""
-            className="banner-carousel__img"
-            loading="lazy"
-          />
-        )}
-        {banners.length > 1 && (
-          <div className="banner-carousel__dots" role="tablist">
-            {banners.map((b, i) => (
-              <button
-                key={b.id}
-                type="button"
-                role="tab"
-                aria-selected={i === index}
-                className={`banner-carousel__dot${i === index ? ' is-active' : ''}`}
-                onClick={() => setIndex(i)}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
+    <ImageSlider
+      slides={slides}
+      className="banner-carousel section"
+      ariaLabel={t('banner.carousel.label')}
+      prevLabel={t('banner.carousel.prev')}
+      nextLabel={t('banner.carousel.next')}
+    />
   )
 }

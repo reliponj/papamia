@@ -101,6 +101,13 @@ export async function createOrder(payload: OrderCreatePayload): Promise<Order> {
   return one
 }
 
+export async function getMyOrder(id: number): Promise<Order> {
+  const data = await publicRequest<unknown>('GET', `/api/order/${id}`)
+  const one = parseOrder(data)
+  if (!one) throw new Error('Invalid order response')
+  return one
+}
+
 export async function listMyOrders(): Promise<Order[]> {
   const data = await publicRequest<unknown>('GET', '/api/order')
   return unwrapList(data)
