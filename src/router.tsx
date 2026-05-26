@@ -16,6 +16,7 @@ import { BlogPostPage } from './pages/BlogPostPage'
 import { CheckoutPage } from './pages/CheckoutPage'
 import { OrderDetailPage } from './pages/OrderDetailPage'
 import { OrderSuccessPage } from './pages/OrderSuccessPage'
+import { NotFoundPage } from './pages/NotFoundPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { TermsPage } from './pages/TermsPage'
 import { FavoritesPage } from './pages/FavoritesPage'
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
       { path: 'favorites', element: <FavoritesPage /> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
   {

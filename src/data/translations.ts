@@ -207,6 +207,9 @@ export type UiKey =
   | 'blog.readMore'
   | 'blog.back'
   | 'blog.notFound'
+  | 'notFound.title'
+  | 'notFound.sub'
+  | 'notFound.home'
   | 'checkout.title'
   | 'checkout.form.title'
   | 'checkout.form.firstName'
@@ -245,6 +248,7 @@ export type UiKey =
   | 'order.success.title'
   | 'order.success.titleWithId'
   | 'order.success.sub'
+  | 'order.success.home'
   | 'order.success.back'
   | 'order.success.account'
   | 'order.detail.back'
@@ -787,8 +791,20 @@ const UI: Record<UiKey, Record<Lang, string>> = {
     ru: 'Спасибо! Курьер доставит ваш заказ за 35–50 минут.',
     en: 'Thank you! Your order will be delivered in 35–50 minutes.',
   },
+  'order.success.home': { ro: 'Acasă', ru: 'На главную', en: 'Back to home' },
   'order.success.back': { ro: 'Înapoi la meniu', ru: 'Вернуться в меню', en: 'Back to menu' },
   'order.success.account': { ro: 'Contul meu', ru: 'Мой аккаунт', en: 'My account' },
+  'notFound.title': {
+    ro: 'Pagina nu a fost găsită',
+    ru: 'Страница не найдена',
+    en: 'Page not found',
+  },
+  'notFound.sub': {
+    ro: 'Se pare că această pagină nu există sau a fost mutată. Întoarce-te pe pagina principală.',
+    ru: 'Похоже, такой страницы нет или она была перенесена. Вернитесь на главную.',
+    en: 'This page doesn’t exist or may have been moved. Head back to the home page.',
+  },
+  'notFound.home': { ro: 'Acasă', ru: 'На главную', en: 'Back to home' },
   'order.detail.back': { ro: 'Înapoi', ru: 'Назад', en: 'Back' },
   'order.detail.loading': { ro: 'Se încarcă comanda…', ru: 'Загрузка заказа…', en: 'Loading order…' },
   'order.detail.notFound': { ro: 'Comanda nu a fost găsită.', ru: 'Заказ не найден.', en: 'Order not found.' },

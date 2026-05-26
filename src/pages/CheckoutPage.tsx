@@ -140,7 +140,7 @@ export function CheckoutPage() {
         })),
       })
       clear()
-      navigate(`/orders/${order.id}`, { state: { order, justPlaced: true } })
+      navigate('/order-success', { state: { orderId: order.id }, replace: true })
     } catch (err) {
       const msg =
         err instanceof PublicApiError
