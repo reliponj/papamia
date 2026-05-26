@@ -6,18 +6,20 @@ export type { ArticleDto, ArticlePayload }
 function parseArticle(raw: unknown): ArticleDto | null {
   if (!isRecord(raw)) return null
   const id = parseId(raw.id)
+  const title = raw.title
   const createdAt = raw.createdAt
   const text = raw.text
   const imageUrl = raw.imageUrl
   if (
     id === null ||
+    typeof title !== 'string' ||
     typeof createdAt !== 'string' ||
     typeof text !== 'string' ||
     typeof imageUrl !== 'string'
   ) {
     return null
   }
-  return { id, createdAt, text, imageUrl }
+  return { id, title, createdAt, text, imageUrl }
 }
 
 function parseArticleList(raw: unknown): ArticleDto[] {

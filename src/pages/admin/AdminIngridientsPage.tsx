@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatPriceMdl, majorToMinor, minorToMajor } from '../../api/money'
 import {
   createIngridient,
   deleteIngridient,
@@ -22,7 +23,7 @@ const TYPE_LABELS: Record<IngridientType, string> = {
   2: 'Extra',
 }
 
-const emptyForm = { name: '', type: 0 as IngridientType }
+const emptyForm = { name: '', type: 0 as IngridientType, priceMdl: '0', isActive: true }
 
 export function AdminIngridientsPage() {
   const crud = useCrudResource<IngridientDto>({
@@ -53,13 +54,24 @@ export function AdminIngridientsPage() {
 
   function openEdit(row: IngridientDto) {
     setEditingId(row.id)
-    setForm({ name: row.name, type: row.type })
+    setForm({
+      name: row.name,
+      type: row.type,
+      priceMdl: minorToMajor(row.price).toFixed(2),
+      isActive: row.isActive,
+    })
     setModalOpen(true)
   }
 
   async function submitIngridient() {
-    const payload = { name: form.name.trim(), type: form.type }
-    if (!payload.name) return
+    const priceMajor = Number.parseFloat(form.priceMdl)
+    if (!form.name.trim() || !Number.isFinite(priceMajor) || priceMajor < 0) return
+    const payload = {
+      name: form.name.trim(),
+      type: form.type,
+      price: majorToMinor(priceMajor),
+      isActive: form.isActive,
+    }
 
     await crud.runMutation(async () => {
       if (editingId !== null) {
@@ -99,6 +111,12 @@ export function AdminIngridientsPage() {
         columns={[
           { key: 'name', header: 'Name', render: (row) => row.name },
           { key: 'type', header: 'Type', render: (row) => TYPE_LABELS[row.type] },
+          { key: 'price', header: 'Price', render: (row) => formatPriceMdl(row.price) },
+          {
+            key: 'active',
+            header: 'Active',
+            render: (row) => (row.isActive ? 'Yes' : 'No'),
+          },
         ]}
         rows={crud.filteredItems}
         rowKey={(row) => row.id}
@@ -153,6 +171,26 @@ export function AdminIngridientsPage() {
                 </option>
               ))}
             </select>
+          </FormField>
+          <FormField label="Price (MDL)">
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={form.priceMdl}
+              onChange={(e) => setForm((p) => ({ ...p, priceMdl: e.target.value }))}
+              required
+            />
+          </FormField>
+          <FormField label="Active">
+            <label className="crm-checkbox">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) => setForm((p) => ({ ...p, isActive: e.target.checked }))}
+              />
+              <span>Visible in pizza builder</span>
+            </label>
           </FormField>
           <div className="crm-form__actions">
             <button className="btn btn--primary" type="submit" disabled={crud.saving}>

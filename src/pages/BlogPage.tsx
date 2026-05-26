@@ -62,6 +62,7 @@ export function BlogPage() {
                 />
               </Link>
               <div className="blog-card__body">
+                <h2 className="blog-card__title">{post.title}</h2>
                 <time className="blog-card__date" dateTime={post.createdAt}>
                   {formatDate(post.createdAt, lang)}
                 </time>

@@ -94,12 +94,14 @@ export type BannerPayload = {
 
 export type ArticleDto = {
   id: number
+  title: string
   createdAt: string
   text: string
   imageUrl: string
 }
 
 export type ArticlePayload = {
+  title: string
   text: string
   imageUrl: string
 }
@@ -149,11 +151,15 @@ export type IngridientDto = {
   id: number
   name: string
   type: IngridientType
+  price: number
+  isActive: boolean
 }
 
 export type IngridientPayload = {
   name: string
   type: IngridientType
+  price: number
+  isActive: boolean
 }
 
 export type CategoryDto = {
