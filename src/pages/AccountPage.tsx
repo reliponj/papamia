@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { listMyOrders } from '../api/public/order'
 import type { Order, OrderStatus } from '../api/public/types'
@@ -23,6 +23,113 @@ function orderItemCount(order: Order): number {
   const productQty = order.items.reduce((s, i) => s + i.quantity, 0)
   const pizzaQty = order.customPizzaItems.reduce((s, i) => s + i.quantity, 0)
   return productQty + pizzaQty
+}
+
+const AVATAR_MAX_BYTES = 2 * 1024 * 1024
+
+function avatarStorageKey(userId: string | number): string {
+  return `papamia-avatar-${userId}`
+}
+
+function readStoredAvatar(userId: string | number): string | null {
+  try {
+    return localStorage.getItem(avatarStorageKey(userId))
+  } catch {
+    return null
+  }
+}
+
+function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return (parts[0][0] + parts[1][0]).toUpperCase()
+}
+
+/** UI-only avatar picker — persists the chosen image in localStorage. */
+function ProfileAvatar({ userId, name }: { userId: string | number; name: string }) {
+  const { t } = useLocale()
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [avatar, setAvatar] = useState<string | null>(() => readStoredAvatar(userId))
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setAvatar(readStoredAvatar(userId))
+  }, [userId])
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = '' // allow re-selecting the same file later
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setError(t('account.avatar.hint'))
+      return
+    }
+    if (file.size > AVATAR_MAX_BYTES) {
+      setError(t('account.avatar.hint'))
+      return
+    }
+    setError('')
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = String(reader.result)
+      setAvatar(dataUrl)
+      try {
+        localStorage.setItem(avatarStorageKey(userId), dataUrl)
+      } catch {
+        /* storage full — keep it in memory only */
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+
+  function handleRemove() {
+    setAvatar(null)
+    setError('')
+    try {
+      localStorage.removeItem(avatarStorageKey(userId))
+    } catch {
+      /* ignore */
+    }
+  }
+
+  return (
+    <div className="profile-avatar">
+      <div className="profile-avatar__preview">
+        {avatar ? (
+          <img src={avatar} alt="" className="profile-avatar__img" />
+        ) : (
+          <span className="profile-avatar__initials">{initialsFromName(name)}</span>
+        )}
+      </div>
+      <div className="profile-avatar__body">
+        <div className="profile-avatar__actions">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFile}
+          />
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={() => inputRef.current?.click()}
+          >
+            {t('account.avatar.change')}
+          </button>
+          {avatar && (
+            <button type="button" className="btn btn--ghost btn--sm" onClick={handleRemove}>
+              {t('account.avatar.remove')}
+            </button>
+          )}
+        </div>
+        <p className="profile-avatar__hint">
+          {error || t('account.avatar.hint')}
+        </p>
+      </div>
+    </div>
+  )
 }
 
 export function AccountPage() {
@@ -109,6 +216,8 @@ function ProfileTab() {
 
   return (
     <form className="profile-form" onSubmit={(e) => void handleSubmit(e)}>
+      {user && <ProfileAvatar userId={user.id} name={username || user.username || ''} />}
+
       <div className="profile-form__section">
         <label className="auth-form__label">
           {t('auth.username')}

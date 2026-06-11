@@ -69,10 +69,10 @@ export function MenuPage() {
     else setInitialLoading(true)
 
     setError('')
+    // Allergen exclusion is applied client-side (see `list` below), so the
+    // server query only carries sorting.
     const query: ProductListQuery = {
       ...sortToQuery(sort),
-      allergenExclude:
-        excludedAllergenIds.size > 0 ? [...excludedAllergenIds] : undefined,
     }
 
     try {
@@ -93,7 +93,7 @@ export function MenuPage() {
       setInitialLoading(false)
       setRefreshing(false)
     }
-  }, [cat, categories, excludedAllergenIds, sort])
+  }, [cat, categories, sort])
 
   useEffect(() => {
     if (categories.length === 0) return
@@ -108,7 +108,8 @@ export function MenuPage() {
   function toggleAllergen(id: number) {
     setExcludedAllergenIds((prev) => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
       return next
     })
   }
@@ -122,8 +123,21 @@ export function MenuPage() {
   const hasActiveFilters =
     search.trim() !== '' || sort !== 'default' || excludedAllergenIds.size > 0
 
+  // Names of the allergens the user wants to exclude (lower-cased), derived
+  // from the selected ids + the loaded allergen list.
+  const excludedAllergenNames = useMemo(() => {
+    const nameById = new Map(allergens.map((a) => [a.id, a.name.trim().toLowerCase()]))
+    const names = new Set<string>()
+    for (const id of excludedAllergenIds) {
+      const name = nameById.get(id)
+      if (name) names.add(name)
+    }
+    return names
+  }, [allergens, excludedAllergenIds])
+
   const list = useMemo(() => {
     let result = [...products]
+
     if (search.trim()) {
       const q = search.trim().toLowerCase()
       result = result.filter(
@@ -131,8 +145,20 @@ export function MenuPage() {
           p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q),
       )
     }
+
+    // Drop any product whose allergen list contains an excluded allergen.
+    if (excludedAllergenNames.size > 0) {
+      result = result.filter((p) => {
+        const productAllergens = p.allergens
+          .split(',')
+          .map((s) => s.trim().toLowerCase())
+          .filter(Boolean)
+        return !productAllergens.some((name) => excludedAllergenNames.has(name))
+      })
+    }
+
     return result
-  }, [products, search])
+  }, [products, search, excludedAllergenNames])
 
   const FOUND_LABEL: Record<string, (n: number) => string> = {
     ro: (n) => `${n} ${n === 1 ? 'preparat găsit' : 'preparate găsite'}`,

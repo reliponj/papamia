@@ -141,6 +141,9 @@ export type UiKey =
   | 'account.profile.confirmPassword'
   | 'account.profile.save'
   | 'account.profile.saved'
+  | 'account.avatar.change'
+  | 'account.avatar.remove'
+  | 'account.avatar.hint'
   | 'account.orders.empty'
   | 'account.orders.order'
   | 'account.orders.date'
@@ -590,6 +593,13 @@ const UI: Record<UiKey, Record<Lang, string>> = {
   'account.profile.confirmPassword': { ro: 'Confirmă parola nouă', ru: 'Подтвердите новый пароль', en: 'Confirm new password' },
   'account.profile.save': { ro: 'Salvează', ru: 'Сохранить', en: 'Save changes' },
   'account.profile.saved': { ro: 'Salvat!', ru: 'Сохранено!', en: 'Saved!' },
+  'account.avatar.change': { ro: 'Schimbă avatarul', ru: 'Изменить аватар', en: 'Change avatar' },
+  'account.avatar.remove': { ro: 'Elimină', ru: 'Удалить', en: 'Remove' },
+  'account.avatar.hint': {
+    ro: 'PNG sau JPG, până la 2 MB.',
+    ru: 'PNG или JPG, до 2 МБ.',
+    en: 'PNG or JPG, up to 2 MB.',
+  },
   'account.orders.empty': { ro: 'Nu ai comenzi încă.', ru: 'Заказов пока нет.', en: 'No orders yet.' },
   'account.orders.order': { ro: 'Comanda', ru: 'Заказ', en: 'Order' },
   'account.orders.date': { ro: 'Data', ru: 'Дата', en: 'Date' },
