@@ -124,9 +124,7 @@ function ProfileAvatar({ userId, name }: { userId: string | number; name: string
             </button>
           )}
         </div>
-        <p className="profile-avatar__hint">
-          {error || t('account.avatar.hint')}
-        </p>
+        {error && <p className="profile-avatar__hint profile-avatar__hint--error">{error}</p>}
       </div>
     </div>
   )

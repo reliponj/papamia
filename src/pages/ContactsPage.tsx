@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapPin, Phone, Clock } from 'lucide-react'
@@ -7,18 +7,35 @@ import { listLocations } from '../api/public/location'
 import type { Location } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
 
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+const DEFAULT_CENTER: [number, number] = [47.024, 28.826]
 
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconUrl: markerIcon,
-  iconRetinaUrl: markerIcon2x,
-  shadowUrl: markerShadow,
+// Inline SVG pin so markers always render (no reliance on bundled image assets).
+const SHOP_PIN = L.divIcon({
+  className: 'shop-pin',
+  html: `
+    <svg width="32" height="42" viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.4 0 0 5.4 0 12c0 8.6 12 20 12 20s12-11.4 12-20C24 5.4 18.6 0 12 0z" fill="#c45c3e" stroke="#fff" stroke-width="1.5"/>
+      <circle cx="12" cy="12" r="4.5" fill="#fff"/>
+    </svg>`,
+  iconSize: [32, 42],
+  iconAnchor: [16, 40],
+  popupAnchor: [0, -36],
 })
 
-const DEFAULT_CENTER: [number, number] = [47.024, 28.826]
+/** Auto-fits the map viewport to all shop markers whenever they change. */
+function FitToLocations({ locations }: { locations: Location[] }) {
+  const map = useMap()
+  useEffect(() => {
+    if (locations.length === 0) return
+    if (locations.length === 1) {
+      map.setView([locations[0].latitude, locations[0].longitude], 15)
+      return
+    }
+    const bounds = L.latLngBounds(locations.map((l) => [l.latitude, l.longitude]))
+    map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 })
+  }, [locations, map])
+  return null
+}
 
 export function ContactsPage() {
   const { t } = useLocale()
@@ -53,19 +70,24 @@ export function ContactsPage() {
         <MapContainer
           center={mapCenter}
           zoom={13}
-          scrollWheelZoom={false}
+          scrollWheelZoom
           className="contacts-page__map"
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          <FitToLocations locations={locations} />
           {locations.map((loc) => (
-            <Marker key={loc.id} position={[loc.latitude, loc.longitude]}>
+            <Marker key={loc.id} position={[loc.latitude, loc.longitude]} icon={SHOP_PIN}>
               <Popup>
                 <strong>{loc.name}</strong>
-                <br />
-                {loc.address}
+                {loc.address ? (
+                  <>
+                    <br />
+                    {loc.address}
+                  </>
+                ) : null}
               </Popup>
             </Marker>
           ))}

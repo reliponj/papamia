@@ -1819,6 +1819,17 @@ textarea {
   height: 380px;
 }
 
+/* custom SVG shop pin — strip Leaflet's default divIcon box */
+.shop-pin {
+  background: transparent;
+  border: none;
+}
+
+.shop-pin svg {
+  display: block;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+}
+
 .contacts-page__section {
   margin-top: 3rem;
 }
@@ -4442,6 +4453,10 @@ textarea {
   margin: 0;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.profile-avatar__hint--error {
+  color: #ff9580;
 }
 
 .profile-form__divider {
