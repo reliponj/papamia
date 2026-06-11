@@ -65,6 +65,7 @@ export function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const prefilledRef = useRef(false)
+  const orderPlacedRef = useRef(false)
 
   const isEmpty = lines.length === 0 && customLines.length === 0
 
@@ -87,6 +88,9 @@ export function CheckoutPage() {
   }, [authLoading, isAuthenticated, user])
 
   useEffect(() => {
+    // Don't bounce to the menu when the cart empties because the order was
+    // just placed — that navigation goes to the success page instead.
+    if (orderPlacedRef.current) return
     if (isEmpty) navigate('/menu', { replace: true })
   }, [isEmpty, navigate])
 
@@ -139,6 +143,7 @@ export function CheckoutPage() {
           quantity: cl.qty,
         })),
       })
+      orderPlacedRef.current = true
       clear()
       navigate('/order-success', { state: { orderId: order.id }, replace: true })
     } catch (err) {

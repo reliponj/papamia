@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { MapPin, Phone, Clock } from 'lucide-react'
 import { listLocations } from '../api/public/location'
 import type { Location } from '../api/public/types'
 import { useLocale } from '../contexts/LocaleContext'
@@ -80,11 +81,18 @@ export function ContactsPage() {
                 <img src={loc.imageUrl} alt="" className="contacts-page__card-img" loading="lazy" />
               ) : null}
               <h3 className="contacts-page__card-name">{loc.name}</h3>
-              <p className="contacts-page__card-address">{loc.address}</p>
+              <p className="contacts-page__card-address">
+                <MapPin size={15} strokeWidth={1.75} aria-hidden className="contacts-page__card-icon" />
+                <span>{loc.address}</span>
+              </p>
               <p className="contacts-page__card-phone">
+                <Phone size={15} strokeWidth={1.75} aria-hidden className="contacts-page__card-icon" />
                 <a href={`tel:${loc.phoneNumber.replace(/\s/g, '')}`}>{loc.phoneNumber}</a>
               </p>
-              <p className="contacts-page__card-hours">{loc.worktime}</p>
+              <p className="contacts-page__card-hours">
+                <Clock size={15} strokeWidth={1.75} aria-hidden className="contacts-page__card-icon" />
+                <span>{loc.worktime}</span>
+              </p>
             </div>
           ))}
         </div>
